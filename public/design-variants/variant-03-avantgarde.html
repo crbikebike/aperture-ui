@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow — Brutalist Axis</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0d0d0d;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #606060;
+            --grid-major: #1a1a1a;
+            --grid-minor: #252525;
+            --accent-line: #ffffff;
+            --highlight: #ffeb3b;
+            --dim: #404040;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        /* Main grid container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Top: Title bar */
+        .titlebar {
+            height: 48px;
+            border-bottom: 2px solid var(--accent-line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: var(--bg);
+            position: relative;
+            z-index: 100;
+        }
+
+        .titlebar h1 {
+            font-family: 'Courier Prime', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--text-primary);
+        }
+
+        .titlebar-info {
+            display: flex;
+            gap: 32px;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .titlebar-info span {
+            text-transform: uppercase;
+            border-right: 1px solid var(--text-tertiary);
+            padding-right: 32px;
+        }
+
+        .titlebar-info span:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        /* Main content grid */
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left: Day axis (vertical) */
+        .axis-days {
+            width: 140px;
+            border-right: 1px solid var(--grid-major);
+            padding: 32px 0;
+            overflow-y: auto;
+            background: linear-gradient(180deg, var(--bg) 0%, #0a0a0a 100%);
+        }
+
+        .axis-days::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .axis-days::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+        }
+
+        .day-label {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--grid-minor);
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-label:hover {
+            background: var(--grid-major);
+        }
+
+        .day-label.today {
+            background: var(--grid-major);
+            border-bottom: 2px solid var(--highlight);
+        }
+
+        .day-label.past {
+            opacity: 0.5;
+        }
+
+        .day-label .date {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .day-label.today .date {
+            color: var(--highlight);
+        }
+
+        .day-label .dow {
+            font-size: 9px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Right: Main matrix area */
+        .matrix {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Priority header (horizontal axis) */
+        .priority-header {
+            height: 48px;
+            display: flex;
+            border-bottom: 1px solid var(--grid-major);
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 90;
+        }
+
+        .priority-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--grid-minor);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .priority-cell:last-child {
+            border-right: none;
+        }
+
+        .priority-cell.p0::before {
+            content: '●';
+            margin-right: 6px;
+            color: var(--highlight);
+            font-size: 14px;
+        }
+
+        .priority-cell.p1::before {
+            content: '●';
+            margin-right: 6px;
+            color: #ff6b6b;
+            font-size: 12px;
+        }
+
+        .priority-cell.p2::before {
+            content: '●';
+            margin-right: 6px;
+            color: #ffa94d;
+            font-size: 10px;
+        }
+
+        /* Grid body */
+        .grid-body {
+            flex: 1;
+            display: flex;
+            overflow: auto;
+            position: relative;
+        }
+
+        .grid-body::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .grid-body::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+        }
+
+        /* Priority column */
+        .priority-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--grid-minor);
+            min-width: 280px;
+        }
+
+        .priority-column:last-child {
+            border-right: none;
+        }
+
+        /* Day cell (intersection of day × priority) */
+        .day-cell {
+            flex: 1;
+            min-height: 80px;
+            border-bottom: 1px solid var(--grid-minor);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            transition: all 0.2s ease;
+            background: var(--bg);
+        }
+
+        .day-cell:hover {
+            background: var(--grid-major);
+        }
+
+        .day-cell.today {
+            background: rgba(255, 235, 59, 0.05);
+            border-left: 3px solid var(--highlight);
+            padding-left: 9px;
+        }
+
+        .day-cell.empty::before {
+            content: '—';
+            color: var(--text-tertiary);
+            font-size: 13px;
+            align-self: center;
+            flex: 1;
+        }
+
+        /* Tasks inside cell */
+        .tasks-in-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .task-inline {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 4px 0;
+            font-size: 10px;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .task-inline input[type="checkbox"] {
+            margin-top: 1px;
+            cursor: pointer;
+            accent-color: var(--highlight);
+        }
+
+        .task-inline .label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .task-inline .age {
+            color: var(--text-tertiary);
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+
+        .meeting-block {
+            padding: 4px 6px;
+            background: rgba(255, 235, 59, 0.15);
+            border-left: 2px solid var(--highlight);
+            margin-bottom: 4px;
+            font-size: 9px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .meeting-block .time {
+            font-weight: 700;
+            color: var(--highlight);
+        }
+
+        /* Right sidebar: People & initiatives */
+        .sidebar {
+            width: 240px;
+            border-left: 1px solid var(--grid-major);
+            padding: 32px 20px;
+            overflow-y: auto;
+            background: linear-gradient(180deg, var(--bg) 0%, #080808 100%);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--grid-minor);
+            padding-bottom: 24px;
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .person-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--grid-minor);
+            margin-bottom: 8px;
+            font-size: 9px;
+        }
+
+        .person-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .person-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .person-role {
+            color: var(--text-tertiary);
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .person-topics {
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .topic-line {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .status-indicator.ok {
+            background: #4ade80;
+        }
+
+        .status-indicator.warn {
+            background: #facc15;
+        }
+
+        .status-indicator.critical {
+            background: #ef4444;
+        }
+
+        /* Footer: Key bindings */
+        .footer {
+            height: 40px;
+            border-top: 2px solid var(--accent-line);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            background: var(--bg);
+            font-size: 9px;
+            color: var(--text-secondary);
+            gap: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .key-binding {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .key-binding code {
+            background: var(--grid-major);
+            padding: 2px 5px;
+            border: 1px solid var(--text-tertiary);
+            font-weight: 700;
+            color: var(--highlight);
+        }
+
+        @media (max-width: 1200px) {
+            .axis-days {
+                width: 100px;
+            }
+
+            .priority-cell {
+                font-size: 8px;
+            }
+
+            .day-cell {
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title bar -->
+        <div class="titlebar">
+            <h1>APERTURE</h1>
+            <div class="titlebar-info">
+                <span>WEEK 13 / MARCH 31 - APRIL 4</span>
+                <span>12 TASKS • 5 MEETINGS</span>
+                <span>3 PEOPLE</span>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="content">
+            <!-- Left axis: Days -->
+            <div class="axis-days">
+                <div class="day-label past">
+                    <div class="date">31</div>
+                    <div class="dow">Mon</div>
+                </div>
+                <div class="day-label past">
+                    <div class="date">01</div>
+                    <div class="dow">Tue</div>
+                </div>
+                <div class="day-label today">
+                    <div class="date">02</div>
+                    <div class="dow">Wed</div>
+                </div>
+                <div class="day-label">
+                    <div class="date">03</div>
+                    <div class="dow">Thu</div>
+                </div>
+                <div class="day-label">
+                    <div class="date">04</div>
+                    <div class="dow">Fri</div>
+                </div>
+            </div>
+
+            <!-- Right: Matrix (days × priorities) -->
+            <div class="matrix">
+                <!-- Priority header -->
+                <div class="priority-header">
+                    <div class="priority-cell p0">Critical</div>
+                    <div class="priority-cell p1">High</div>
+                    <div class="priority-cell p2">Next</div>
+                </div>
+
+                <!-- Grid body -->
+                <div class="grid-body">
+                    <!-- CRITICAL column -->
+                    <div class="priority-column">
+                        <!-- Mon 31 -->
+                        <div class="day-cell empty"></div>
+
+                        <!-- Tue 01 -->
+                        <div class="day-cell">
+                            <div class="meeting-block">
+                                <span class="time">09:00</span> Standup
+                            </div>
+                            <div class="meeting-block">
+                                <span class="time">14:00</span> 1:1 Marcus
+                            </div>
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox" checked>
+                                    <span class="label">Deploy hotfix</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wed 02 (Today) -->
+                        <div class="day-cell today">
+                            <div class="meeting-block">
+                                <span class="time">10:00</span> 1:1 Priya
+                            </div>
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Code review</span>
+                                    <span class="age">3d</span>
+                                </div>
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Refactor auth</span>
+                                    <span class="age">5d</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thu 03 -->
+                        <div class="day-cell">
+                            <div class="meeting-block">
+                                <span class="time">11:00</span> Design kickoff
+                            </div>
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">PR feedback</span>
+                                    <span class="age">4d</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fri 04 -->
+                        <div class="day-cell empty"></div>
+                    </div>
+
+                    <!-- HIGH column -->
+                    <div class="priority-column">
+                        <!-- Mon 31 -->
+                        <div class="day-cell empty"></div>
+
+                        <!-- Tue 01 -->
+                        <div class="day-cell">
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Fix tests</span>
+                                    <span class="age">2d</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wed 02 (Today) -->
+                        <div class="day-cell today">
+                            <div class="meeting-block">
+                                <span class="time">14:30</span> Design review
+                            </div>
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Update API docs</span>
+                                    <span class="age">1d</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thu 03 -->
+                        <div class="day-cell">
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Setup CI/CD</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fri 04 -->
+                        <div class="day-cell">
+                            <div class="meeting-block">
+                                <span class="time">14:00</span> Weekly review
+                            </div>
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Plan sprint</span>
+                                    <span class="age">7d</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEXT column -->
+                    <div class="priority-column">
+                        <!-- Mon 31 -->
+                        <div class="day-cell empty"></div>
+
+                        <!-- Tue 01 -->
+                        <div class="day-cell empty"></div>
+
+                        <!-- Wed 02 (Today) -->
+                        <div class="day-cell today">
+                            <div class="meeting-block">
+                                <span class="time">16:00</span> Stakeholder sync
+                            </div>
+                        </div>
+
+                        <!-- Thu 03 -->
+                        <div class="day-cell empty"></div>
+
+                        <!-- Fri 04 -->
+                        <div class="day-cell">
+                            <div class="tasks-in-cell">
+                                <div class="task-inline">
+                                    <input type="checkbox">
+                                    <span class="label">Monthly report</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="section-title">People</div>
+                <div class="person-item">
+                    <div class="person-name">Priya Desai</div>
+                    <div class="person-role">Eng Lead</div>
+                    <div class="person-topics">
+                        <div class="topic-line">
+                            <span class="status-indicator ok"></span>
+                            <span>Project scope</span>
+                        </div>
+                        <div class="topic-line">
+                            <span class="status-indicator warn"></span>
+                            <span>Timeline</span>
+                        </div>
+                        <div class="topic-line">
+                            <span class="status-indicator critical"></span>
+                            <span>Budget (8d)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="person-item">
+                    <div class="person-name">Marcus Chen</div>
+                    <div class="person-role">PM</div>
+                    <div class="person-topics">
+                        <div class="topic-line">
+                            <span class="status-indicator ok"></span>
+                            <span>Feature flag</span>
+                        </div>
+                        <div class="topic-line">
+                            <span class="status-indicator warn"></span>
+                            <span>Launch (3d)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="person-item">
+                    <div class="person-name">Alex Carter</div>
+                    <div class="person-role">Designer</div>
+                    <div class="person-topics">
+                        <div class="topic-line">
+                            <span class="status-indicator ok"></span>
+                            <span>Design sys</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-title">Initiatives</div>
+                <div class="person-item">
+                    <div class="person-name">Q2 Launch</div>
+                    <div class="person-role">Active</div>
+                    <div class="person-topics">
+                        5 open topics
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="key-binding"><code>K</code> Now</div>
+        <div class="key-binding"><code>A</code> Assign</div>
+        <div class="key-binding"><code>D</code> Drop</div>
+        <div class="key-binding"><code>T</code> Type</div>
+        <div class="key-binding"><code>X</code> Archive</div>
+    </div>
+</body>
+</html>

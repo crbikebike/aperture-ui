@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow - Concentric Rings</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1e 100%);
+            color: #e8e8f0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 40px;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #a78bfa 50%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #888;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Canvas container */
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Sidebar with info */
+        .info-panel {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            background: rgba(30, 30, 46, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 157, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 280px;
+            z-index: 15;
+        }
+
+        .info-section {
+            margin-bottom: 16px;
+        }
+
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            color: #e8e8f0;
+            line-height: 1.6;
+        }
+
+        .task-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 12px;
+        }
+
+        .task-age {
+            font-size: 10px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .task-text.completed {
+            color: #666;
+            text-decoration: line-through;
+        }
+
+        /* People orbitals */
+        .person-orbital {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .person-orbital:hover .person-card {
+            transform: scale(1.15);
+            box-shadow: 0 0 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .person-card {
+            background: rgba(255, 107, 157, 0.1);
+            border: 2px solid rgba(255, 107, 157, 0.3);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ff6b9d;
+            transition: all 0.3s ease;
+        }
+
+        /* Tooltip on hover */
+        .person-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 46, 0.95);
+            border: 1px solid rgba(255, 107, 157, 0.4);
+            border-radius: 6px;
+            padding: 8px 12px;
+            white-space: nowrap;
+            font-size: 11px;
+            color: #e8e8f0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            margin-bottom: 8px;
+            z-index: 10;
+        }
+
+        .person-orbital:hover .person-tooltip {
+            opacity: 1;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: rgba(30, 30, 46, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 12px;
+            z-index: 15;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.today {
+            background: #60a5fa;
+            box-shadow: 0 0 8px #60a5fa;
+        }
+
+        .legend-dot.past {
+            background: #888;
+        }
+
+        .legend-dot.future {
+            background: #a78bfa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ORBITAL</h1>
+            <p>Week of March 31 — Now / Next / Later</p>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="ringCanvas"></canvas>
+
+            <!-- People in orbit -->
+            <div class="person-orbital" style="left: 45%; top: 20%; transform: translate(-50%, -50%);">
+                <div class="person-card">P</div>
+                <div class="person-tooltip">Priya • 5d</div>
+            </div>
+
+            <div class="person-orbital" style="right: 25%; top: 35%; transform: translate(50%, -50%);">
+                <div class="person-card">C</div>
+                <div class="person-tooltip">Carlos • 3d</div>
+            </div>
+
+            <div class="person-orbital" style="left: 20%; bottom: 30%; transform: translate(-50%, 50%);">
+                <div class="person-card">A</div>
+                <div class="person-tooltip">Amir • 1d</div>
+            </div>
+
+            <div class="person-orbital" style="right: 18%; bottom: 25%; transform: translate(50%, 50%);">
+                <div class="person-card">B</div>
+                <div class="person-tooltip">Bea • 2w</div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot today"></div>
+                    <span>Today (center)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot past"></div>
+                    <span>This week</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot future"></div>
+                    <span>Next 2 weeks</span>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="info-section">
+                    <div class="info-label">Today (Wed)</div>
+                    <div class="info-content">
+                        <div class="task-item">
+                            <span class="task-checkbox">✓</span>
+                            <span class="task-text completed">Review PRs</span>
+                        </div>
+                        <div class="task-item">
+                            <span class="task-checkbox">○</span>
+                            <span class="task-text">Code review <span class="task-age">1d</span></span>
+                        </div>
+                        <div class="task-item">
+                            <span class="task-checkbox">○</span>
+                            <span class="task-text">Deploy v2.1 <span class="task-age">4d</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-label">Upcoming</div>
+                    <div class="info-content">
+                        <div class="task-item">
+                            <span class="task-checkbox">📌</span>
+                            <span class="task-text">API spec</span>
+                        </div>
+                        <div class="task-item">
+                            <span class="task-checkbox">📌</span>
+                            <span class="task-text">Q2 planning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('ringCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Days of week
+        const days = [
+            { name: 'Mon', date: 31, type: 'past' },
+            { name: 'Tue', date: 1, type: 'past' },
+            { name: 'Wed', date: 2, type: 'today' },
+            { name: 'Thu', date: 3, type: 'future' },
+            { name: 'Fri', date: 4, type: 'future' }
+        ];
+
+        // Tasks plotted on rings
+        const tasks = [
+            { day: 0, time: 10, title: 'Standup', type: 'meeting' },
+            { day: 0, time: 12, title: 'Review PRs', type: 'task' },
+            { day: 0, time: 14, title: '1:1 w/ Priya', type: 'meeting' },
+            { day: 1, time: 9, title: 'Design mockup', type: 'task' },
+            { day: 1, time: 13, title: 'Design sync', type: 'meeting' },
+            { day: 2, time: 10, title: 'Code review', type: 'task' },
+            { day: 2, time: 13, title: 'Team standup', type: 'meeting' },
+            { day: 2, time: 15, title: 'Deploy v2.1', type: 'task' },
+            { day: 3, time: 9, title: 'Strategy sync', type: 'meeting' },
+            { day: 3, time: 12, title: 'Testing', type: 'task' },
+            { day: 4, time: 10, title: 'Retro + demo', type: 'meeting' },
+        ];
+
+        function drawRings() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const baseRadius = 100;
+
+            // Clear canvas
+            ctx.fillStyle = 'transparent';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw rings for each day
+            days.forEach((day, idx) => {
+                const radius = baseRadius + idx * 70;
+                const color = day.type === 'today' ? '#60a5fa' :
+                             day.type === 'past' ? 'rgba(136, 136, 150, 0.3)' :
+                             'rgba(167, 139, 250, 0.3)';
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = day.type === 'today' ? 3 : 1;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Day label
+                ctx.fillStyle = day.type === 'today' ? '#60a5fa' : '#666';
+                ctx.font = day.type === 'today' ? 'bold 14px Lato' : '12px Lato';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${day.name} ${day.date}`, centerX, centerY - radius - 15);
+            });
+
+            // Draw task dots on rings
+            tasks.forEach((task) => {
+                const radius = baseRadius + task.day * 70;
+                const angle = (task.time / 24) * Math.PI * 2 - Math.PI / 2;
+
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                // Dot
+                ctx.fillStyle = task.type === 'meeting' ? '#ff6b9d' : '#60a5fa';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Glow
+                ctx.strokeStyle = task.type === 'meeting' ?
+                    'rgba(255, 107, 157, 0.3)' : 'rgba(96, 165, 250, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+
+            // Center circle (today's detail)
+            ctx.fillStyle = 'rgba(96, 165, 250, 0.1)';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#60a5fa';
+            ctx.font = 'bold 16px Playfair Display';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('NOW', centerX, centerY);
+        }
+
+        // Animation loop
+        let animationFrame;
+        function animate() {
+            drawRings();
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Hover effects on people
+        document.querySelectorAll('.person-orbital').forEach(orbital => {
+            orbital.addEventListener('click', function() {
+                const name = this.querySelector('.person-tooltip').textContent;
+                console.log('Selected:', name);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow - Editorial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: #f5f1ec;
+            color: #1a1a1a;
+            line-height: 1.4;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Masthead / Logo */
+        .masthead {
+            padding: 32px 48px 24px;
+            border-bottom: 3px solid #1a1a1a;
+            background: #f5f1ec;
+        }
+
+        .publication-title {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 54px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .publication-date {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        /* Main grid layout */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 32px;
+            padding: 32px 48px;
+            overflow-y: auto;
+        }
+
+        .articles-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        /* Article styling */
+        .article {
+            border-bottom: 1px solid #d0ccc8;
+            padding-bottom: 24px;
+        }
+
+        .article-headline {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .article-byline {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .article-description {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .article-meta {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Status indicator (color bar) */
+        .status-bar {
+            width: 4px;
+            display: inline-block;
+            margin-right: 12px;
+            height: 1em;
+            vertical-align: text-bottom;
+        }
+
+        .status-bar.pending { background: #d4af37; }
+        .status-bar.in-progress { background: #ff6b6b; }
+        .status-bar.completed { background: #2d6a4f; }
+
+        /* Featured article (wide) */
+        .featured-article {
+            grid-column: 1 / -1;
+            border: 2px solid #1a1a1a;
+            padding: 24px;
+            margin-bottom: 24px;
+            background: #fff8f3;
+        }
+
+        .featured-article .article-headline {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .featured-article .article-description {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            padding-top: 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+
+        .sidebar-heading {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #d0ccc8;
+        }
+
+        .person-card {
+            margin-bottom: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e8e4df;
+        }
+
+        .person-card:last-child {
+            border-bottom: none;
+        }
+
+        .person-name {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .person-detail {
+            font-size: 10px;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .person-detail strong {
+            color: #333;
+        }
+
+        /* Column layout for past days */
+        .past-days {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            grid-column: 1 / -1;
+            margin-top: 24px;
+        }
+
+        .day-column {
+            border-left: 3px solid #d0ccc8;
+            padding-left: 16px;
+        }
+
+        .day-column.completed {
+            border-left-color: #2d6a4f;
+            opacity: 0.7;
+        }
+
+        .day-header {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #666;
+        }
+
+        .day-item {
+            font-size: 12px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: flex;
+            gap: 8px;
+        }
+
+        .day-item-check {
+            flex-shrink: 0;
+            width: 14px;
+            text-align: center;
+        }
+
+        .day-item-text {
+            flex: 1;
+        }
+
+        .day-item.done .day-item-text {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .day-time {
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .day-attendee {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Scrollbar */
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: #f5f1ec;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: #d0ccc8;
+            border-radius: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .masthead {
+            animation: slideDown 0.6s ease;
+        }
+
+        .article {
+            animation: slideDown 0.6s ease;
+        }
+
+        .article:nth-child(1) { animation-delay: 0.1s; }
+        .article:nth-child(2) { animation-delay: 0.15s; }
+        .article:nth-child(3) { animation-delay: 0.2s; }
+        .article:nth-child(4) { animation-delay: 0.25s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Masthead -->
+        <div class="masthead">
+            <div class="publication-title">APERTURE</div>
+            <div class="publication-date">Week of March 31, 2026</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Articles Column -->
+            <div>
+                <!-- Featured Article -->
+                <div class="featured-article">
+                    <div class="article-headline">
+                        <span class="status-bar pending"></span>
+                        Team Retrospective & Q2 Planning
+                    </div>
+                    <div class="article-byline">Friday 4 Apr • 10:00–12:00</div>
+                    <div class="article-description">
+                        Wrap-up from this week's sprints, demo delivery on v2.1, and strategic alignment for next quarter. Carlos leading facilitation. All hands. Outcomes: Q2 priorities locked, team feedback captured.
+                    </div>
+                </div>
+
+                <!-- Regular Articles -->
+                <div class="article">
+                    <div class="article-headline">
+                        <span class="status-bar in-progress"></span>
+                        Code Review & Deployment
+                    </div>
+                    <div class="article-byline">Wed 2 Apr • 14:00 | Age: 4d</div>
+                    <div class="article-description">
+                        v2.1 feature validation pending. Review cycle with Priya, Carlos, Amir. Deployment window open Friday afternoon. Rollback plan documented.
+                    </div>
+                    <div class="article-meta">Status: In Progress · Priority: High</div>
+                </div>
+
+                <div class="article">
+                    <div class="article-headline">
+                        <span class="status-bar pending"></span>
+                        Design Sync & API Specification
+                    </div>
+                    <div class="article-byline">Tue 1 Apr • 13:00 | Age: 2d</div>
+                    <div class="article-description">
+                        Finalize component library documentation. API contract review w/ Kai. Design system alignment across web/mobile.
+                    </div>
+                    <div class="article-meta">Status: Pending · Priority: Medium</div>
+                </div>
+
+                <div class="article">
+                    <div class="article-headline">
+                        <span class="status-bar completed"></span>
+                        Review Pull Requests
+                    </div>
+                    <div class="article-byline">Mon 31 Mar • 12:00 | Age: 1d</div>
+                    <div class="article-description">
+                        Batch review of incoming PRs. 7 merged, 2 pending feedback. All comments addressed by end of day.
+                    </div>
+                    <div class="article-meta">Status: Done · Priority: Medium</div>
+                </div>
+
+                <!-- Past Days Summary -->
+                <div class="past-days">
+                    <div class="day-column completed">
+                        <div class="day-header">Monday 31</div>
+                        <div class="day-item done">
+                            <div class="day-item-check">✓</div>
+                            <div class="day-item-text">
+                                <div class="day-time">08:00</div>
+                                <div>Daily standup</div>
+                            </div>
+                        </div>
+                        <div class="day-item done">
+                            <div class="day-item-check">✓</div>
+                            <div class="day-item-text">
+                                <div class="day-time">10:00</div>
+                                <div>1:1 w/ Priya</div>
+                                <div class="day-attendee">Engineering sync</div>
+                            </div>
+                        </div>
+                        <div class="day-item done">
+                            <div class="day-item-check">✓</div>
+                            <div class="day-item-text">
+                                <div class="day-time">14:00</div>
+                                <div>Code review</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column completed">
+                        <div class="day-header">Tuesday 1</div>
+                        <div class="day-item done">
+                            <div class="day-item-check">✓</div>
+                            <div class="day-item-text">
+                                <div class="day-time">09:30</div>
+                                <div>Design mockup</div>
+                            </div>
+                        </div>
+                        <div class="day-item done">
+                            <div class="day-item-check">✓</div>
+                            <div class="day-item-text">
+                                <div class="day-time">13:00</div>
+                                <div>Design sync</div>
+                                <div class="day-attendee">w/ Bea, Carlos</div>
+                            </div>
+                        </div>
+                        <div class="day-item">
+                            <div class="day-item-check">○</div>
+                            <div class="day-item-text">
+                                <div class="day-time">16:00</div>
+                                <div>API spec writeup <span style="font-size: 9px; color: #d4af37;">2d old</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">People</div>
+
+                    <div class="person-card">
+                        <div class="person-name">Priya Sharma</div>
+                        <div class="person-detail"><strong>Engineering</strong></div>
+                        <div class="person-detail">Last met: 1d ago</div>
+                        <div class="person-detail" style="margin-top: 4px; font-size: 9px;">
+                            📌 Code review · 📌 v2.1 deploy
+                        </div>
+                    </div>
+
+                    <div class="person-card">
+                        <div class="person-name">Carlos Ruiz</div>
+                        <div class="person-detail"><strong>Product</strong></div>
+                        <div class="person-detail">Last met: 2d ago</div>
+                        <div class="person-detail" style="margin-top: 4px; font-size: 9px;">
+                            📌 Design sync · 📌 Retro lead
+                        </div>
+                    </div>
+
+                    <div class="person-card">
+                        <div class="person-name">Amir Hassan</div>
+                        <div class="person-detail"><strong>Backend</strong></div>
+                        <div class="person-detail">Last met: 3d ago</div>
+                        <div class="person-detail" style="margin-top: 4px; font-size: 9px;">
+                            📌 API spec · 📌 Testing
+                        </div>
+                    </div>
+
+                    <div class="person-card">
+                        <div class="person-name">Bea Nguyen</div>
+                        <div class="person-detail"><strong>Design</strong></div>
+                        <div class="person-detail">Last met: 1d ago</div>
+                        <div class="person-detail" style="margin-top: 4px; font-size: 9px;">
+                            📌 Component lib · 📌 Web redesign
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Later / Backlog</div>
+                    <div class="person-detail">
+                        • Q2 initiatives
+                        <br>• Tech debt cleanup
+                        <br>• Mobile optimization
+                        <br>• Accessibility audit
+                        <br>• Docs refresh
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</body>
+</html>

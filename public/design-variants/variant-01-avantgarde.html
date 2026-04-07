@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow — Radial Timeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #f5e6d3;
+            --text-secondary: #a89968;
+            --accent-warm: #d4933f;
+            --accent-bright: #e8b447;
+            --danger: #c85a4d;
+            --success: #6ba857;
+            --muted: #3d3d3d;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1410 100%);
+            color: var(--text-primary);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 32px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-bright);
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .radial-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .radial-center {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #2a2620, #1a1410);
+            border: 2px solid var(--accent-warm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 0 40px rgba(212, 147, 63, 0.2);
+        }
+
+        .radial-center .day {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-bright);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .radial-center .status {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(212, 147, 63, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orbit-1 { width: 400px; height: 400px; animation: spin 60s linear infinite; }
+        .orbit-2 { width: 560px; height: 560px; animation: spin 80s linear infinite reverse; }
+        .orbit-3 { width: 720px; height: 720px; animation: spin 100s linear infinite; }
+
+        .day-card {
+            position: absolute;
+            width: 140px;
+            padding: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(232, 180, 71, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.85;
+        }
+
+        .day-card:hover {
+            border-color: var(--accent-warm);
+            box-shadow: 0 0 20px rgba(212, 147, 63, 0.3);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .day-card.today {
+            border-color: var(--accent-bright);
+            background: rgba(232, 180, 71, 0.1);
+            opacity: 1;
+            box-shadow: 0 0 30px rgba(232, 180, 71, 0.4);
+        }
+
+        .day-card .date {
+            font-size: 11px;
+            color: var(--accent-warm);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .day-card .tasks {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .day-card .task-item {
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .day-card .task-item:before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        .day-card.today .task-item:before {
+            color: var(--accent-bright);
+        }
+
+        .day-card .age-badge {
+            display: inline-block;
+            font-size: 10px;
+            background: rgba(200, 90, 77, 0.2);
+            color: #e8a8a0;
+            padding: 2px 4px;
+            margin-left: 4px;
+            border-radius: 2px;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: 32px;
+            top: 32px;
+            width: 240px;
+            max-height: calc(100vh - 64px);
+            overflow-y: auto;
+            z-index: 20;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .person-card {
+            padding: 12px;
+            background: rgba(212, 147, 63, 0.08);
+            border: 1px solid rgba(212, 147, 63, 0.2);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .person-card:hover {
+            background: rgba(212, 147, 63, 0.15);
+            border-color: var(--accent-warm);
+        }
+
+        .person-card .name {
+            font-weight: 600;
+            color: var(--accent-bright);
+            margin-bottom: 4px;
+        }
+
+        .person-card .role {
+            color: var(--text-secondary);
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .person-card .topics {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .triage-bar {
+            position: fixed;
+            bottom: 32px;
+            left: 32px;
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .triage-key {
+            padding: 6px 10px;
+            background: rgba(212, 147, 63, 0.1);
+            border: 1px solid rgba(212, 147, 63, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .triage-key:hover {
+            background: rgba(232, 180, 71, 0.2);
+            border-color: var(--accent-bright);
+            color: var(--accent-bright);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 147, 63, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 147, 63, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>APERTURE</h1>
+            <p>Week of March 31 — Radial Timeline</p>
+        </div>
+
+        <div class="radial-container">
+            <!-- Center -->
+            <div class="radial-center">
+                <div class="day">TODAY</div>
+                <div class="status">Wednesday</div>
+            </div>
+
+            <!-- Orbit 1 (Inner) -->
+            <div class="orbit orbit-1">
+                <div class="day-card today" style="transform: translate(200px, 0);">
+                    <div class="date">Wed 4/2</div>
+                    <div class="tasks">
+                        <div class="task-item">1:1 w/ Priya</div>
+                        <div class="task-item">Team standup</div>
+                        <div class="task-item">Code review <span class="age-badge">2d</span></div>
+                    </div>
+                </div>
+
+                <div class="day-card" style="transform: translate(-100px, 173px);">
+                    <div class="date">Thu 4/3</div>
+                    <div class="tasks">
+                        <div class="task-item">Design kickoff</div>
+                        <div class="task-item">Refactor API <span class="age-badge">5d</span></div>
+                    </div>
+                </div>
+
+                <div class="day-card" style="transform: translate(-100px, -173px);">
+                    <div class="date">Tue 4/1</div>
+                    <div class="tasks">
+                        <div class="task-item">Deploy hotfix</div>
+                        <div class="task-item">Fix tests</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orbit 2 (Middle) -->
+            <div class="orbit orbit-2">
+                <div class="day-card" style="transform: translate(280px, 0);">
+                    <div class="date">Fri 4/4</div>
+                    <div class="tasks">
+                        <div class="task-item">Weekly review</div>
+                        <div class="task-item">Plan sprint <span class="age-badge">7d</span></div>
+                    </div>
+                </div>
+
+                <div class="day-card" style="transform: translate(-140px, 242px);">
+                    <div class="date">Mon 3/31</div>
+                    <div class="tasks">
+                        <div class="task-item">Nothing planned</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orbit 3 (Outer) -->
+            <div class="orbit orbit-3">
+                <div class="day-card" style="transform: translate(360px, 0);">
+                    <div class="date">Next Week</div>
+                    <div class="tasks">
+                        <div class="task-item">🧪 Integration tests <span class="age-badge">9d</span></div>
+                        <div class="task-item">📊 Analytics review</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">People</div>
+            <div class="person-card">
+                <div class="name">Priya Desai</div>
+                <div class="role">Engineering Lead</div>
+                <div class="topics">
+                    ✓ Project scope<br>
+                    ✓ Timeline risk<br>
+                    ✗ Budget review <span class="age-badge">8d</span>
+                </div>
+            </div>
+            <div class="person-card">
+                <div class="name">Marcus Chen</div>
+                <div class="role">PM</div>
+                <div class="topics">
+                    ✓ Feature flag<br>
+                    ✗ Launch plan <span class="age-badge">3d</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Initiatives</div>
+            <div class="person-card">
+                <div class="name">🚀 Q2 Launch</div>
+                <div class="role">Active</div>
+                <div class="topics">5 open topics</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Triage Bar -->
+    <div class="triage-bar">
+        <div class="triage-key">K = Now</div>
+        <div class="triage-key">A = Assign</div>
+        <div class="triage-key">D = Drop</div>
+        <div class="triage-key">X = Archive</div>
+    </div>
+</body>
+</html>

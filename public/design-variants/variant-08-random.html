@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow - Timeline Sequencer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0e27;
+            color: #e0e6ff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #1a1f3a;
+            background: linear-gradient(180deg, #0f1535 0%, #0a0e27 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            letter-spacing: -0.02em;
+            font-weight: 600;
+            color: #00ff88;
+            text-transform: uppercase;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .timeline-info {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 0.05em;
+        }
+
+        /* Main Content */
+        .timeline-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Ruler / Time Labels */
+        .ruler {
+            width: 80px;
+            border-right: 1px solid #1a1f3a;
+            background: #0f1535;
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .time-marker {
+            height: 120px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding-right: 12px;
+            border-top: 1px solid #1a1f3a;
+            position: relative;
+        }
+
+        .time-marker:first-child {
+            border-top: none;
+        }
+
+        /* Tracks / Days */
+        .tracks {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: auto;
+            background: #0a0e27;
+            position: relative;
+        }
+
+        .tracks-content {
+            min-width: 2000px;
+            position: relative;
+        }
+
+        /* Day Track */
+        .day-track {
+            height: 120px;
+            border-bottom: 2px solid #1a1f3a;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .day-track.today {
+            background: rgba(0, 255, 136, 0.05);
+            border-bottom-color: #00ff88;
+        }
+
+        .day-track.past {
+            opacity: 0.5;
+        }
+
+        /* Day Label */
+        .day-label {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 5;
+            margin-left: 16px;
+        }
+
+        /* Clips (meetings and tasks) */
+        .clip {
+            position: absolute;
+            height: 44px;
+            margin-top: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .clip:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        /* Meeting clips */
+        .clip.meeting {
+            background: linear-gradient(135deg, #ff006e 0%, #ff0066 100%);
+            border-color: #ff3385;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Task clips */
+        .clip.task {
+            background: linear-gradient(135deg, #00d9ff 0%, #0099ff 100%);
+            border-color: #0088ff;
+            color: #fff;
+        }
+
+        .clip.task.completed {
+            background: linear-gradient(135deg, #00ff88 0%, #00dd66 100%);
+            border-color: #00dd66;
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .clip-icon {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image:
+                linear-gradient(90deg, transparent 99%, #1a1f3a 100%),
+                linear-gradient(0deg, transparent 99%, #1a1f3a 100%);
+            background-size: 120px 120px;
+        }
+
+        /* Playhead */
+        .playhead {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+            z-index: 8;
+            left: 240px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Next / Later sidebar */
+        .sidebar {
+            width: 300px;
+            border-left: 1px solid #1a1f3a;
+            background: #0f1535;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+
+        .sidebar-section h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #888;
+            margin-bottom: 16px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .person-card {
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .person-card:hover {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .person-name {
+            font-weight: 600;
+            color: #e0e6ff;
+            margin-bottom: 4px;
+        }
+
+        .person-role {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .person-last-met {
+            color: #666;
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .topics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .topic-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0e27;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1a1f3a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a2f4a;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .day-track {
+            animation: slideIn 0.4s ease;
+        }
+
+        .day-track:nth-child(1) { animation-delay: 0s; }
+        .day-track:nth-child(2) { animation-delay: 0.05s; }
+        .day-track:nth-child(3) { animation-delay: 0.1s; }
+        .day-track:nth-child(4) { animation-delay: 0.15s; }
+        .day-track:nth-child(5) { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>▸ SEQUENCER</h1>
+            <div class="timeline-info">WEEK OF MAR 31 — 12:00 PM</div>
+        </div>
+
+        <div class="timeline-container">
+            <!-- Ruler -->
+            <div class="ruler">
+                <div class="time-marker">08:00</div>
+                <div class="time-marker">09:00</div>
+                <div class="time-marker">10:00</div>
+                <div class="time-marker">11:00</div>
+                <div class="time-marker">12:00</div>
+                <div class="time-marker">13:00</div>
+                <div class="time-marker">14:00</div>
+                <div class="time-marker">15:00</div>
+                <div class="time-marker">16:00</div>
+                <div class="time-marker">17:00</div>
+            </div>
+
+            <!-- Tracks -->
+            <div class="tracks">
+                <div class="grid-bg"></div>
+                <div class="playhead"></div>
+                <div class="tracks-content">
+                    <!-- Monday -->
+                    <div class="day-track past">
+                        <div class="day-label">MON 31</div>
+                        <div class="clip meeting" style="left: 120px; width: 100px;">
+                            <span class="clip-icon">📞</span> Standup
+                        </div>
+                        <div class="clip task completed" style="left: 280px; width: 120px;">
+                            <span class="clip-icon">✓</span> Review PRs
+                        </div>
+                        <div class="clip meeting" style="left: 460px; width: 150px;">
+                            <span class="clip-icon">👥</span> 1:1 w/ Priya
+                        </div>
+                    </div>
+
+                    <!-- Tuesday -->
+                    <div class="day-track past">
+                        <div class="day-label">TUE 1</div>
+                        <div class="clip task completed" style="left: 100px; width: 100px;">
+                            <span class="clip-icon">✓</span> Design mockup
+                        </div>
+                        <div class="clip meeting" style="left: 280px; width: 140px;">
+                            <span class="clip-icon">📞</span> Design sync
+                        </div>
+                        <div class="clip task" style="left: 480px; width: 110px;">
+                            <span class="clip-icon">○</span> API spec <span style="font-size: 9px; margin-left: 4px;">2d</span>
+                        </div>
+                    </div>
+
+                    <!-- Wednesday -->
+                    <div class="day-track">
+                        <div class="day-label">WED 2</div>
+                        <div class="clip task" style="left: 140px; width: 130px;">
+                            <span class="clip-icon">○</span> Code review <span style="font-size: 9px; margin-left: 4px;">1d</span>
+                        </div>
+                        <div class="clip meeting" style="left: 340px; width: 160px;">
+                            <span class="clip-icon">📞</span> Team standup
+                        </div>
+                        <div class="clip task" style="left: 570px; width: 120px;">
+                            <span class="clip-icon">○</span> Deploy v2.1 <span style="font-size: 9px; margin-left: 4px;">4d</span>
+                        </div>
+                    </div>
+
+                    <!-- Thursday -->
+                    <div class="day-track">
+                        <div class="day-label">THU 3</div>
+                        <div class="clip meeting" style="left: 100px; width: 140px;">
+                            <span class="clip-icon">📞</span> Strategy sync
+                        </div>
+                        <div class="clip task" style="left: 310px; width: 100px;">
+                            <span class="clip-icon">○</span> Testing <span style="font-size: 9px; margin-left: 4px;">3d</span>
+                        </div>
+                        <div class="clip meeting" style="left: 480px; width: 150px;">
+                            <span class="clip-icon">👥</span> 1:1 w/ Carlos
+                        </div>
+                    </div>
+
+                    <!-- Friday -->
+                    <div class="day-track">
+                        <div class="day-label">FRI 4</div>
+                        <div class="clip meeting" style="left: 160px; width: 130px;">
+                            <span class="clip-icon">📞</span> Retro + demo
+                        </div>
+                        <div class="clip task" style="left: 360px; width: 110px;">
+                            <span class="clip-icon">○</span> Next week <span style="font-size: 9px; margin-left: 4px;">new</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar slides in after page load -->
+    <style>
+        @keyframes sidebarFade {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .sidebar {
+            animation: sidebarFade 0.6s ease 0.3s both;
+        }
+    </style>
+</body>
+</html>

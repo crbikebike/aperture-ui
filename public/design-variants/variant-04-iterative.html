@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow — Warm Notebook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sand: #f5f1eb;
+            --cream: #faf8f3;
+            --charcoal: #2a2520;
+            --warm-gray: #8b8680;
+            --tan: #d4ccc2;
+            --accent-amber: #c9a961;
+            --accent-green: #7a9b6f;
+            --accent-red: #a85543;
+            --border: #e8e3d8;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.5;
+            padding: 32px;
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: var(--charcoal);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--warm-gray);
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Week Grid */
+        .week-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .day-column {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .day-column.today {
+            background: var(--sand);
+            border: 2px solid var(--accent-amber);
+            box-shadow: inset 0 0 0 1px var(--border);
+        }
+
+        .day-column.past {
+            opacity: 0.65;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .day-name {
+            font-family: 'Crimson Text', serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .day-date {
+            font-size: 12px;
+            color: var(--warm-gray);
+            letter-spacing: 0.5px;
+        }
+
+        .meetings {
+            margin-bottom: 18px;
+        }
+
+        .meeting {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: var(--sand);
+            border-left: 2px solid var(--accent-amber);
+            border-radius: 2px;
+        }
+
+        .meeting-time {
+            font-weight: 600;
+            color: var(--accent-amber);
+            min-width: 45px;
+        }
+
+        .meeting-title {
+            color: var(--charcoal);
+        }
+
+        .empty-state {
+            font-size: 13px;
+            color: #c9c3b5;
+            font-style: italic;
+            padding: 8px;
+        }
+
+        .tasks {
+            flex: 1;
+        }
+
+        .task {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+            font-size: 13px;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .task.completed {
+            opacity: 0.5;
+        }
+
+        .task.completed .task-title {
+            text-decoration: line-through;
+            color: var(--warm-gray);
+        }
+
+        .task-checkbox {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+            background: white;
+            transition: all 200ms;
+        }
+
+        .task-checkbox:hover {
+            border-color: var(--accent-green);
+        }
+
+        .task-checkbox:checked {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .task-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            color: var(--charcoal);
+            margin-bottom: 4px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .age-badge {
+            background: var(--sand);
+            color: var(--warm-gray);
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            background: #fce8d6;
+            color: var(--accent-amber);
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        /* Next Section */
+        .section-label {
+            font-family: 'Crimson Text', serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 48px;
+            margin-bottom: 20px;
+            color: var(--charcoal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .flash-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--sand);
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--charcoal);
+            margin-bottom: 2px;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: var(--warm-gray);
+        }
+
+        .card-body {
+            padding: 16px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .card-topic {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: var(--cream);
+            border-radius: 2px;
+            font-size: 12px;
+            align-items: flex-start;
+        }
+
+        .card-topic-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .card-topic-content {
+            flex: 1;
+        }
+
+        .card-topic-title {
+            color: var(--charcoal);
+            margin-bottom: 2px;
+        }
+
+        .card-topic-age {
+            color: var(--warm-gray);
+            font-size: 11px;
+        }
+
+        /* Later Section */
+        .later-container {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .later-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .later-item:last-child {
+            border-bottom: none;
+        }
+
+        .later-item-title {
+            color: var(--charcoal);
+        }
+
+        .later-item-meta {
+            color: var(--warm-gray);
+            font-size: 11px;
+        }
+
+        /* Keyboard hints */
+        .keyhint {
+            display: inline-block;
+            background: var(--sand);
+            color: var(--charcoal);
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-family: monospace;
+            font-size: 10px;
+            margin-left: 6px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1400px) {
+            .week-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .week-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .week-container {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Aperture Flow</h1>
+    <p class="subtitle">Week of March 31 — April 4</p>
+
+    <div class="week-container">
+        <!-- Monday -->
+        <div class="day-column">
+            <div class="day-header">
+                <span class="day-name">Monday</span>
+                <span class="day-date">3.31</span>
+            </div>
+            <div class="meetings">
+                <div class="meeting">
+                    <span class="meeting-time">9:30</span>
+                    <span class="meeting-title">1:1 w/ Priya</span>
+                </div>
+                <div class="meeting">
+                    <span class="meeting-time">2:00</span>
+                    <span class="meeting-title">Team Planning</span>
+                </div>
+            </div>
+            <div class="tasks">
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Finalize Q2 roadmap</div>
+                        <div class="task-meta">
+                            <span class="age-badge">2d</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Review design system updates</div>
+                        <div class="task-meta">
+                            <span class="age-badge">1d</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task completed">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <div class="task-content">
+                        <div class="task-title">Send weekly digest</div>
+                        <div class="task-meta">
+                            <span class="age-badge">1d</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column">
+            <div class="day-header">
+                <span class="day-name">Tuesday</span>
+                <span class="day-date">4.1</span>
+            </div>
+            <div class="meetings">
+                <div class="meeting">
+                    <span class="meeting-time">10:00</span>
+                    <span class="meeting-title">Design Review</span>
+                </div>
+            </div>
+            <div class="tasks">
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Update deployment docs</div>
+                        <div class="task-meta">
+                            <span class="age-badge">4d</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Fix critical bug in auth flow</div>
+                        <div class="task-meta">
+                            <span class="status-badge">⚠️ still open</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+            <div class="day-header">
+                <span class="day-name">Wednesday</span>
+                <span class="day-date">4.2</span>
+            </div>
+            <div class="meetings">
+                <div class="meeting">
+                    <span class="meeting-time">11:00</span>
+                    <span class="meeting-title">Standup</span>
+                </div>
+                <div class="meeting">
+                    <span class="meeting-time">3:00</span>
+                    <span class="meeting-title">1:1 w/ Morgan</span>
+                </div>
+            </div>
+            <div class="tasks">
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Review PR #284</div>
+                        <div class="task-meta">
+                            <span class="age-badge">Today</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Prep presentation for all-hands</div>
+                        <div class="task-meta">
+                            <span class="age-badge">Today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+            <div class="day-header">
+                <span class="day-name">Thursday</span>
+                <span class="day-date">4.3</span>
+            </div>
+            <div class="meetings">
+                <div class="meeting">
+                    <span class="meeting-time">9:00</span>
+                    <span class="meeting-title">All Hands</span>
+                </div>
+            </div>
+            <div class="tasks">
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Implement caching layer</div>
+                        <div class="task-meta">
+                            <span class="age-badge">3d</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+            <div class="day-header">
+                <span class="day-name">Friday</span>
+                <span class="day-date">4.4</span>
+            </div>
+            <div class="meetings">
+            </div>
+            <div class="empty-state">No meetings scheduled</div>
+            <div class="tasks">
+                <div class="task">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Week retro notes</div>
+                        <div class="task-meta">
+                            <span class="age-badge">1d</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-label">Next (Unscheduled)</div>
+
+    <div class="flash-cards">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-name">Priya Desai</div>
+                <div class="card-meta">Senior Eng · Last met 4 days ago</div>
+            </div>
+            <div class="card-body">
+                <div class="card-topic">
+                    <span class="card-topic-icon">📋</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">API pagination redesign</div>
+                        <div class="card-topic-age">5d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">🐛</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Production incidents post-mortem</div>
+                        <div class="card-topic-age">2d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">📖</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Docs migration to new platform</div>
+                        <div class="card-topic-age">1d old</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-name">Morgan Chen</div>
+                <div class="card-meta">Product Lead · Last met 1 day ago</div>
+            </div>
+            <div class="card-body">
+                <div class="card-topic">
+                    <span class="card-topic-icon">🎯</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Q2 OKRs alignment</div>
+                        <div class="card-topic-age">6d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">📊</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Metrics dashboard revamp</div>
+                        <div class="card-topic-age">3d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">🤝</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Cross-team sync schedule</div>
+                        <div class="card-topic-age">New</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-name">Design System Initiative</div>
+                <div class="card-meta">Project · Active</div>
+            </div>
+            <div class="card-body">
+                <div class="card-topic">
+                    <span class="card-topic-icon">🎨</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Component library v2 release</div>
+                        <div class="card-topic-age">7d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">📱</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">Mobile responsive testing</div>
+                        <div class="card-topic-age">4d old</div>
+                    </div>
+                </div>
+                <div class="card-topic">
+                    <span class="card-topic-icon">♿</span>
+                    <div class="card-topic-content">
+                        <div class="card-topic-title">WCAG accessibility audit</div>
+                        <div class="card-topic-age">2d old</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-label">Later (Backlog)</div>
+
+    <div class="later-container">
+        <div class="later-item">
+            <span class="later-item-title">Platform migration to microservices</span>
+            <span class="later-item-meta">Q3 · High Priority</span>
+        </div>
+        <div class="later-item">
+            <span class="later-item-title">Infrastructure cost optimization</span>
+            <span class="later-item-meta">Q3 · Medium</span>
+        </div>
+        <div class="later-item">
+            <span class="later-item-title">Internationalization (i18n) support</span>
+            <span class="later-item-meta">Q4 · Medium</span>
+        </div>
+        <div class="later-item">
+            <span class="later-item-title">Analytics deep dive & reporting</span>
+            <span class="later-item-meta">Backlog · Low</span>
+        </div>
+    </div>
+
+    <script>
+        // Simple checkbox toggle animation
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const task = this.closest('.task');
+                if (this.checked) {
+                    task.classList.add('completed');
+                } else {
+                    task.classList.remove('completed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

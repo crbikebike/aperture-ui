@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aperture Flow — Design Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #f8f7f4;
+    color: #2a2a2a;
+    line-height: 1.6;
+    padding: 3rem 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 3rem;
+    border-bottom: 2px solid #2a2a2a;
+    padding-bottom: 1.5rem;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  header p {
+    color: #666;
+    font-size: 0.95rem;
+    max-width: 640px;
+  }
+
+  .info-arch {
+    background: #fff;
+    border: 1px solid #e0ddd8;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    font-size: 0.9rem;
+  }
+
+  .info-arch h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .info-arch ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 2rem;
+  }
+
+  .info-arch li::before {
+    content: "—";
+    margin-right: 0.5rem;
+    color: #999;
+  }
+
+  .category {
+    margin-bottom: 2.5rem;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e0ddd8;
+    padding-bottom: 0.5rem;
+  }
+
+  .category-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .category-header span {
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  .variant-card {
+    background: #fff;
+    border: 1px solid #e0ddd8;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .variant-card:hover {
+    border-color: #bbb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .variant-info {
+    flex: 1;
+  }
+
+  .variant-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .variant-number {
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 400;
+  }
+
+  .variant-info p {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  .variant-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    background: #f0eee9;
+    color: #666;
+  }
+
+  .variant-link a {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: #2a2a2a;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .variant-link a:hover {
+    background: #444;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0ddd8;
+    font-size: 0.8rem;
+    color: #999;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem; }
+    .variant-card { flex-direction: column; gap: 0.75rem; }
+    .info-arch ul { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Aperture Flow — Design Variants</h1>
+  <p>10 layout explorations for the v1 native app. Same information architecture, different visual approaches. 3 avant-garde, 4 iterative, 3 completely random.</p>
+</header>
+
+<div class="info-arch">
+  <h2>Shared Information Architecture</h2>
+  <ul>
+    <li>Now: M-F day columns with meetings + tasks</li>
+    <li>Today highlighted, past days dimmed</li>
+    <li>Undone past tasks show amber "still open" badge</li>
+    <li>Task completion: checkbox, strikethrough, 2s undo</li>
+    <li>Next (2 weeks): cards without day assignment</li>
+    <li>Later: compact backlog, collapsed by default</li>
+    <li>Flash cards: 320px, person/initiative + topic list</li>
+    <li>Triage: K-Now, A-Name, D-Name, T-Name, X</li>
+  </ul>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Avant-Garde</h2>
+    <span>Bold, unconventional layouts that push boundaries</span>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">01</span> Radial Timeline</h3>
+      <p>Days orbit a central "today" hub in concentric rings. Radial distance indicates time horizon — center is most urgent. Smooth orbital animation on load.</p>
+      <div class="variant-tags">
+        <span class="tag">burnt orange / gold on dark</span>
+        <span class="tag">Playfair Display + Source Code Pro</span>
+        <span class="tag">orbital layout</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-01-avantgarde.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">02</span> Overlapping Cards</h3>
+      <p>Stacked, overlapping card deck with asymmetric layout and depth. Day columns peek from behind each other with 3D transforms on hover and floating stagger animation.</p>
+      <div class="variant-tags">
+        <span class="tag">cool silver / blue on light</span>
+        <span class="tag">GT America + IBM Plex Mono</span>
+        <span class="tag">3D depth + parallax</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-02-avantgarde.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">03</span> Brutalist Axis</h3>
+      <p>Geometric precision, pure monochromatic grid. Two-axis matrix (horizontal = priority, vertical = days). No curves, border-driven structure, maximum information density.</p>
+      <div class="variant-tags">
+        <span class="tag">black / white / yellow</span>
+        <span class="tag">JetBrains Mono + Courier Prime</span>
+        <span class="tag">data visualization</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-03-avantgarde.html">View</a></div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Iterative</h2>
+    <span>Polished refinements of the M-F column pattern</span>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">04</span> Warm Neutrals</h3>
+      <p>The "notebook" feel. Sand, cream, and charcoal with warm amber accents. Serif headers give an editorial quality. Equal 5-column grid with spacious cards.</p>
+      <div class="variant-tags">
+        <span class="tag">sand / cream / charcoal</span>
+        <span class="tag">Crimson Text + Source Sans 3</span>
+        <span class="tag">equal-width columns</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-04-iterative.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">05</span> Cool Professional</h3>
+      <p>Clean dashboard polish. Slate grays with blue accents on white. Modern sans-serif with monospaced time displays. Professional hierarchy, trustworthy feel.</p>
+      <div class="variant-tags">
+        <span class="tag">slate / blue / white</span>
+        <span class="tag">Outfit + IBM Plex Mono</span>
+        <span class="tag">dashboard aesthetic</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-05-iterative.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">06</span> Dark Mode</h3>
+      <p>Dark background with muted cyan, lime, and orange accents. High contrast text on dark, comfortable for extended use. Technical, modern feel.</p>
+      <div class="variant-tags">
+        <span class="tag">dark (#0f1419) + muted accents</span>
+        <span class="tag">Sohne + JetBrains Mono</span>
+        <span class="tag">low-light optimized</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-06-iterative.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">07</span> High Contrast Sidebar</h3>
+      <p>Bold red accent on neutral with a dark sidebar housing flash cards and backlog. 3-column day grid + right sidebar. Editorial, print-magazine energy.</p>
+      <div class="variant-tags">
+        <span class="tag">white / bold red / dark sidebar</span>
+        <span class="tag">Bricolage Grotesque + Newsreader</span>
+        <span class="tag">sidebar layout</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-07-iterative.html">View</a></div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Random</h2>
+    <span>Completely unexpected, wildcard approaches</span>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">08</span> Timeline Sequencer</h3>
+      <p>Inspired by music production software (Ableton/DAW). Days as horizontal tracks with meetings and tasks as draggable clips positioned in time. Playhead shows current time with pulsing glow.</p>
+      <div class="variant-tags">
+        <span class="tag">industrial dark + neon green/pink/cyan</span>
+        <span class="tag">DAW interface metaphor</span>
+        <span class="tag">time-ruler layout</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-08-random.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">09</span> Concentric Rings</h3>
+      <p>Days plotted as concentric rings radiating from center (today = innermost). Tasks rendered as glowing dots by day + time. People as orbital cards floating around the canvas. Abstract, zen.</p>
+      <div class="variant-tags">
+        <span class="tag">cosmic blues / purples / pinks</span>
+        <span class="tag">canvas-based rendering</span>
+        <span class="tag">spatial visualization</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-09-random.html">View</a></div>
+  </div>
+
+  <div class="variant-card">
+    <div class="variant-info">
+      <h3><span class="variant-number">10</span> Editorial Newspaper</h3>
+      <p>Classic print newspaper layout. Tasks and meetings as article "headlines" with bylines and status bars. Multi-column grid, serif typography, people as "columnists" in sidebar.</p>
+      <div class="variant-tags">
+        <span class="tag">black / cream / gold</span>
+        <span class="tag">Bodoni Moda + Work Sans</span>
+        <span class="tag">print editorial</span>
+      </div>
+    </div>
+    <div class="variant-link"><a href="variant-10-random.html">View</a></div>
+  </div>
+</div>
+
+<footer>
+  Aperture Flow v1 Design Exploration — April 2026
+</footer>
+
+</body>
+</html>
