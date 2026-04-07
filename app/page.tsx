@@ -1,5 +1,14 @@
 const variants = [
   {
+    category: 'Interactive Prototypes — Batch 4',
+    description: 'Fully clickable — working aperture dial, triage actions, tabbed People/Initiatives, multi-view navigation',
+    items: [
+      { number: '41', name: 'Broadsheet + Tabs', file: 'variant-41-broadsheet-tabs.html', summary: 'Two-panel layout: 560px editorial content column + 240px persistent tabbed People/Initiatives panel. Working aperture dial switches f/1.4→f/4→f/11→f/22. Side panel hides at f/11+. Triage cards dismiss. Checkboxes complete.', tags: ['fully interactive', 'aperture dial', 'tabbed panel', 'two-column'] },
+      { number: '42', name: 'Stacked + Fixed Panel', file: 'variant-42-stacked-fixed-panel.html', summary: '520px centered column with a fixed 120px dock at the bottom — People/Initiatives always visible without scrolling. Clicking a person in the dock opens a full flash card modal. All 4 apertures implemented.', tags: ['fully interactive', 'aperture dial', 'fixed dock', 'modal flash card'] },
+      { number: '43', name: 'Split Aperture', file: 'variant-43-split-aperture.html', summary: 'Persistent 320px week overview (left, never changes) + 560px aperture-controlled detail pane (right). Sub-tabs at f/4: Schedule / People / Initiatives / Next. Clicking a day row on the left navigates the right pane. All 4 apertures.', tags: ['fully interactive', 'split layout', 'persistent week', 'sub-tabs'] },
+    ],
+  },
+  {
     category: 'Brand Focused — Batch 3',
     description: 'First brand-guide-aligned designs: newsprint palette, Lora serif, 520px column, aperture dial, horizon fade',
     items: [
