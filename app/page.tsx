@@ -1,5 +1,27 @@
 const variants = [
   {
+    category: 'Brand Focused — Batch 3',
+    description: 'First brand-guide-aligned designs: newsprint palette, Lora serif, 520px column, aperture dial, horizon fade',
+    items: [
+      { number: '34', name: 'Agenda Focus', file: 'variant-34-agenda-focus.html', summary: 'f/1.4 Today. Triage queue at top with Keep/Assign/Discuss/Drop actions. Today\'s plan below. Nothing from other days visible. Maximum whitespace — the deliberate absence of information is the feature.', tags: ['f/1.4 Today', 'brand-focused', 'triage'] },
+      { number: '31b', name: 'Broadsheet', file: 'variant-31-broadsheet.html', summary: 'f/4 This Week. All 5 days inside a 520px column. Horizon fade: today on cotton (brightest), future on linen, past on parchment. People + Initiatives in clearly separate sections below.', tags: ['f/4 This Week', 'brand-focused', '520px column'] },
+      { number: '32b', name: 'Editorial Scroll', file: 'variant-32-editorial-scroll.html', summary: 'f/4 This Week. Today as a large hero container dominating ~50% of the viewport. Other days as smaller subordinate containers below — size communicates priority.', tags: ['f/4 This Week', 'brand-focused', 'hero today'] },
+      { number: '33b', name: 'Cascade Sections', file: 'variant-33-cascade-sections.html', summary: 'f/4 This Week. Five luminosity bands: cotton (today) → newsprint → linen → parchment (past). No color coding — only background brightness communicates urgency.', tags: ['f/4 This Week', 'brand-focused', 'horizon fade'] },
+      { number: '36', name: 'Broadsheet Split', file: 'variant-36-broadsheet-split.html', summary: 'f/4 This Week. Two-column layout inside 560px: today\'s agenda left, people flash cards right. People as co-equal to tasks — not a sidebar, an editorial column.', tags: ['f/4 This Week', 'brand-focused', 'two-column'] },
+      { number: '37', name: 'Ink Minimal', file: 'variant-37-ink-minimal.html', summary: 'f/4 This Week. Near-zero chrome. No cards, no containers — just typeset text on newsprint. Lora headers, system sans tasks. The extreme test: does this feel calming or unfinished?', tags: ['f/4 This Week', 'brand-focused', 'maximum reduction'] },
+      { number: '35', name: 'Initiative Arc', file: 'variant-35-initiative-arc.html', summary: 'f/11 The Arc. Initiative cards as primary content — no day columns. SCIM Integration + Q2 Roadmap as full-width cards with health dots, topic lists, people avatars. Same data, different focal length.', tags: ['f/11 The Arc', 'brand-focused', 'initiatives'] },
+    ],
+  },
+  {
+    category: 'Wild Cards — Batch 3',
+    description: 'Experimental layouts outside the editorial direction',
+    items: [
+      { number: '39', name: 'Pure Focus', file: 'variant-39-pure-focus.html', summary: 'f/0.95. One item. Full screen newsprint. Nothing else exists. The photographic equivalent of shooting wide open — razor-sharp foreground, everything dissolved.', tags: ['f/0.95', 'wild-card', 'focus mode'] },
+      { number: '38', name: 'Time River', file: 'variant-38-time-river.html', summary: 'Vertical timeline with today anchored center. Past fades upward, future extends down. People cards float right anchored at last-interaction time. Outside the column/grid paradigm entirely.', tags: ['wild-card', 'vertical timeline', 'experimental'] },
+      { number: '40', name: 'Week as Story', file: 'variant-40-week-as-story.html', summary: 'The week as editorial prose narrative. Each day is a paragraph, not a column. Done items struck through, stale in amber. Closest to a weekly memo than a calendar.', tags: ['wild-card', 'prose narrative', 'editorial'] },
+    ],
+  },
+  {
     category: 'Iterative — Batch 2',
     description: 'Refined M-F column layouts — the most on-mark direction',
     items: [
@@ -160,7 +182,7 @@ export default function VariantsPage() {
       <div className="border-b border-border pb-5">
         <h1 className="text-2xl font-bold text-text tracking-tight mb-1">Design Variants</h1>
         <p className="text-label text-sm max-w-xl">
-          The original prototype plus 33 layout explorations for the v1 native app. Batch 1: 3 avant-garde, 4 iterative, 3 random. Batch 2: 8 iterative, 4 sidebar, 4 scroll, 4 wildcard, 3 newspaper — all with corrected Next/Later IA (user topics + person cards).
+          43 layout explorations across 3 batches. Batch 3 (new): 7 brand-guide-aligned + 3 wild cards. Batch 2: 23 IA-focused iterations. Batch 1: 10 initial range-finding explorations.
         </p>
       </div>
 
