@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 39: Pure Focus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --health-red: #a85a4a;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--newsprint);
+      color: var(--ink);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── f/0.95 label — top left, faint ── */
+    .aperture-label {
+      position: fixed;
+      top: 18px;
+      left: 20px;
+      font-size: 11px;
+      color: var(--pencil);
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+
+    /* ── Main centered content ── */
+    .focus-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 80px;
+    }
+
+    .focus-inner {
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    /* Topic title */
+    .focus-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    /* Source line */
+    .focus-source {
+      font-size: 13px;
+      color: var(--pencil);
+      margin-bottom: 24px;
+    }
+
+    /* Thin bone rule */
+    .focus-rule {
+      height: 1px;
+      background: var(--bone);
+      margin: 0 auto 24px;
+      max-width: 360px;
+    }
+
+    /* Context block — left-aligned within the centered column */
+    .focus-context {
+      font-size: 15px;
+      color: var(--graphite);
+      line-height: 1.6;
+      text-align: left;
+      max-width: 360px;
+      margin: 0 auto 32px;
+    }
+
+    /* Action buttons */
+    .focus-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-done {
+      display: inline-block;
+      background: var(--today-accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 48px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-back {
+      font-size: 13px;
+      color: var(--pencil);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* ── Keyboard hints — bottom of page, very faint ── */
+    .keyboard-hints {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--pencil);
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+
+    kbd {
+      font-family: inherit;
+      background: var(--linen);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: var(--pencil);
+      border: 1px solid var(--bone);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Aperture label — only reference to the system -->
+  <span class="aperture-label">f/0.95</span>
+
+  <!-- Centered focus content -->
+  <div class="focus-wrap">
+    <div class="focus-inner">
+
+      <!-- The single item -->
+      <h1 class="focus-title">Finalize SCIM scope doc</h1>
+
+      <!-- Source / metadata -->
+      <p class="focus-source">Added Wednesday · from meeting with Priya</p>
+
+      <!-- Bone rule -->
+      <div class="focus-rule"></div>
+
+      <!-- Context -->
+      <p class="focus-context">
+        Priya mentioned the reorg could affect the scope. Needs a decision before EOD — does the external SCIM API integration stay in Q2 or slip to Q3?
+      </p>
+
+      <!-- Actions -->
+      <div class="focus-actions">
+        <button class="btn-done">Done</button>
+        <button class="btn-back">Back</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Keyboard hints -->
+  <div class="keyboard-hints">
+    <kbd>⌘↩</kbd> Mark done &nbsp;·&nbsp; <kbd>Esc</kbd> Return
+  </div>
+
+</body>
+</html>

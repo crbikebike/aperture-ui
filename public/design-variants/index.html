@@ -9,8 +9,8 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: #f8f7f4;
-    color: #2a2a2a;
+    background: #f7f5f2;
+    color: #1a1a1a;
     line-height: 1.6;
     padding: 3rem 2rem;
     max-width: 960px;
@@ -19,7 +19,7 @@
 
   header {
     margin-bottom: 3rem;
-    border-bottom: 2px solid #2a2a2a;
+    border-bottom: 2px solid #1a1a1a;
     padding-bottom: 1.5rem;
   }
 
@@ -31,148 +31,115 @@
   }
 
   header p {
-    color: #666;
+    color: #4a4a4a;
     font-size: 0.95rem;
     max-width: 640px;
   }
 
-  .info-arch {
-    background: #fff;
-    border: 1px solid #e0ddd8;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 3rem;
-    font-size: 0.9rem;
-  }
-
-  .info-arch h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .info-arch ul {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem 2rem;
-  }
-
-  .info-arch li::before {
-    content: "—";
-    margin-right: 0.5rem;
-    color: #999;
-  }
-
   .category {
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
   }
 
   .category-header {
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #e0ddd8;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #d8d4cc;
     padding-bottom: 0.5rem;
   }
 
   .category-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
   }
 
   .category-header span {
     font-size: 0.85rem;
-    color: #888;
+    color: #8a8a8a;
+  }
+
+  .variant-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 680px) {
+    .variant-grid { grid-template-columns: 1fr; }
   }
 
   .variant-card {
-    background: #fff;
-    border: 1px solid #e0ddd8;
-    border-radius: 8px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 0.75rem;
+    background: #faf9f7;
+    border: 1px solid #d8d4cc;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem 1rem;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+  }
+
+  .variant-card:hover { border-color: #2c5f8a; }
+
+  .variant-card-top {
+    display: flex;
     align-items: flex-start;
-    gap: 1.5rem;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-
-  .variant-card:hover {
-    border-color: #bbb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-
-  .variant-info {
-    flex: 1;
-  }
-
-  .variant-info h3 {
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    gap: 0.5rem;
   }
 
   .variant-number {
-    color: #999;
-    font-size: 0.85rem;
-    font-weight: 400;
+    font-size: 0.78rem;
+    color: #8a8a8a;
+    font-weight: 500;
+    white-space: nowrap;
+    padding-top: 2px;
   }
 
-  .variant-info p {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 0.5rem;
+  .variant-name {
+    font-size: 0.98rem;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .variant-desc {
+    font-size: 0.84rem;
+    color: #4a4a4a;
+    line-height: 1.45;
   }
 
   .variant-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.35rem;
+    margin-top: 0.1rem;
   }
 
   .tag {
-    font-size: 0.75rem;
-    padding: 0.15rem 0.5rem;
+    font-size: 0.72rem;
+    padding: 0.12rem 0.45rem;
     border-radius: 3px;
-    background: #f0eee9;
-    color: #666;
+    background: #edeae4;
+    color: #4a4a4a;
   }
+  .tag.brand { background: #e0eaf3; color: #2c5f8a; }
+  .tag.wildcard { background: #f0e8df; color: #7a5a3a; }
+  .tag.winner { background: #e4ede0; color: #3a6a2a; }
 
-  .variant-link a {
-    display: inline-block;
-    padding: 0.5rem 1.25rem;
-    background: #2a2a2a;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: background 0.15s;
-  }
-
-  .variant-link a:hover {
-    background: #444;
+  .divider {
+    border: none;
+    border-top: 1px solid #d8d4cc;
+    margin: 2.5rem 0;
   }
 
   footer {
     margin-top: 3rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #e0ddd8;
+    border-top: 1px solid #d8d4cc;
     font-size: 0.8rem;
-    color: #999;
-  }
-
-  @media (max-width: 640px) {
-    body { padding: 1.5rem 1rem; }
-    .variant-card { flex-direction: column; gap: 0.75rem; }
-    .info-arch ul { grid-template-columns: 1fr; }
+    color: #8a8a8a;
   }
 </style>
 </head>
@@ -180,176 +147,377 @@
 
 <header>
   <h1>Aperture Flow — Design Variants</h1>
-  <p>10 layout explorations for the v1 native app. Same information architecture, different visual approaches. 3 avant-garde, 4 iterative, 3 completely random.</p>
+  <p>43 layout explorations across three batches. Batch 1: initial range-finding. Batch 2: IA-focused iterations. Batch 3: first brand-guide-aligned designs.</p>
 </header>
 
-<div class="info-arch">
-  <h2>Shared Information Architecture</h2>
-  <ul>
-    <li>Now: M-F day columns with meetings + tasks</li>
-    <li>Today highlighted, past days dimmed</li>
-    <li>Undone past tasks show amber "still open" badge</li>
-    <li>Task completion: checkbox, strikethrough, 2s undo</li>
-    <li>Next (2 weeks): cards without day assignment</li>
-    <li>Later: compact backlog, collapsed by default</li>
-    <li>Flash cards: 320px, person/initiative + topic list</li>
-    <li>Triage: K-Now, A-Name, D-Name, T-Name, X</li>
-  </ul>
-</div>
-
+<!-- BATCH 3: BRAND FOCUSED -->
 <div class="category">
   <div class="category-header">
-    <h2>Avant-Garde</h2>
-    <span>Bold, unconventional layouts that push boundaries</span>
+    <h2>Batch 3 — Brand Focused</h2>
+    <span>Newsprint palette · Lora serif · 520px column · Aperture dial · Horizon fade</span>
   </div>
+  <div class="variant-grid">
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">01</span> Radial Timeline</h3>
-      <p>Days orbit a central "today" hub in concentric rings. Radial distance indicates time horizon — center is most urgent. Smooth orbital animation on load.</p>
-      <div class="variant-tags">
-        <span class="tag">burnt orange / gold on dark</span>
-        <span class="tag">Playfair Display + Source Code Pro</span>
-        <span class="tag">orbital layout</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-01-avantgarde.html">View</a></div>
-  </div>
+    <a class="variant-card" href="variant-34-agenda-focus.html">
+      <div class="variant-card-top"><span class="variant-number">34</span><span class="variant-name">Agenda Focus</span></div>
+      <p class="variant-desc">f/1.4 Today. Triage queue at top, today's plan below. Nothing from other days. Maximum whitespace — the deliberate absence of information is the feature.</p>
+      <div class="variant-tags"><span class="tag brand">f/1.4 Today</span><span class="tag brand">brand-focused</span><span class="tag">triage</span></div>
+    </a>
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">02</span> Overlapping Cards</h3>
-      <p>Stacked, overlapping card deck with asymmetric layout and depth. Day columns peek from behind each other with 3D transforms on hover and floating stagger animation.</p>
-      <div class="variant-tags">
-        <span class="tag">cool silver / blue on light</span>
-        <span class="tag">GT America + IBM Plex Mono</span>
-        <span class="tag">3D depth + parallax</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-02-avantgarde.html">View</a></div>
-  </div>
+    <a class="variant-card" href="variant-31-broadsheet.html">
+      <div class="variant-card-top"><span class="variant-number">31b</span><span class="variant-name">Broadsheet</span></div>
+      <p class="variant-desc">f/4 This Week. All 5 days inside a 520px column. Horizon fade: today cotton, future linen, past parchment. People + Initiatives in separate sections below.</p>
+      <div class="variant-tags"><span class="tag brand">f/4 This Week</span><span class="tag brand">brand-focused</span><span class="tag">newsprint palette</span></div>
+    </a>
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">03</span> Brutalist Axis</h3>
-      <p>Geometric precision, pure monochromatic grid. Two-axis matrix (horizontal = priority, vertical = days). No curves, border-driven structure, maximum information density.</p>
-      <div class="variant-tags">
-        <span class="tag">black / white / yellow</span>
-        <span class="tag">JetBrains Mono + Courier Prime</span>
-        <span class="tag">data visualization</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-03-avantgarde.html">View</a></div>
+    <a class="variant-card" href="variant-32-editorial-scroll.html">
+      <div class="variant-card-top"><span class="variant-number">32b</span><span class="variant-name">Editorial Scroll</span></div>
+      <p class="variant-desc">f/4 This Week. Today as a large hero container dominating the top. Other days as smaller subordinate containers — size communicates priority.</p>
+      <div class="variant-tags"><span class="tag brand">f/4 This Week</span><span class="tag brand">brand-focused</span><span class="tag">hero today</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-33-cascade-sections.html">
+      <div class="variant-card-top"><span class="variant-number">33b</span><span class="variant-name">Cascade Sections</span></div>
+      <p class="variant-desc">f/4 This Week. Background luminosity = urgency. Cotton for today, parchment for past. No color coding — only brightness communicates priority.</p>
+      <div class="variant-tags"><span class="tag brand">f/4 This Week</span><span class="tag brand">brand-focused</span><span class="tag">horizon fade</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-36-broadsheet-split.html">
+      <div class="variant-card-top"><span class="variant-number">36</span><span class="variant-name">Broadsheet Split</span></div>
+      <p class="variant-desc">f/4 This Week. Two-column layout inside 560px: today's agenda left, people flash cards right. People as co-equal to tasks — not a sidebar, an editorial column.</p>
+      <div class="variant-tags"><span class="tag brand">f/4 This Week</span><span class="tag brand">brand-focused</span><span class="tag">two-column</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-37-ink-minimal.html">
+      <div class="variant-card-top"><span class="variant-number">37</span><span class="variant-name">Ink Minimal</span></div>
+      <p class="variant-desc">f/4 This Week. Near-zero chrome. No cards, no containers — just typeset text on newsprint. The extreme test: does this feel calming or unfinished?</p>
+      <div class="variant-tags"><span class="tag brand">f/4 This Week</span><span class="tag brand">brand-focused</span><span class="tag">maximum reduction</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-35-initiative-arc.html">
+      <div class="variant-card-top"><span class="variant-number">35</span><span class="variant-name">Initiative Arc</span></div>
+      <p class="variant-desc">f/11 The Arc. Initiative cards as primary content — no day columns. SCIM + Q2 Roadmap as full-width cards. Same data at a completely different focal length.</p>
+      <div class="variant-tags"><span class="tag brand">f/11 The Arc</span><span class="tag brand">brand-focused</span><span class="tag">initiatives</span></div>
+    </a>
+
   </div>
 </div>
 
+<!-- BATCH 3: WILD CARDS -->
 <div class="category">
   <div class="category-header">
-    <h2>Iterative</h2>
-    <span>Polished refinements of the M-F column pattern</span>
+    <h2>Batch 3 — Wild Cards</h2>
+    <span>Experimental — outside the editorial direction</span>
   </div>
+  <div class="variant-grid">
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">04</span> Warm Neutrals</h3>
-      <p>The "notebook" feel. Sand, cream, and charcoal with warm amber accents. Serif headers give an editorial quality. Equal 5-column grid with spacious cards.</p>
-      <div class="variant-tags">
-        <span class="tag">sand / cream / charcoal</span>
-        <span class="tag">Crimson Text + Source Sans 3</span>
-        <span class="tag">equal-width columns</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-04-iterative.html">View</a></div>
+    <a class="variant-card" href="variant-39-pure-focus.html">
+      <div class="variant-card-top"><span class="variant-number">39</span><span class="variant-name">Pure Focus</span></div>
+      <p class="variant-desc">f/0.95. One item. Full screen newsprint. Nothing else exists. Focus Mode as a standalone view — the photographic equivalent of shooting wide open.</p>
+      <div class="variant-tags"><span class="tag wildcard">wild-card</span><span class="tag">f/0.95 focus mode</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-38-time-river.html">
+      <div class="variant-card-top"><span class="variant-number">38</span><span class="variant-name">Time River</span></div>
+      <p class="variant-desc">Vertical timeline, today anchored center. Past fades upward, future extends down. People cards float right. Outside the column/grid paradigm entirely.</p>
+      <div class="variant-tags"><span class="tag wildcard">wild-card</span><span class="tag">vertical timeline</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-40-week-as-story.html">
+      <div class="variant-card-top"><span class="variant-number">40</span><span class="variant-name">Week as Story</span></div>
+      <p class="variant-desc">The week as editorial prose narrative. Each day is a paragraph, not a column. Done items struck through, stale in amber. Closest to a weekly memo.</p>
+      <div class="variant-tags"><span class="tag wildcard">wild-card</span><span class="tag">prose narrative</span></div>
+    </a>
+
   </div>
+</div>
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">05</span> Cool Professional</h3>
-      <p>Clean dashboard polish. Slate grays with blue accents on white. Modern sans-serif with monospaced time displays. Professional hierarchy, trustworthy feel.</p>
-      <div class="variant-tags">
-        <span class="tag">slate / blue / white</span>
-        <span class="tag">Outfit + IBM Plex Mono</span>
-        <span class="tag">dashboard aesthetic</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-05-iterative.html">View</a></div>
+<hr class="divider">
+
+<!-- BATCH 2 -->
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 2 — Newspaper</h2>
+    <span>Final batch 2 explorations — editorial/newspaper direction</span>
   </div>
+  <div class="variant-grid">
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">06</span> Dark Mode</h3>
-      <p>Dark background with muted cyan, lime, and orange accents. High contrast text on dark, comfortable for extended use. Technical, modern feel.</p>
-      <div class="variant-tags">
-        <span class="tag">dark (#0f1419) + muted accents</span>
-        <span class="tag">Sohne + JetBrains Mono</span>
-        <span class="tag">low-light optimized</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-06-iterative.html">View</a></div>
-  </div>
+    <a class="variant-card" href="variant-32-newspaper.html">
+      <div class="variant-card-top"><span class="variant-number">32</span><span class="variant-name">Weekly Magazine</span></div>
+      <p class="variant-desc">Topics in progress + week look ahead. PO's strongest layout pick — good organization, feels well thought out. Needs to go softer/rounder.</p>
+      <div class="variant-tags"><span class="tag winner">PO favorite layout</span><span class="tag">magazine</span></div>
+    </a>
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">07</span> High Contrast Sidebar</h3>
-      <p>Bold red accent on neutral with a dark sidebar housing flash cards and backlog. 3-column day grid + right sidebar. Editorial, print-magazine energy.</p>
-      <div class="variant-tags">
-        <span class="tag">white / bold red / dark sidebar</span>
-        <span class="tag">Bricolage Grotesque + Newsreader</span>
-        <span class="tag">sidebar layout</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-07-iterative.html">View</a></div>
+    <a class="variant-card" href="variant-31-newspaper.html">
+      <div class="variant-card-top"><span class="variant-number">31</span><span class="variant-name">Morning Edition</span></div>
+      <p class="variant-desc">Newspaper front page. PO liked the title treatment, serif grounding, and clear header. Wants AI editorial lede at top.</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">newspaper</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-33-newspaper.html">
+      <div class="variant-card-top"><span class="variant-number">33</span><span class="variant-name">Telegram Wire</span></div>
+      <p class="variant-desc">Ultra-condensed wire format. PO: too compressed — too much, too much. Where do I look?</p>
+      <div class="variant-tags"><span class="tag">too dense</span></div>
+    </a>
+
   </div>
 </div>
 
 <div class="category">
   <div class="category-header">
-    <h2>Random</h2>
-    <span>Completely unexpected, wildcard approaches</span>
+    <h2>Batch 2 — Wild Cards</h2>
+    <span>Experimental layouts</span>
   </div>
+  <div class="variant-grid">
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">08</span> Timeline Sequencer</h3>
-      <p>Inspired by music production software (Ableton/DAW). Days as horizontal tracks with meetings and tasks as draggable clips positioned in time. Playhead shows current time with pulsing glow.</p>
-      <div class="variant-tags">
-        <span class="tag">industrial dark + neon green/pink/cyan</span>
-        <span class="tag">DAW interface metaphor</span>
-        <span class="tag">time-ruler layout</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-08-random.html">View</a></div>
+    <a class="variant-card" href="variant-27-wildcard.html">
+      <div class="variant-card-top"><span class="variant-number">27</span><span class="variant-name">Focus Mode</span></div>
+      <p class="variant-desc">Single-item view. PO: "Fits the camera analogy perfectly. Worth exploring as an addition to the winning format."</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">focus</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-30-wildcard.html">
+      <div class="variant-card-top"><span class="variant-number">30</span><span class="variant-name">Agenda + Cards</span></div>
+      <p class="variant-desc">Today prominent with collapsible next/later. PO: "Something to explore here — I really like the direction."</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">agenda</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-29-wildcard.html">
+      <div class="variant-card-top"><span class="variant-number">29</span><span class="variant-name">Heat Map</span></div>
+      <p class="variant-desc">Color intensity = urgency. PO: "Too bright — too many colors at once, where am I looking?"</p>
+      <div class="variant-tags"><span class="tag">too stimulating</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-28-wildcard.html">
+      <div class="variant-card-top"><span class="variant-number">28</span><span class="variant-name">Triage-First</span></div>
+      <p class="variant-desc">Triage queue as the entry point. PO: not a huge fan in this form.</p>
+      <div class="variant-tags"><span class="tag">triage</span></div>
+    </a>
+
   </div>
+</div>
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">09</span> Concentric Rings</h3>
-      <p>Days plotted as concentric rings radiating from center (today = innermost). Tasks rendered as glowing dots by day + time. People as orbital cards floating around the canvas. Abstract, zen.</p>
-      <div class="variant-tags">
-        <span class="tag">cosmic blues / purples / pinks</span>
-        <span class="tag">canvas-based rendering</span>
-        <span class="tag">spatial visualization</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-09-random.html">View</a></div>
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 2 — Scroll</h2>
+    <span>Vertically-scrollable single-column approaches</span>
   </div>
+  <div class="variant-grid">
 
-  <div class="variant-card">
-    <div class="variant-info">
-      <h3><span class="variant-number">10</span> Editorial Newspaper</h3>
-      <p>Classic print newspaper layout. Tasks and meetings as article "headlines" with bylines and status bars. Multi-column grid, serif typography, people as "columnists" in sidebar.</p>
-      <div class="variant-tags">
-        <span class="tag">black / cream / gold</span>
-        <span class="tag">Bodoni Moda + Work Sans</span>
-        <span class="tag">print editorial</span>
-      </div>
-    </div>
-    <div class="variant-link"><a href="variant-10-random.html">View</a></div>
+    <a class="variant-card" href="variant-23-scroll.html">
+      <div class="variant-card-top"><span class="variant-number">23</span><span class="variant-name">Scroll Newspaper</span></div>
+      <p class="variant-desc">Central column, containerized days, one day larger, others smaller. PO liked the hierarchy and central column structure.</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">scroll</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-25-scroll.html">
+      <div class="variant-card-top"><span class="variant-number">25</span><span class="variant-name">Scroll Sections</span></div>
+      <p class="variant-desc">Containers inside containers. White = urgent, fades toward horizon. PO: "Containers I care about have white background, background fades as I get to the horizon."</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">horizon fade</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-26-scroll.html">
+      <div class="variant-card-top"><span class="variant-number">26</span><span class="variant-name">Progressive Density</span></div>
+      <p class="variant-desc">Content density increases as you scroll down — sparse at top, dense at bottom.</p>
+      <div class="variant-tags"><span class="tag">progressive disclosure</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-24-scroll.html">
+      <div class="variant-card-top"><span class="variant-number">24</span><span class="variant-name">Scroll Timeline</span></div>
+      <p class="variant-desc">Horizontal timeline scroll. PO: this one's not working.</p>
+      <div class="variant-tags"><span class="tag">timeline</span></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 2 — Sidebar</h2>
+    <span>PO feedback: sidebars add noise</span>
+  </div>
+  <div class="variant-grid">
+
+    <a class="variant-card" href="variant-19-sidebar.html">
+      <div class="variant-card-top"><span class="variant-number">19</span><span class="variant-name">Sidebar Weekly</span></div>
+      <p class="variant-desc">Left sidebar for people/initiatives, main panel for week grid.</p>
+      <div class="variant-tags"><span class="tag">sidebar</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-20-sidebar.html">
+      <div class="variant-card-top"><span class="variant-number">20</span><span class="variant-name">Sidebar Hybrid</span></div>
+      <p class="variant-desc">Collapsible sidebar + main content area hybrid.</p>
+      <div class="variant-tags"><span class="tag">sidebar</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-21-sidebar.html">
+      <div class="variant-card-top"><span class="variant-number">21</span><span class="variant-name">Sidebar Right</span></div>
+      <p class="variant-desc">Right sidebar for context, main area for tasks.</p>
+      <div class="variant-tags"><span class="tag">sidebar</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-22-sidebar.html">
+      <div class="variant-card-top"><span class="variant-number">22</span><span class="variant-name">Sidebar Contextual</span></div>
+      <p class="variant-desc">Context-sensitive sidebar that changes based on selection.</p>
+      <div class="variant-tags"><span class="tag">sidebar</span></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 2 — Iterative</h2>
+    <span>M-F column refinements with IA improvements</span>
+  </div>
+  <div class="variant-grid">
+
+    <a class="variant-card" href="variant-13-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">13</span><span class="variant-name">Warm Editorial</span></div>
+      <p class="variant-desc">PO: "Starting to feel much better. Eyes can focus where they need to be. Narrower width helps." Serif day headers.</p>
+      <div class="variant-tags"><span class="tag winner">PO liked</span><span class="tag">serif headers</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-12-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">12</span><span class="variant-name">Compact Pro</span></div>
+      <p class="variant-desc">PO: "Getting better — vertically compact but still too wide horizontally."</p>
+      <div class="variant-tags"><span class="tag">compact</span><span class="tag">still too wide</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-11-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">11</span><span class="variant-name">Clean Grid</span></div>
+      <p class="variant-desc">PO: "Too wide — don't know where to focus, have to pan left to right."</p>
+      <div class="variant-tags"><span class="tag">too wide</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-14-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">14</span><span class="variant-name">Today-First</span></div>
+      <p class="variant-desc">Today gets 40% of horizontal space. PO: too wide.</p>
+      <div class="variant-tags"><span class="tag">too wide</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-15-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">15</span><span class="variant-name">Kanban-Lite</span></div>
+      <p class="variant-desc">Day columns as kanban swim lanes with count badges. PO liked the pill containerization but too wide.</p>
+      <div class="variant-tags"><span class="tag">kanban</span><span class="tag">too wide</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-16-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">16</span><span class="variant-name">Horizon Bands</span></div>
+      <p class="variant-desc">Three full-width horizontal bands: Now / Next / Later. PO: this is not gonna work.</p>
+      <div class="variant-tags"><span class="tag">full-width</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-17-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">17</span><span class="variant-name">Muted Luxe</span></div>
+      <p class="variant-desc">Luke's dashboard style. PO: not a fan — not enough definition around the containers.</p>
+      <div class="variant-tags"><span class="tag">dashboard</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-18-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">18</span><span class="variant-name">Dense Dashboard</span></div>
+      <p class="variant-desc">Maximum density. PO: skipping — not looking for dense dashboard.</p>
+      <div class="variant-tags"><span class="tag">too dense</span></div>
+    </a>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- BATCH 1 -->
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 1 — Avant-Garde</h2>
+    <span>Bold, unconventional layouts</span>
+  </div>
+  <div class="variant-grid">
+
+    <a class="variant-card" href="variant-01-avantgarde.html">
+      <div class="variant-card-top"><span class="variant-number">01</span><span class="variant-name">Radial Timeline</span></div>
+      <p class="variant-desc">Days orbit a central "today" hub. Radial distance = time horizon.</p>
+      <div class="variant-tags"><span class="tag">burnt orange / gold</span><span class="tag">orbital</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-02-avantgarde.html">
+      <div class="variant-card-top"><span class="variant-number">02</span><span class="variant-name">Overlapping Cards</span></div>
+      <p class="variant-desc">Stacked card deck with 3D transforms. Day columns peek from behind each other.</p>
+      <div class="variant-tags"><span class="tag">cool silver</span><span class="tag">3D depth</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-03-avantgarde.html">
+      <div class="variant-card-top"><span class="variant-number">03</span><span class="variant-name">Brutalist Axis</span></div>
+      <p class="variant-desc">Two-axis matrix: horizontal = priority, vertical = days. Monochromatic, maximum density.</p>
+      <div class="variant-tags"><span class="tag">black / white / yellow</span></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 1 — Iterative</h2>
+    <span>Polished M-F column refinements</span>
+  </div>
+  <div class="variant-grid">
+
+    <a class="variant-card" href="variant-04-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">04</span><span class="variant-name">Warm Neutrals</span></div>
+      <p class="variant-desc">Sand, cream, and charcoal with warm amber accents. Serif headers. The "notebook" feel.</p>
+      <div class="variant-tags"><span class="tag">sand / cream</span><span class="tag">serif</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-05-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">05</span><span class="variant-name">Cool Professional</span></div>
+      <p class="variant-desc">Slate grays with blue accents. Modern sans-serif, monospaced time displays.</p>
+      <div class="variant-tags"><span class="tag">slate / blue</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-06-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">06</span><span class="variant-name">Dark Mode</span></div>
+      <p class="variant-desc">Dark background with muted cyan, lime, and orange accents. Comfortable for extended use.</p>
+      <div class="variant-tags"><span class="tag">dark</span><span class="tag">muted accents</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-07-iterative.html">
+      <div class="variant-card-top"><span class="variant-number">07</span><span class="variant-name">High Contrast Sidebar</span></div>
+      <p class="variant-desc">Bold red accent + dark sidebar housing flash cards. Print-magazine energy.</p>
+      <div class="variant-tags"><span class="tag">white / red / dark sidebar</span></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">
+    <h2>Batch 1 — Random</h2>
+    <span>Unexpected wildcard approaches</span>
+  </div>
+  <div class="variant-grid">
+
+    <a class="variant-card" href="variant-08-random.html">
+      <div class="variant-card-top"><span class="variant-number">08</span><span class="variant-name">Timeline Sequencer</span></div>
+      <p class="variant-desc">DAW-inspired. Days as horizontal tracks with meetings as clips. Playhead at current time.</p>
+      <div class="variant-tags"><span class="tag">industrial dark</span><span class="tag">DAW</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-09-random.html">
+      <div class="variant-card-top"><span class="variant-number">09</span><span class="variant-name">Concentric Rings</span></div>
+      <p class="variant-desc">Days plotted as concentric rings (today = innermost). Tasks as glowing dots. Abstract, zen.</p>
+      <div class="variant-tags"><span class="tag">cosmic blues</span><span class="tag">spatial</span></div>
+    </a>
+
+    <a class="variant-card" href="variant-10-random.html">
+      <div class="variant-card-top"><span class="variant-number">10</span><span class="variant-name">Editorial Newspaper</span></div>
+      <p class="variant-desc">Classic print newspaper. Tasks as article headlines with bylines. Multi-column serif grid.</p>
+      <div class="variant-tags"><span class="tag">black / cream / gold</span><span class="tag">print editorial</span></div>
+    </a>
+
   </div>
 </div>
 
 <footer>
-  Aperture Flow v1 Design Exploration — April 2026
+  Aperture Flow v1 Design Exploration — April 2026 · 43 variants across 3 batches
 </footer>
 
 </body>

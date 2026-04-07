@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 32: Editorial Scroll</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-yellow: #b8963a;
+      --health-red: #a85a4a;
+      --teal: #5a8a8a;
+      --plum: #7a5a7a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--newsprint);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .content-column {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .app-name {
+      font-size: 13px;
+      color: var(--pencil);
+      letter-spacing: 0.02em;
+    }
+
+    .record-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--linen);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .record-btn::after {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--health-red);
+    }
+
+    /* Aperture dial */
+    .aperture-dial {
+      display: flex;
+      border-bottom: 1.5px solid var(--bone);
+      margin-bottom: 16px;
+    }
+
+    .dial-stop {
+      font-size: 12px;
+      color: var(--pencil);
+      padding: 6px 0;
+      margin-right: 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1.5px;
+    }
+
+    .dial-stop.active {
+      color: var(--today-accent);
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 2px solid var(--today-accent);
+    }
+
+    /* AI headline */
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    /* TODAY — hero container */
+    .today-container {
+      background: var(--cotton);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 2px solid var(--today-accent);
+      margin-bottom: 12px;
+    }
+
+    .today-label {
+      font-size: 11px;
+      color: var(--today-accent);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .today-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    /* Meeting rows */
+    .meeting-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      background: var(--linen);
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .meeting-time {
+      font-size: 12px;
+      color: var(--pencil);
+      min-width: 38px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meeting-name {
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .task-divider {
+      height: 1px;
+      background: var(--bone);
+      margin: 12px 0;
+    }
+
+    /* Task list */
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      font-size: 13px;
+      color: var(--graphite);
+      border-bottom: 1px solid var(--linen);
+    }
+
+    .task-row:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1.5px solid var(--bone);
+      flex-shrink: 0;
+    }
+
+    /* Past day containers */
+    .past-container {
+      background: var(--parchment);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .past-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--graphite);
+      margin-bottom: 10px;
+    }
+
+    .past-task-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      font-size: 12px;
+      color: var(--graphite);
+    }
+
+    .check-done {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      background: var(--bone);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 9px;
+      color: var(--pencil);
+    }
+
+    .check-empty {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      border: 1.5px solid var(--bone);
+      flex-shrink: 0;
+    }
+
+    .stale-label {
+      color: var(--amber-nudge);
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    .done-text {
+      color: var(--pencil);
+    }
+
+    /* Future containers */
+    .future-container {
+      background: var(--linen);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .future-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--graphite);
+      margin-bottom: 10px;
+    }
+
+    .future-task-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      font-size: 12px;
+      color: var(--graphite);
+    }
+
+    /* Section divider */
+    .section-gap {
+      height: 20px;
+    }
+
+    /* People + Initiatives at bottom */
+    .bottom-section {
+      background: var(--linen);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .flash-stubs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .flash-stub {
+      background: var(--cotton);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stub-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--linen);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--graphite);
+      flex-shrink: 0;
+    }
+
+    .stub-meta {
+      flex: 1;
+    }
+
+    .stub-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .stub-role {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .stub-topics {
+      font-size: 11px;
+      color: var(--pencil);
+      white-space: nowrap;
+    }
+
+    .initiative-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--bone);
+    }
+
+    .initiative-row:last-child {
+      border-bottom: none;
+    }
+
+    .initiative-accent {
+      width: 4px;
+      height: 36px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .initiative-name {
+      font-size: 13px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .initiative-meta {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+  </style>
+</head>
+<body>
+  <div class="content-column">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <span class="app-name">Aperture</span>
+      <div class="record-btn"></div>
+    </div>
+
+    <!-- Aperture dial -->
+    <div class="aperture-dial">
+      <span class="dial-stop">f/1.4 Today</span>
+      <span class="dial-stop active">f/4 This Week</span>
+      <span class="dial-stop">f/11 The Arc</span>
+      <span class="dial-stop">f/22 Identity</span>
+    </div>
+
+    <!-- AI editorial headline -->
+    <p class="ai-headline">Wednesday is the anchor day. Two items still open from earlier this week.</p>
+
+    <!-- TODAY: hero container -->
+    <div class="today-container">
+      <div class="today-label">Today</div>
+      <div class="today-header">Wednesday</div>
+
+      <div class="meeting-row">
+        <span class="meeting-time">09:30</span>
+        <span class="meeting-name">Standup</span>
+      </div>
+      <div class="meeting-row">
+        <span class="meeting-time">11:00</span>
+        <span class="meeting-name">1:1 with Maya</span>
+      </div>
+
+      <div class="task-divider"></div>
+
+      <div class="task-row">
+        <div class="checkbox"></div>
+        Finalize SCIM scope doc
+      </div>
+      <div class="task-row">
+        <div class="checkbox"></div>
+        Write launch checklist
+      </div>
+      <div class="task-row">
+        <div class="checkbox"></div>
+        Reply to Anika re: vendor eval
+      </div>
+    </div>
+
+    <!-- Past: Tuesday -->
+    <div class="past-container">
+      <div class="past-header">Tuesday</div>
+      <div class="past-task-row">
+        <div class="check-done">✓</div>
+        <span class="done-text">Draft Q2 roadmap section</span>
+      </div>
+      <div class="past-task-row">
+        <div class="check-empty"></div>
+        Prep board deck slides
+        <span class="stale-label">⚠️ still open</span>
+      </div>
+    </div>
+
+    <!-- Past: Monday -->
+    <div class="past-container">
+      <div class="past-header">Monday</div>
+      <div class="past-task-row">
+        <div class="check-done">✓</div>
+        <span class="done-text">10:00 — 1:1 w/ Priya</span>
+      </div>
+      <div class="past-task-row">
+        <div class="check-done">✓</div>
+        <span class="done-text">Update SCIM spec</span>
+      </div>
+      <div class="past-task-row">
+        <div class="check-empty"></div>
+        Review Maya's design doc
+        <span class="stale-label">⚠️ still open</span>
+      </div>
+    </div>
+
+    <!-- Future: Thursday -->
+    <div class="future-container">
+      <div class="future-header">Thursday</div>
+      <div class="future-task-row">
+        <div class="checkbox"></div>
+        Review PR #847
+      </div>
+      <div class="future-task-row" style="margin-top:4px;">
+        <div class="checkbox"></div>
+        Sync notes from Maya 1:1
+      </div>
+    </div>
+
+    <!-- Future: Friday -->
+    <div class="future-container">
+      <div class="future-header">Friday</div>
+      <div class="future-task-row">
+        <span style="font-size:11px; color:var(--pencil); margin-right:4px;">09:30</span>
+        Team standup
+      </div>
+      <div class="future-task-row" style="margin-top:4px;">
+        <div class="checkbox"></div>
+        Weekly brag sheet
+      </div>
+      <div class="future-task-row" style="margin-top:4px;">
+        <div class="checkbox"></div>
+        Submit expense report
+      </div>
+    </div>
+
+    <div class="section-gap"></div>
+
+    <!-- People section -->
+    <div class="bottom-section">
+      <div class="section-heading">People</div>
+      <div class="flash-stubs">
+        <div class="flash-stub">
+          <div class="stub-avatar">P</div>
+          <div class="stub-meta">
+            <div class="stub-name">Priya</div>
+            <div class="stub-role">Staff Engineer</div>
+          </div>
+          <div class="stub-topics">3 topics</div>
+        </div>
+        <div class="flash-stub">
+          <div class="stub-avatar">M</div>
+          <div class="stub-meta">
+            <div class="stub-name">Maya</div>
+            <div class="stub-role">Designer</div>
+          </div>
+          <div class="stub-topics">2 topics</div>
+        </div>
+        <div class="flash-stub">
+          <div class="stub-avatar">A</div>
+          <div class="stub-meta">
+            <div class="stub-name">Anika</div>
+            <div class="stub-role">PM</div>
+          </div>
+          <div class="stub-topics">1 topic</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Initiatives section -->
+    <div class="bottom-section">
+      <div class="section-heading">Initiatives</div>
+      <div class="initiative-row">
+        <div class="initiative-accent" style="background: #5a8a8a;"></div>
+        <div>
+          <div class="initiative-name">SCIM Integration</div>
+          <div class="initiative-meta">4 open topics · week 3</div>
+        </div>
+      </div>
+      <div class="initiative-row">
+        <div class="initiative-accent" style="background: #7a5a7a;"></div>
+        <div>
+          <div class="initiative-name">Q2 Roadmap</div>
+          <div class="initiative-meta">2 open topics · week 2</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

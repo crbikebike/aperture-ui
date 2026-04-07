@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 40: Week as Story</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-yellow: #b8963a;
+      --health-red: #a85a4a;
+      --teal: #5a8a8a;
+      --plum: #7a5a7a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--newsprint);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--bone);
+    }
+
+    .app-name {
+      font-size: 13px;
+      color: var(--pencil);
+      letter-spacing: 0.04em;
+    }
+
+    .record-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--bone);
+      background: var(--cotton);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .record-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--health-red);
+    }
+
+    /* ── Content ── */
+    .content {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ── Aperture dial ── */
+    .aperture-dial {
+      display: flex;
+      gap: 0;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--bone);
+      padding-bottom: 12px;
+    }
+
+    .dial-stop {
+      font-size: 12px;
+      color: var(--pencil);
+      padding: 4px 14px 8px;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .dial-stop.active {
+      color: var(--today-accent);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .dial-stop.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--today-accent);
+      border-radius: 1px;
+    }
+
+    /* ── AI editorial headline ── */
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 20px;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    /* ── Triage queue — above story ── */
+    .triage-section {
+      margin-bottom: 24px;
+    }
+
+    .triage-label {
+      font-size: 11px;
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .triage-card {
+      background: var(--cotton);
+      border: 1px solid var(--bone);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+
+    .triage-card-text {
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .triage-card-meta {
+      font-size: 11px;
+      color: var(--pencil);
+      margin-bottom: 10px;
+    }
+
+    .triage-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .triage-btn {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid var(--bone);
+      background: var(--newsprint);
+      color: var(--graphite);
+    }
+
+    .triage-btn.keep {
+      background: var(--today-accent);
+      color: #fff;
+      border-color: var(--today-accent);
+    }
+
+    .triage-btn.drop {
+      color: var(--health-red);
+      border-color: var(--health-red);
+      background: none;
+    }
+
+    /* ── Story section ── */
+    .story-bone-rule {
+      height: 1px;
+      background: var(--bone);
+      margin-bottom: 22px;
+    }
+
+    .story-section {
+      margin-bottom: 28px;
+    }
+
+    /* Each day paragraph */
+    .story-day {
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      border-radius: 8px;
+    }
+
+    /* Today highlight */
+    .story-day.today {
+      background: var(--cotton);
+      border-left: 2px solid var(--today-accent);
+    }
+
+    /* Past days */
+    .story-day.past {
+      background: var(--parchment);
+      opacity: 0.88;
+    }
+
+    /* Future days */
+    .story-day.future {
+      background: var(--linen);
+    }
+
+    .day-heading {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--graphite);
+      display: inline;
+      margin-right: 6px;
+    }
+
+    .day-heading.today-heading {
+      color: var(--today-accent);
+      font-size: 15px;
+    }
+
+    /* Prose items inline */
+    .story-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .story-item {
+      font-size: 14px;
+      color: var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .story-item.done {
+      color: var(--pencil);
+    }
+
+    .story-item.done .item-text {
+      text-decoration: line-through;
+    }
+
+    .story-item.stale {
+      color: var(--amber-nudge);
+    }
+
+    .story-item.today-item {
+      color: var(--ink);
+    }
+
+    .item-marker {
+      font-size: 12px;
+      flex-shrink: 0;
+      line-height: 1.6;
+    }
+
+    .item-time {
+      font-size: 12px;
+      color: var(--pencil);
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .item-text {
+      line-height: 1.5;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      height: 1px;
+      background: var(--bone);
+      margin: 24px 0;
+    }
+
+    /* ── People section ── */
+    .section-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--graphite);
+      margin-bottom: 10px;
+    }
+
+    .people-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .person-stub {
+      background: var(--linen);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .person-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--parchment);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--graphite);
+      flex-shrink: 0;
+    }
+
+    .person-info {
+      flex: 1;
+    }
+
+    .person-name-stub {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 1px;
+    }
+
+    .person-role-stub {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .person-meta-right {
+      text-align: right;
+    }
+
+    .person-topic-count {
+      font-size: 12px;
+      color: var(--graphite);
+    }
+
+    .meeting-today-badge {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--today-accent);
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* ── Initiatives section ── */
+    .initiatives-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .initiative-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--linen);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .initiative-bar {
+      width: 4px;
+      height: 32px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .initiative-info {
+      flex: 1;
+    }
+
+    .initiative-name-row {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .initiative-status {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .health-dot {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <span class="app-name">Aperture</span>
+    <div class="record-btn"><div class="record-dot"></div></div>
+  </div>
+
+  <div class="content">
+
+    <!-- Aperture dial -->
+    <nav class="aperture-dial">
+      <span class="dial-stop">f/1.4 Today</span>
+      <span class="dial-stop active">f/4 This Week</span>
+      <span class="dial-stop">f/11 The Arc</span>
+      <span class="dial-stop">f/22 Identity</span>
+    </nav>
+
+    <!-- AI headline -->
+    <p class="ai-headline">A pivotal week: SCIM spec needs a decision and Maya's design review is waiting.</p>
+
+    <!-- Triage queue (above story) -->
+    <div class="triage-section">
+      <div class="triage-label">Triage · 2 items</div>
+
+      <div class="triage-card">
+        <div class="triage-card-text">"Priya mentioned reorg timeline"</div>
+        <div class="triage-card-meta">from: Monday recording · 2h ago</div>
+        <div class="triage-actions">
+          <button class="triage-btn keep">Keep</button>
+          <button class="triage-btn">Assign ▾</button>
+          <button class="triage-btn">Discuss ▾</button>
+          <button class="triage-btn drop">Drop</button>
+        </div>
+      </div>
+
+      <div class="triage-card">
+        <div class="triage-card-text">"Anika: vendor eval criteria need sign-off"</div>
+        <div class="triage-card-meta">from: recording · 3h ago</div>
+        <div class="triage-actions">
+          <button class="triage-btn keep">Keep</button>
+          <button class="triage-btn">Assign ▾</button>
+          <button class="triage-btn">Discuss ▾</button>
+          <button class="triage-btn drop">Drop</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story section -->
+    <div class="story-bone-rule"></div>
+
+    <div class="story-section">
+
+      <!-- Monday (past) -->
+      <div class="story-day past">
+        <div class="day-heading">Monday</div>
+        <div class="story-items">
+          <div class="story-item done">
+            <span class="item-marker">✅</span>
+            <span class="item-time">10:00</span>
+            <span class="item-text">1:1 w/ Priya</span>
+          </div>
+          <div class="story-item done">
+            <span class="item-marker">✅</span>
+            <span class="item-text">Update SCIM spec</span>
+          </div>
+          <div class="story-item stale">
+            <span class="item-marker">⚠️</span>
+            <span class="item-text">Review Maya's design doc — still open</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tuesday (past) -->
+      <div class="story-day past">
+        <div class="day-heading">Tuesday</div>
+        <div class="story-items">
+          <div class="story-item done">
+            <span class="item-marker">✅</span>
+            <span class="item-text">Draft Q2 roadmap section</span>
+          </div>
+          <div class="story-item stale">
+            <span class="item-marker">⚠️</span>
+            <span class="item-text">Prep board deck slides — still open</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wednesday (today) -->
+      <div class="story-day today">
+        <div class="day-heading today-heading">Wednesday</div>
+        <div class="story-items">
+          <div class="story-item today-item">
+            <span class="item-time">09:30</span>
+            <span class="item-text">Standup</span>
+          </div>
+          <div class="story-item today-item">
+            <span class="item-time">11:00</span>
+            <span class="item-text">1:1 w/ Maya</span>
+          </div>
+          <div class="story-item today-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Finalize SCIM scope doc</span>
+          </div>
+          <div class="story-item today-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Write launch checklist</span>
+          </div>
+          <div class="story-item today-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Reply to Anika re: vendor eval</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thursday (future) -->
+      <div class="story-day future">
+        <div class="day-heading">Thursday</div>
+        <div class="story-items">
+          <div class="story-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Review PR #847</span>
+          </div>
+          <div class="story-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Sync notes from Maya 1:1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Friday (future) -->
+      <div class="story-day future">
+        <div class="day-heading">Friday</div>
+        <div class="story-items">
+          <div class="story-item">
+            <span class="item-time">09:30</span>
+            <span class="item-text">Team standup</span>
+          </div>
+          <div class="story-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Weekly brag sheet</span>
+          </div>
+          <div class="story-item">
+            <span class="item-marker">·</span>
+            <span class="item-text">Submit expense report</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- People section -->
+    <div class="section-header">People</div>
+    <div class="people-cards">
+      <div class="person-stub">
+        <div class="person-avatar">P</div>
+        <div class="person-info">
+          <div class="person-name-stub">Priya <span style="font-size:11px; color:var(--pencil); font-weight:400;">Staff Eng</span></div>
+          <div class="person-role-stub">SCIM timeline · reorg timeline</div>
+        </div>
+        <div class="person-meta-right">
+          <div class="person-topic-count">3 topics</div>
+        </div>
+      </div>
+      <div class="person-stub">
+        <div class="person-avatar">M</div>
+        <div class="person-info">
+          <div class="person-name-stub">Maya <span style="font-size:11px; color:var(--pencil); font-weight:400;">Designer</span><span class="meeting-today-badge"></span></div>
+          <div class="person-role-stub">Design doc review · 1:1 today</div>
+        </div>
+        <div class="person-meta-right">
+          <div class="person-topic-count">2 topics</div>
+        </div>
+      </div>
+      <div class="person-stub">
+        <div class="person-avatar">A</div>
+        <div class="person-info">
+          <div class="person-name-stub">Anika <span style="font-size:11px; color:var(--pencil); font-weight:400;">PM</span></div>
+          <div class="person-role-stub">Vendor eval sign-off</div>
+        </div>
+        <div class="person-meta-right">
+          <div class="person-topic-count">1 topic</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Initiatives section -->
+    <div class="section-header">Initiatives</div>
+    <div class="initiatives-list">
+      <div class="initiative-row">
+        <div class="initiative-bar" style="background: #5a8a8a;"></div>
+        <div class="initiative-info">
+          <div class="initiative-name-row">SCIM Integration <span class="health-dot">🟡</span></div>
+          <div class="initiative-status">Week 3 · 2 topics stalled on external dependencies</div>
+        </div>
+      </div>
+      <div class="initiative-row">
+        <div class="initiative-bar" style="background: #7a5a7a;"></div>
+        <div class="initiative-info">
+          <div class="initiative-name-row">Q2 Roadmap <span class="health-dot">🟢</span></div>
+          <div class="initiative-status">Week 2 · On track — draft section due Friday</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

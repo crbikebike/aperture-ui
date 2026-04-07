@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 38: Time River</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-red: #a85a4a;
+      --teal: #5a8a8a;
+      --plum: #7a5a7a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--newsprint);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Top nav ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      border-bottom: 1px solid var(--bone);
+    }
+
+    .app-name {
+      font-size: 13px;
+      color: var(--pencil);
+      letter-spacing: 0.04em;
+    }
+
+    .aperture-label {
+      font-size: 12px;
+      color: var(--pencil);
+    }
+
+    .record-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--bone);
+      background: var(--cotton);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .record-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--health-red);
+    }
+
+    /* ── AI headline ── */
+    .ai-headline-wrap {
+      text-align: center;
+      padding: 20px 24px 0;
+    }
+
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 20px;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    /* ── River layout ── */
+    .river-wrap {
+      position: relative;
+      width: 100%;
+      padding: 32px 0 60px;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* Central vertical line */
+    .river-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--bone);
+      transform: translateX(-50%);
+    }
+
+    /* Each river entry */
+    .river-entry {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 0;
+      min-height: 72px;
+    }
+
+    /* Left side: day count */
+    .river-left {
+      flex: 0 0 50%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-right: 36px;
+      padding-top: 16px;
+    }
+
+    .day-count {
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--bone);
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Right side: content card */
+    .river-right {
+      flex: 0 0 50%;
+      padding-left: 36px;
+      padding-top: 12px;
+    }
+
+    /* Connector dot on the line */
+    .river-entry::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bone);
+      border: 2px solid var(--newsprint);
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    /* Today special */
+    .river-entry.today-entry::after {
+      width: 18px;
+      height: 18px;
+      background: var(--today-accent);
+      border: 3px solid var(--newsprint);
+      top: 16px;
+    }
+
+    /* ── Day label ── */
+    .day-label-river {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--pencil);
+      margin-bottom: 4px;
+    }
+
+    .day-label-river.today {
+      font-size: 18px;
+      color: var(--today-accent);
+      margin-bottom: 8px;
+    }
+
+    /* Past day card (faded) */
+    .past-card {
+      background: var(--parchment);
+      border-radius: 8px;
+      padding: 10px 14px;
+      opacity: 0.7;
+      max-width: 240px;
+    }
+
+    .past-item {
+      font-size: 12px;
+      color: var(--graphite);
+      padding: 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .done-mark { color: var(--health-green); font-size: 11px; }
+    .stale-mark { color: var(--amber-nudge); font-size: 11px; }
+
+    /* Today card (full detail) */
+    .today-card {
+      background: var(--cotton);
+      border-radius: 12px;
+      border-left: 3px solid var(--today-accent);
+      padding: 14px 16px;
+      max-width: 280px;
+    }
+
+    .today-meeting {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--linen);
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .today-meeting-time {
+      font-size: 11px;
+      color: var(--pencil);
+      min-width: 36px;
+    }
+
+    .today-task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .checkbox-small {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      border: 1.5px solid var(--bone);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Future day card */
+    .future-card {
+      background: var(--linen);
+      border-radius: 8px;
+      padding: 10px 14px;
+      max-width: 240px;
+    }
+
+    .future-item {
+      font-size: 12px;
+      color: var(--graphite);
+      padding: 2px 0;
+    }
+
+    /* ── People — floating right of line (positioned absolutely) ── */
+    /* In static HTML, we'll use a right-column float approach */
+    .river-people {
+      position: absolute;
+      right: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .person-float {
+      background: var(--cotton);
+      border-radius: 8px;
+      border: 1px solid var(--bone);
+      padding: 10px 12px;
+      width: 140px;
+    }
+
+    .person-float-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--graphite);
+      margin-bottom: 2px;
+    }
+
+    .person-float-role {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .person-float-topic {
+      font-size: 11px;
+      color: var(--graphite);
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* Connector from right side to people card */
+    .person-float-time {
+      font-size: 10px;
+      color: var(--pencil);
+      margin-top: 4px;
+    }
+
+    /* Spacer entries that align the river */
+    .river-entry.spacer {
+      min-height: 40px;
+    }
+
+    .today-tasks-divider {
+      height: 1px;
+      background: var(--bone);
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top nav -->
+  <div class="top-nav">
+    <span class="app-name">Aperture</span>
+    <span class="aperture-label">f/4 This Week · Time River</span>
+    <div class="record-btn"><div class="record-dot"></div></div>
+  </div>
+
+  <!-- AI headline -->
+  <div class="ai-headline-wrap">
+    <p class="ai-headline">Two carried items surface from earlier. Wednesday is the still point in the river.</p>
+  </div>
+
+  <!-- River -->
+  <div class="river-wrap">
+    <div class="river-line"></div>
+
+    <!-- People floating to the right — absolutely positioned -->
+    <div class="river-people" style="top: 48px;">
+      <div class="person-float">
+        <div class="person-float-name">Priya</div>
+        <div class="person-float-role">Staff Eng</div>
+        <div class="person-float-topic">SCIM timeline · reorg</div>
+        <div class="person-float-time">Last: Monday 10:00</div>
+      </div>
+      <div class="person-float" style="margin-top: 80px;">
+        <div class="person-float-name">Maya</div>
+        <div class="person-float-role">Designer</div>
+        <div class="person-float-topic">Design doc review open</div>
+        <div class="person-float-time">Today 11:00</div>
+      </div>
+      <div class="person-float" style="margin-top: 64px;">
+        <div class="person-float-name">Anika</div>
+        <div class="person-float-role">PM</div>
+        <div class="person-float-topic">Vendor eval sign-off</div>
+        <div class="person-float-time">Async · 3h ago</div>
+      </div>
+    </div>
+
+    <!-- Monday (past, faded) -->
+    <div class="river-entry">
+      <div class="river-left">
+        <div class="day-count">2</div>
+      </div>
+      <div class="river-right">
+        <div class="day-label-river">Monday</div>
+        <div class="past-card">
+          <div class="past-item"><span class="done-mark">✅</span> 10:00 1:1 w/ Priya</div>
+          <div class="past-item"><span class="done-mark">✅</span> Update SCIM spec</div>
+          <div class="past-item"><span class="stale-mark">⚠️</span> Review Maya's design doc</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tuesday (past, faded) -->
+    <div class="river-entry">
+      <div class="river-left">
+        <div class="day-count">1</div>
+      </div>
+      <div class="river-right">
+        <div class="day-label-river">Tuesday</div>
+        <div class="past-card">
+          <div class="past-item"><span class="done-mark">✅</span> Draft Q2 roadmap section</div>
+          <div class="past-item"><span class="stale-mark">⚠️</span> Prep board deck slides</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wednesday (TODAY — anchored center) -->
+    <div class="river-entry today-entry">
+      <div class="river-left" style="justify-content: flex-start; padding-left: 40px; padding-right: 0;">
+        <!-- Left of today: nothing, or could show "today" label -->
+        <div style="font-size: 11px; color: var(--pencil); margin-top: 20px; letter-spacing: 0.06em; text-transform: uppercase;">Now</div>
+      </div>
+      <div class="river-right">
+        <div class="day-label-river today">Wednesday</div>
+        <div class="today-card">
+          <div class="today-meeting">
+            <span class="today-meeting-time">09:30</span>
+            <span>Standup</span>
+          </div>
+          <div class="today-meeting">
+            <span class="today-meeting-time">11:00</span>
+            <span>1:1 w/ Maya</span>
+          </div>
+          <div class="today-tasks-divider"></div>
+          <div class="today-task-row">
+            <div class="checkbox-small"></div>
+            <span>Finalize SCIM scope doc</span>
+          </div>
+          <div class="today-task-row">
+            <div class="checkbox-small"></div>
+            <span>Write launch checklist</span>
+          </div>
+          <div class="today-task-row">
+            <div class="checkbox-small"></div>
+            <span>Reply to Anika re: vendor eval</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thursday (future) -->
+    <div class="river-entry">
+      <div class="river-left">
+        <!-- future: count on right side, so left is empty -->
+      </div>
+      <div class="river-right">
+        <div class="day-label-river">Thursday</div>
+        <div class="future-card">
+          <div class="future-item">Review PR #847</div>
+          <div class="future-item">Sync notes from Maya 1:1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Friday (future) -->
+    <div class="river-entry">
+      <div class="river-left"></div>
+      <div class="river-right">
+        <div class="day-label-river">Friday</div>
+        <div class="future-card">
+          <div class="future-item">09:30 Team standup</div>
+          <div class="future-item">Weekly brag sheet</div>
+          <div class="future-item">Submit expense report</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacer -->
+    <div class="river-entry spacer"></div>
+
+  </div>
+
+</body>
+</html>

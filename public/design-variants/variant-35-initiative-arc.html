@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 35: Initiative Arc</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-yellow: #b8963a;
+      --health-red: #a85a4a;
+      --teal: #5a8a8a;
+      --plum: #7a5a7a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--newsprint);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .content-column {
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .app-name {
+      font-size: 13px;
+      color: var(--pencil);
+    }
+
+    .record-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--linen);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .record-btn::after {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--health-red);
+    }
+
+    /* Aperture dial */
+    .aperture-dial {
+      display: flex;
+      border-bottom: 1.5px solid var(--bone);
+      margin-bottom: 16px;
+    }
+
+    .dial-stop {
+      font-size: 12px;
+      color: var(--pencil);
+      padding: 6px 0;
+      margin-right: 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1.5px;
+    }
+
+    .dial-stop.active {
+      color: var(--today-accent);
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 2px solid var(--today-accent);
+    }
+
+    /* AI headline */
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    /* Initiative cards */
+    .initiative-card {
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .initiative-card.scim {
+      background: var(--cotton);
+      border-left: 6px solid var(--teal);
+    }
+
+    .initiative-card.q2 {
+      background: var(--linen);
+      border-left: 6px solid var(--plum);
+    }
+
+    /* Initiative header */
+    .init-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .init-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .health-dot {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .week-badge {
+      font-size: 11px;
+      color: var(--pencil);
+      background: var(--newsprint);
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid var(--bone);
+      white-space: nowrap;
+    }
+
+    .init-status {
+      font-size: 13px;
+      color: var(--graphite);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    /* Topic list */
+    .topic-list-label {
+      font-size: 11px;
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .topic-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--bone);
+      font-size: 13px;
+      color: var(--graphite);
+    }
+
+    .topic-item:last-child {
+      border-bottom: none;
+    }
+
+    .topic-name {
+      flex: 1;
+    }
+
+    .topic-age {
+      font-size: 11px;
+      color: var(--pencil);
+      white-space: nowrap;
+    }
+
+    .topic-stale {
+      color: var(--amber-nudge);
+      font-size: 12px;
+    }
+
+    .topic-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--bone);
+      flex-shrink: 0;
+    }
+
+    /* People on initiative card */
+    .init-people {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--bone);
+    }
+
+    .init-people-label {
+      font-size: 11px;
+      color: var(--pencil);
+      margin-right: 4px;
+    }
+
+    .mini-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--parchment);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--graphite);
+    }
+
+    /* Section divider */
+    .section-divider {
+      height: 1px;
+      background: var(--bone);
+      margin: 20px 0;
+    }
+
+    /* People section */
+    .section-heading {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .people-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .person-card {
+      background: var(--linen);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .person-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--parchment);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--graphite);
+      flex-shrink: 0;
+    }
+
+    .person-info {
+      flex: 1;
+    }
+
+    .person-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .person-role {
+      font-size: 11px;
+      color: var(--pencil);
+      margin-top: 1px;
+    }
+
+    .person-topics {
+      font-size: 12px;
+      color: var(--graphite);
+      white-space: nowrap;
+    }
+
+    .person-health {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-column">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <span class="app-name">Aperture</span>
+      <div class="record-btn"></div>
+    </div>
+
+    <!-- Aperture dial -->
+    <div class="aperture-dial">
+      <span class="dial-stop">f/1.4 Today</span>
+      <span class="dial-stop">f/4 This Week</span>
+      <span class="dial-stop active">f/11 The Arc</span>
+      <span class="dial-stop">f/22 Identity</span>
+    </div>
+
+    <!-- AI editorial headline -->
+    <p class="ai-headline">SCIM integration is in its third week. Priya's workload has been rising.</p>
+
+    <!-- SCIM Integration card -->
+    <div class="initiative-card scim">
+      <div class="init-header">
+        <span class="init-title">SCIM Integration</span>
+        <span class="health-dot">🟡</span>
+        <span class="week-badge">week 3</span>
+      </div>
+      <div class="init-status">2 topics stalled on external dependencies</div>
+
+      <div class="topic-list-label">Open topics</div>
+
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">API rate limits</span>
+        <span class="topic-age">3d</span>
+      </div>
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">SCIM timeline discussion</span>
+        <span class="topic-age">5d</span>
+      </div>
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">On-call rotation</span>
+        <span class="topic-age">1d</span>
+      </div>
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">Integration test plan</span>
+        <span class="topic-age">8d</span>
+        <span class="topic-stale">⚠️</span>
+      </div>
+
+      <div class="init-people">
+        <span class="init-people-label">People</span>
+        <div class="mini-avatar">P</div>
+        <div class="mini-avatar">A</div>
+      </div>
+    </div>
+
+    <!-- Q2 Roadmap card -->
+    <div class="initiative-card q2">
+      <div class="init-header">
+        <span class="init-title">Q2 Roadmap</span>
+        <span class="health-dot">🟢</span>
+        <span class="week-badge">week 2</span>
+      </div>
+      <div class="init-status">On track — draft section due Friday</div>
+
+      <div class="topic-list-label">Open topics</div>
+
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">Draft Q2 roadmap section</span>
+        <span class="topic-stale">⚠️ carried</span>
+      </div>
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">Board deck slides</span>
+        <span class="topic-stale">⚠️ carried</span>
+      </div>
+      <div class="topic-item">
+        <div class="topic-dot"></div>
+        <span class="topic-name">Research competitor flows</span>
+        <span class="topic-age">2d</span>
+      </div>
+
+      <div class="init-people">
+        <span class="init-people-label">People</span>
+        <div class="mini-avatar">M</div>
+      </div>
+    </div>
+
+    <!-- Section divider -->
+    <div class="section-divider"></div>
+
+    <!-- People section -->
+    <div class="section-heading">People</div>
+    <div class="people-cards">
+
+      <div class="person-card">
+        <div class="person-avatar">P</div>
+        <div class="person-info">
+          <div class="person-name">Priya</div>
+          <div class="person-role">Staff Engineer</div>
+        </div>
+        <div class="person-topics">4 topics</div>
+        <div class="person-health">🟡</div>
+      </div>
+
+      <div class="person-card">
+        <div class="person-avatar">M</div>
+        <div class="person-info">
+          <div class="person-name">Maya</div>
+          <div class="person-role">Designer</div>
+        </div>
+        <div class="person-topics">2 topics</div>
+        <div class="person-health">🟢</div>
+      </div>
+
+      <div class="person-card">
+        <div class="person-avatar">A</div>
+        <div class="person-info">
+          <div class="person-name">Anika</div>
+          <div class="person-role">PM</div>
+        </div>
+        <div class="person-topics">2 topics</div>
+        <div class="person-health">🟢</div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

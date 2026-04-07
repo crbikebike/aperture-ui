@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 34: Agenda Focus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-yellow: #b8963a;
+      --health-red: #a85a4a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--newsprint);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .content-column {
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* Aperture dial */
+    .aperture-dial {
+      display: flex;
+      border-bottom: 1.5px solid var(--bone);
+      margin-bottom: 16px;
+    }
+
+    .dial-stop {
+      font-size: 12px;
+      color: var(--pencil);
+      padding: 6px 0;
+      margin-right: 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1.5px;
+    }
+
+    .dial-stop.active {
+      color: var(--today-accent);
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 2px solid var(--today-accent);
+    }
+
+    /* AI headline */
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    /* Triage queue */
+    .triage-heading {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+
+    .triage-card {
+      background: var(--cotton);
+      border: 1px solid var(--bone);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .triage-body {
+      padding: 12px 14px;
+    }
+
+    .triage-text {
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+
+    .triage-meta {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .triage-actions {
+      display: flex;
+      border-top: 1px solid var(--bone);
+      padding: 0;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 9px 6px;
+      font-size: 12px;
+      text-align: center;
+      border-right: 1px solid var(--bone);
+      cursor: pointer;
+      color: var(--graphite);
+      user-select: none;
+    }
+
+    .action-btn:last-child {
+      border-right: none;
+    }
+
+    .action-btn.keep {
+      background: var(--today-accent);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .action-btn.drop {
+      color: var(--health-red);
+    }
+
+    /* Section divider */
+    .section-divider {
+      height: 1px;
+      background: var(--bone);
+      margin: 18px 0;
+    }
+
+    /* Today's plan */
+    .today-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    /* Meeting rows */
+    .agenda-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      min-height: 36px;
+    }
+
+    .agenda-row.meeting {
+      background: var(--linen);
+    }
+
+    .agenda-row.task {
+      background: transparent;
+      border-bottom: 1px solid var(--linen);
+      border-radius: 0;
+      padding-left: 4px;
+      padding-right: 0;
+    }
+
+    .agenda-row.task:last-child {
+      border-bottom: none;
+    }
+
+    .agenda-time {
+      font-size: 12px;
+      color: var(--pencil);
+      min-width: 38px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .agenda-title {
+      font-size: 13px;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .task-checkbox {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+      border: 1.5px solid var(--bone);
+      flex-shrink: 0;
+    }
+
+    /* People strip */
+    .people-strip-label {
+      font-size: 11px;
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+
+    .people-strip {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .person-bubble {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--linen);
+      border: 1.5px solid var(--bone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--graphite);
+    }
+
+    .avatar.meeting-today {
+      border-color: var(--today-accent);
+    }
+
+    .meeting-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--today-accent);
+      border: 1.5px solid var(--newsprint);
+    }
+
+    .person-label {
+      font-size: 10px;
+      color: var(--pencil);
+    }
+  </style>
+</head>
+<body>
+  <div class="content-column">
+
+    <!-- Aperture dial -->
+    <div class="aperture-dial">
+      <span class="dial-stop active">f/1.4 Today</span>
+      <span class="dial-stop">f/4 This Week</span>
+      <span class="dial-stop">f/11 The Arc</span>
+      <span class="dial-stop">f/22 Identity</span>
+    </div>
+
+    <!-- AI editorial headline -->
+    <p class="ai-headline">Two items in triage from yesterday's recordings. Three meetings today.</p>
+
+    <!-- Triage queue -->
+    <div class="triage-heading">Triage</div>
+
+    <div class="triage-card">
+      <div class="triage-body">
+        <div class="triage-text">Priya mentioned reorg timeline</div>
+        <div class="triage-meta">from: Monday recording &middot; 2h ago</div>
+      </div>
+      <div class="triage-actions">
+        <div class="action-btn keep">Keep</div>
+        <div class="action-btn">Assign &#9660;</div>
+        <div class="action-btn">Discuss &#9660;</div>
+        <div class="action-btn drop">Drop</div>
+      </div>
+    </div>
+
+    <div class="triage-card">
+      <div class="triage-body">
+        <div class="triage-text">Anika: vendor eval criteria need sign-off</div>
+        <div class="triage-meta">from: Tuesday recording &middot; 3h ago</div>
+      </div>
+      <div class="triage-actions">
+        <div class="action-btn keep">Keep</div>
+        <div class="action-btn">Assign &#9660;</div>
+        <div class="action-btn">Discuss &#9660;</div>
+        <div class="action-btn drop">Drop</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="section-divider"></div>
+
+    <!-- Today's plan -->
+    <div class="today-header">Wednesday</div>
+
+    <!-- Meetings first -->
+    <div class="agenda-row meeting">
+      <span class="agenda-time">09:30</span>
+      <span class="agenda-title">Standup</span>
+    </div>
+    <div class="agenda-row meeting">
+      <span class="agenda-time">11:00</span>
+      <span class="agenda-title">1:1 with Maya</span>
+    </div>
+
+    <!-- Tasks -->
+    <div style="height: 8px;"></div>
+
+    <div class="agenda-row task">
+      <div class="task-checkbox"></div>
+      <span class="agenda-title">Finalize SCIM scope doc</span>
+    </div>
+    <div class="agenda-row task">
+      <div class="task-checkbox"></div>
+      <span class="agenda-title">Write launch checklist</span>
+    </div>
+    <div class="agenda-row task">
+      <div class="task-checkbox"></div>
+      <span class="agenda-title">Reply to Anika re: vendor eval</span>
+    </div>
+
+    <!-- Divider -->
+    <div class="section-divider"></div>
+
+    <!-- People strip -->
+    <div class="people-strip-label">People</div>
+    <div class="people-strip">
+      <div class="person-bubble">
+        <div class="avatar-wrap">
+          <div class="avatar">P</div>
+        </div>
+        <span class="person-label">Priya</span>
+      </div>
+      <div class="person-bubble">
+        <div class="avatar-wrap">
+          <div class="avatar meeting-today">M</div>
+          <div class="meeting-dot"></div>
+        </div>
+        <span class="person-label">Maya</span>
+      </div>
+      <div class="person-bubble">
+        <div class="avatar-wrap">
+          <div class="avatar">A</div>
+        </div>
+        <span class="person-label">Anika</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

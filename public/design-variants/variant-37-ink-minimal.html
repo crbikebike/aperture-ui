@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Variant 37: Ink Minimal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --newsprint: #f7f5f2;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --cotton: #faf9f7;
+      --bone: #d8d4cc;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --teal: #5a8a8a;
+      --plum: #7a5a7a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--newsprint);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .content {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 28px 24px 80px;
+      position: relative;
+    }
+
+    /* ── Aperture dial (ink minimal: flush left, tiny) ── */
+    .aperture-dial {
+      display: flex;
+      gap: 0;
+      margin-bottom: 22px;
+    }
+
+    .dial-stop {
+      font-size: 12px;
+      color: var(--pencil);
+      padding: 0 12px 0 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dial-stop:not(:last-child)::after {
+      content: '·';
+      position: absolute;
+      right: 4px;
+      color: var(--bone);
+    }
+
+    .dial-stop.active {
+      color: var(--today-accent);
+    }
+
+    /* ── AI headline ── */
+    .ai-headline {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 20px;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    /* ── Bone rule ── */
+    .bone-rule {
+      height: 1px;
+      background: var(--bone);
+      margin-bottom: 24px;
+    }
+
+    /* ── Day section ── */
+    .day-section {
+      margin-bottom: 20px;
+    }
+
+    .day-header-plain {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--graphite);
+      margin-bottom: 6px;
+    }
+
+    .day-header-today {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--today-accent);
+      margin-bottom: 8px;
+    }
+
+    /* ── Task rows — no chrome, just text ── */
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 3px 0 3px 16px;
+    }
+
+    .task-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: 1.5px solid var(--bone);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .task-label {
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .task-label.done {
+      color: var(--pencil);
+      text-decoration: line-through;
+    }
+
+    .task-label.stale {
+      color: var(--amber-nudge);
+    }
+
+    /* Stale indicator inline */
+    .stale-flag {
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 3px;
+      line-height: 1;
+    }
+
+    /* Meeting rows (inline in today only, to indicate timed items) */
+    .meeting-row-plain {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 3px 0 3px 16px;
+    }
+
+    .meeting-time-plain {
+      font-size: 12px;
+      color: var(--pencil);
+      min-width: 38px;
+      flex-shrink: 0;
+      margin-top: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meeting-name-plain {
+      font-size: 14px;
+      color: var(--graphite);
+    }
+
+    /* ── Footer bone rule ── */
+    .footer-rule {
+      height: 1px;
+      background: var(--bone);
+      margin: 24px 0 16px;
+    }
+
+    /* ── Footer — people + initiatives inline ── */
+    .footer-inline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-line {
+      font-size: 12px;
+      color: var(--pencil);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .footer-label {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 12px;
+      color: var(--pencil);
+      font-weight: 600;
+    }
+
+    .person-initial-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--linen);
+      font-size: 10px;
+      color: var(--graphite);
+      font-weight: 600;
+      margin-right: 2px;
+    }
+
+    .person-label-inline {
+      font-size: 12px;
+      color: var(--graphite);
+      margin-right: 10px;
+    }
+
+    .initiative-pill-mini {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--graphite);
+      margin-right: 8px;
+    }
+
+    .initiative-dot-mini {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Record button (bottom-right fixed) ── */
+    .record-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--bone);
+      background: var(--cotton);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .record-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--graphite);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content">
+
+    <!-- Aperture dial: flush left, minimal -->
+    <nav class="aperture-dial">
+      <span class="dial-stop">f/1.4 Today</span>
+      <span class="dial-stop active">f/4 This Week</span>
+      <span class="dial-stop">f/11 The Arc</span>
+      <span class="dial-stop">f/22 Identity</span>
+    </nav>
+
+    <!-- AI editorial headline -->
+    <p class="ai-headline">Two carried items from Tuesday. Wednesday is the anchor.</p>
+
+    <!-- Bone rule -->
+    <div class="bone-rule"></div>
+
+    <!-- Monday (past) -->
+    <div class="day-section">
+      <div class="day-header-plain">Monday</div>
+      <div class="task-row">
+        <div class="task-checkbox" style="border-color: var(--health-green);"></div>
+        <span class="task-label done">10:00 1:1 w/ Priya</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox" style="border-color: var(--health-green);"></div>
+        <span class="task-label done">Update SCIM spec</span>
+      </div>
+      <div class="task-row">
+        <span class="stale-flag">⚠️</span>
+        <span class="task-label stale">Review Maya's design doc</span>
+      </div>
+    </div>
+
+    <!-- Tuesday (past) -->
+    <div class="day-section">
+      <div class="day-header-plain">Tuesday</div>
+      <div class="task-row">
+        <div class="task-checkbox" style="border-color: var(--health-green);"></div>
+        <span class="task-label done">Draft Q2 roadmap section</span>
+      </div>
+      <div class="task-row">
+        <span class="stale-flag">⚠️</span>
+        <span class="task-label stale">Prep board deck slides</span>
+      </div>
+    </div>
+
+    <!-- Wednesday (today) -->
+    <div class="day-section">
+      <div class="day-header-today">Wednesday</div>
+      <div class="meeting-row-plain">
+        <span class="meeting-time-plain">09:30</span>
+        <span class="meeting-name-plain">Standup</span>
+      </div>
+      <div class="meeting-row-plain">
+        <span class="meeting-time-plain">11:00</span>
+        <span class="meeting-name-plain">1:1 w/ Maya</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Finalize SCIM scope doc</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Write launch checklist</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Reply to Anika re: vendor eval</span>
+      </div>
+    </div>
+
+    <!-- Thursday -->
+    <div class="day-section">
+      <div class="day-header-plain">Thursday</div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Review PR #847</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Sync notes from Maya 1:1</span>
+      </div>
+    </div>
+
+    <!-- Friday -->
+    <div class="day-section">
+      <div class="day-header-plain">Friday</div>
+      <div class="meeting-row-plain">
+        <span class="meeting-time-plain">09:30</span>
+        <span class="meeting-name-plain">Team standup</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Weekly brag sheet</span>
+      </div>
+      <div class="task-row">
+        <div class="task-checkbox"></div>
+        <span class="task-label">Submit expense report</span>
+      </div>
+    </div>
+
+    <!-- Footer bone rule -->
+    <div class="footer-rule"></div>
+
+    <!-- People inline -->
+    <div class="footer-inline">
+      <div class="footer-line">
+        <span class="footer-label">People —</span>
+        <span class="person-initial-inline">P</span>
+        <span class="person-label-inline">Priya</span>
+        <span class="person-initial-inline">M</span>
+        <span class="person-label-inline">Maya</span>
+        <span class="person-initial-inline">A</span>
+        <span class="person-label-inline">Anika</span>
+      </div>
+      <div class="footer-line">
+        <span class="footer-label">Initiatives —</span>
+        <span class="initiative-pill-mini">
+          <span class="initiative-dot-mini" style="background: #5a8a8a;"></span>
+          SCIM Integration
+        </span>
+        <span class="initiative-pill-mini">
+          <span class="initiative-dot-mini" style="background: #7a5a7a;"></span>
+          Q2 Roadmap
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Record button -->
+  <div class="record-btn"><div class="record-dot"></div></div>
+
+</body>
+</html>
