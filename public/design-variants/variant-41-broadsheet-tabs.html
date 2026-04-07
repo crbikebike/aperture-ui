@@ -775,6 +775,7 @@
         }
 
         .modal {
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -787,6 +788,10 @@
             overflow-y: auto;
             z-index: 2001;
             animation: slideUp 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: block;
         }
 
         .modal-close {
@@ -1794,15 +1799,18 @@
                 document.getElementById('modalTopics').innerHTML = topicsHtml;
 
                 document.getElementById('modalBackdrop').classList.add('active');
+                document.getElementById('personModal').classList.add('active');
             });
         });
 
         document.getElementById('modalClose').addEventListener('click', () => {
             document.getElementById('modalBackdrop').classList.remove('active');
+            document.getElementById('personModal').classList.remove('active');
         });
 
         document.getElementById('modalBackdrop').addEventListener('click', () => {
             document.getElementById('modalBackdrop').classList.remove('active');
+            document.getElementById('personModal').classList.remove('active');
         });
 
         // Initiative cards expand
