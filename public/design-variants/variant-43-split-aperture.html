@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture — Split Aperture (V43)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --newsprint: #f7f5f2;
+      --cotton: #faf9f7;
+      --linen: #edeae4;
+      --parchment: #e3dfd8;
+      --bone: #d8d4cc;
+      --ink: #1a1a1a;
+      --graphite: #4a4a4a;
+      --pencil: #8a8a8a;
+      --today-accent: #2c5f8a;
+      --amber-nudge: #c4883a;
+      --health-green: #5a8a5a;
+      --health-yellow: #b8963a;
+      --health-red: #a85a4a;
+      --done-strike: rgba(138, 138, 138, 0.5);
+      --init-teal: #5a8a8a;
+      --init-plum: #7a5a7a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--ink);
+      background: var(--newsprint);
+      margin: 0;
+      padding: 0;
+    }
+
+    .serif { font-family: 'Lora', Georgia, serif; }
+
+    /* Shell and Layout */
+    .shell-split {
+      display: flex;
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100vh;
+      gap: 0;
+    }
+
+    .left-panel {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--linen);
+      padding: 16px;
+      border-right: 1px solid var(--bone);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .left-panel-header {
+      padding: 8px 0 16px 0;
+      border-bottom: 1px solid var(--bone);
+      margin-bottom: 12px;
+    }
+
+    .week-overview {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .week-day-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+
+    .week-day-row:hover {
+      background: var(--cotton);
+    }
+
+    .week-day-row.past {
+      background: var(--parchment);
+    }
+
+    .week-day-row.today-row {
+      background: var(--cotton);
+      border-left: 2px solid var(--today-accent);
+    }
+
+    .week-day-row.today-row .week-day-name {
+      color: var(--today-accent);
+      font-weight: 600;
+    }
+
+    .week-day-row.future-row {
+      background: var(--linen);
+    }
+
+    .week-day-row.active-highlight {
+      outline: 2px solid var(--today-accent);
+      outline-offset: -2px;
+    }
+
+    .week-day-name {
+      font-size: 14px;
+      color: var(--ink);
+      min-width: 32px;
+      font-weight: 600;
+    }
+
+    .week-day-count {
+      font-size: 12px;
+      color: var(--pencil);
+      margin-left: auto;
+    }
+
+    .week-day-meeting-dot {
+      color: var(--today-accent);
+      font-size: 8px;
+    }
+
+    .left-section-mini {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--bone);
+    }
+
+    .left-section-label {
+      font-size: 11px;
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .mini-initials-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .initial-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--parchment);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--graphite);
+      position: relative;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .initial-circle:hover {
+      background: var(--bone);
+    }
+
+    .health-dot-overlay {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      font-size: 10px;
+    }
+
+    .health-dot-overlay.green { color: var(--health-green); }
+    .health-dot-overlay.yellow { color: var(--health-yellow); }
+    .health-dot-overlay.red { color: var(--health-red); }
+
+    .mini-init-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .init-pill {
+      font-size: 12px;
+      color: var(--graphite);
+      background: var(--cotton);
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .init-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .health-dot {
+      font-size: 8px;
+    }
+
+    .health-dot.green { color: var(--health-green); }
+    .health-dot.yellow { color: var(--health-yellow); }
+    .health-dot.red { color: var(--health-red); }
+
+    /* Right Panel */
+    .right-panel {
+      flex: 1;
+      min-width: 0;
+      max-width: 560px;
+      padding: 0 24px 32px 24px;
+    }
+
+    /* Aperture Dial */
+    .aperture-dial {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 16px 0;
+      margin: 0 auto;
+    }
+
+    .dial-stop {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 16px;
+      position: relative;
+      transition: all 200ms ease;
+    }
+
+    .dial-stop .dial-label {
+      font-size: 14px;
+      color: var(--pencil);
+      transition: all 200ms ease;
+    }
+
+    .dial-stop .dial-name {
+      font-size: 11px;
+      color: var(--pencil);
+      text-transform: none;
+      transition: all 200ms ease;
+    }
+
+    .dial-stop.active .dial-label {
+      font-size: 16px;
+      color: var(--today-accent);
+      font-weight: 600;
+    }
+
+    .dial-stop.active .dial-name {
+      color: var(--today-accent);
+      font-weight: 500;
+    }
+
+    .dial-stop.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 2px;
+      background: var(--today-accent);
+      border-radius: 1px;
+    }
+
+    .dial-line {
+      width: 32px;
+      height: 1px;
+      background: var(--bone);
+      flex-shrink: 0;
+    }
+
+    /* AI Headline */
+    .ai-headline {
+      font-size: 18px;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.35;
+      margin: 0 0 24px 0;
+      transition: opacity 150ms ease;
+    }
+
+    /* Aperture Views */
+    .aperture-view {
+      transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+      display: none;
+      opacity: 0;
+      transform: scale(0.98);
+    }
+
+    .aperture-view.visible {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Sections */
+    .section {
+      background: var(--linen);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section.today {
+      background: var(--cotton);
+      border-left: 2px solid var(--today-accent);
+    }
+
+    .section.past {
+      background: var(--parchment);
+    }
+
+    .section.future {
+      background: var(--linen);
+    }
+
+    .section.triage-section {
+      background: var(--linen);
+    }
+
+    .section-header {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 12px 0;
+    }
+
+    .section-header.small {
+      font-size: 14px;
+    }
+
+    .section-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Triage Cards */
+    .triage-card {
+      background: var(--cotton);
+      border: 1px solid var(--bone);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: opacity 200ms ease, transform 200ms ease, margin 200ms ease, padding 200ms ease, max-height 300ms ease;
+      max-height: 200px;
+      overflow: hidden;
+    }
+
+    .triage-card.dismissed {
+      opacity: 0;
+      transform: translateX(40px);
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-width: 0;
+    }
+
+    .triage-content {
+      margin-bottom: 12px;
+    }
+
+    .triage-text {
+      font-size: 14px;
+      color: var(--ink);
+      margin: 0 0 4px 0;
+    }
+
+    .triage-meta {
+      font-size: 12px;
+      color: var(--pencil);
+      margin: 0;
+    }
+
+    .triage-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .triage-btn {
+      font-size: 12px;
+      font-family: inherit;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+
+    .triage-btn .btn-key {
+      font-size: 10px;
+      color: var(--pencil);
+      opacity: 0.5;
+    }
+
+    .triage-btn.primary {
+      background: var(--today-accent);
+      color: white;
+      border: 1px solid var(--today-accent);
+    }
+
+    .triage-btn.primary:hover {
+      background: #245278;
+    }
+
+    .triage-btn.primary .btn-key {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .triage-btn.secondary {
+      background: transparent;
+      color: var(--graphite);
+      border: 1px solid var(--bone);
+    }
+
+    .triage-btn.secondary:hover {
+      border-color: var(--graphite);
+      background: var(--linen);
+    }
+
+    .triage-btn.destructive {
+      background: transparent;
+      color: var(--health-red);
+      border: 1px solid var(--bone);
+    }
+
+    .triage-btn.destructive:hover {
+      border-color: var(--health-red);
+      background: rgba(168, 90, 74, 0.05);
+    }
+
+    /* Task Rows */
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      min-height: 36px;
+      transition: opacity 150ms ease;
+    }
+
+    .task-row.done .task-title {
+      text-decoration: line-through;
+      color: var(--pencil);
+    }
+
+    .task-row.stale .task-stale-badge {
+      color: var(--amber-nudge);
+      font-size: 14px;
+    }
+
+    .task-check {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .task-checkbox {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--bone);
+      border-radius: 4px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 150ms ease;
+    }
+
+    .task-checkbox:checked + .checkmark {
+      background: var(--today-accent);
+      border-color: var(--today-accent);
+    }
+
+    .task-checkbox:checked + .checkmark::after {
+      content: '\2713';
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .task-title {
+      font-size: 14px;
+      color: var(--ink);
+      transition: all 150ms ease;
+    }
+
+    .task-done-badge {
+      margin-left: auto;
+      font-size: 14px;
+    }
+
+    /* Meeting Rows */
+    .meeting-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--linen);
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .meeting-time {
+      font-size: 12px;
+      color: var(--graphite);
+      font-weight: 500;
+      min-width: 40px;
+    }
+
+    .meeting-title {
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    /* Sub-Tab Strip */
+    .sub-tab-strip {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--bone);
+      margin-bottom: 16px;
+    }
+
+    .sub-tab {
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--pencil);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-family: inherit;
+      transition: color 150ms ease, border-color 150ms ease;
+    }
+
+    .sub-tab.active {
+      color: var(--today-accent);
+      border-bottom-color: var(--today-accent);
+    }
+
+    .sub-tab:hover:not(.active) {
+      color: var(--graphite);
+    }
+
+    .sub-tab-content {
+      display: none;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    .sub-tab-content.visible {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Person Cards */
+    .person-card {
+      padding: 10px;
+      background: var(--cotton);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .person-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .person-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--graphite);
+      flex-shrink: 0;
+    }
+
+    .person-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .person-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .person-role {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .person-details {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      padding-left: 40px;
+    }
+
+    .person-meta {
+      font-size: 11px;
+      color: var(--pencil);
+    }
+
+    .person-meeting-badge {
+      font-size: 10px;
+      color: var(--today-accent);
+      background: rgba(44, 95, 138, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    /* Initiative Cards */
+    .initiative-card-mini {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      background: var(--cotton);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .initiative-accent {
+      width: 4px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+
+    .initiative-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .initiative-header-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .initiative-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .initiative-meta {
+      font-size: 11px;
+      color: var(--pencil);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* Brag Sheet */
+    .brag-section {
+      margin-bottom: 24px;
+    }
+
+    .brag-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .brag-item {
+      font-size: 14px;
+      color: var(--ink);
+      padding: 8px 0;
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .brag-item::before {
+      content: '\00B7';
+      position: absolute;
+      left: 4px;
+      color: var(--pencil);
+      font-weight: bold;
+    }
+
+    .brag-prose {
+      font-size: 14px;
+      color: var(--graphite);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 920px) {
+      .shell-split {
+        flex-direction: column;
+      }
+
+      .left-panel {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--bone);
+        padding: 12px;
+      }
+
+      .week-overview {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+      }
+
+      .week-day-row {
+        flex: 1;
+        flex-direction: column;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .week-day-count {
+        margin-left: 0;
+      }
+
+      .right-panel {
+        max-width: 100%;
+        padding: 0 12px 32px 12px;
+      }
+
+      .left-section-mini {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell-split">
+    <!-- Left Panel: Persistent Week Overview -->
+    <aside class="left-panel">
+      <div class="left-panel-header">
+        <span class="serif" style="font-size: 14px; color: var(--graphite);">This Week</span>
+      </div>
+      <div class="week-overview" id="week-overview">
+        <div class="week-day-row past" data-day="monday">
+          <span class="week-day-name serif">Mon</span>
+          <span class="week-day-count">3 topics</span>
+          <span class="week-day-meeting-dot" title="Had meeting">&#x25CF;</span>
+        </div>
+        <div class="week-day-row past" data-day="tuesday">
+          <span class="week-day-name serif">Tue</span>
+          <span class="week-day-count">2 topics</span>
+        </div>
+        <div class="week-day-row today-row" data-day="wednesday">
+          <span class="week-day-name serif">Wed</span>
+          <span class="week-day-count">5 topics</span>
+          <span class="week-day-meeting-dot" title="Has meeting">&#x25CF;</span>
+        </div>
+        <div class="week-day-row future-row" data-day="thursday">
+          <span class="week-day-name serif">Thu</span>
+          <span class="week-day-count">2 topics</span>
+        </div>
+        <div class="week-day-row future-row" data-day="friday">
+          <span class="week-day-name serif">Fri</span>
+          <span class="week-day-count">3 topics</span>
+          <span class="week-day-meeting-dot" title="Has meeting">&#x25CF;</span>
+        </div>
+      </div>
+
+      <!-- Mini People Section -->
+      <div class="left-section-mini">
+        <span class="left-section-label">People</span>
+        <div class="mini-initials-row">
+          <div class="initial-circle" title="Priya">P<span class="health-dot-overlay yellow">&#x25CF;</span></div>
+          <div class="initial-circle" title="Maya">M<span class="health-dot-overlay green">&#x25CF;</span></div>
+          <div class="initial-circle" title="Anika">A<span class="health-dot-overlay green">&#x25CF;</span></div>
+        </div>
+      </div>
+
+      <!-- Mini Initiatives Section -->
+      <div class="left-section-mini">
+        <span class="left-section-label">Initiatives</span>
+        <div class="mini-init-pills">
+          <span class="init-pill"><span class="init-dot" style="background: var(--init-teal);"></span> SCIM <span class="health-dot yellow" style="font-size: 8px;">&#x25CF;</span></span>
+          <span class="init-pill"><span class="init-dot" style="background: var(--init-plum);"></span> Q2 <span class="health-dot green" style="font-size: 8px;">&#x25CF;</span></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Panel: Aperture-Controlled Content -->
+    <main class="right-panel">
+      <!-- Aperture Dial -->
+      <nav class="aperture-dial" role="tablist">
+        <button class="dial-stop active" data-aperture="f14" role="tab" aria-selected="true">
+          <span class="dial-label serif">f/1.4</span>
+          <span class="dial-name">Today</span>
+        </button>
+        <span class="dial-line"></span>
+        <button class="dial-stop" data-aperture="f4" role="tab" aria-selected="false">
+          <span class="dial-label serif">f/4</span>
+          <span class="dial-name">This Week</span>
+        </button>
+        <span class="dial-line"></span>
+        <button class="dial-stop" data-aperture="f11" role="tab" aria-selected="false">
+          <span class="dial-label serif">f/11</span>
+          <span class="dial-name">The Arc</span>
+        </button>
+        <span class="dial-line"></span>
+        <button class="dial-stop" data-aperture="f22" role="tab" aria-selected="false">
+          <span class="dial-label serif">f/22</span>
+          <span class="dial-name">Identity</span>
+        </button>
+      </nav>
+
+      <p id="ai-headline" class="ai-headline serif">Two items in triage. Three meetings today, Maya's 1:1 at 11:00.</p>
+
+      <!-- f/1.4 Today View -->
+      <div class="aperture-view visible" id="view-f14">
+        <!-- Triage Section -->
+        <div class="section triage-section">
+          <h2 class="section-header">Triage</h2>
+          <div class="section-content">
+            <div class="triage-card" data-triage-id="1">
+              <div class="triage-content">
+                <p class="triage-text">Priya mentioned reorg timeline</p>
+                <p class="triage-meta">from: Monday recording &middot; 2h ago</p>
+              </div>
+              <div class="triage-actions">
+                <button class="triage-btn primary" data-action="keep" title="Keep this topic and assign to a day">
+                  <span class="btn-key">K</span> Keep
+                </button>
+                <button class="triage-btn secondary" data-action="assign" title="Make someone accountable for this">
+                  <span class="btn-key">A</span> Assign
+                </button>
+                <button class="triage-btn secondary" data-action="discuss" title="Add as a discussion topic for someone">
+                  <span class="btn-key">D</span> Discuss
+                </button>
+                <button class="triage-btn destructive" data-action="drop" title="Remove this — it doesn't need action">
+                  <span class="btn-key">X</span> Drop
+                </button>
+              </div>
+            </div>
+            <div class="triage-card" data-triage-id="2">
+              <div class="triage-content">
+                <p class="triage-text">Anika asked about vendor evaluation process</p>
+                <p class="triage-meta">from: Thursday sync &middot; 1h ago</p>
+              </div>
+              <div class="triage-actions">
+                <button class="triage-btn primary" data-action="keep" title="Keep this topic and assign to a day">
+                  <span class="btn-key">K</span> Keep
+                </button>
+                <button class="triage-btn secondary" data-action="assign" title="Make someone accountable for this">
+                  <span class="btn-key">A</span> Assign
+                </button>
+                <button class="triage-btn secondary" data-action="discuss" title="Add as a discussion topic for someone">
+                  <span class="btn-key">D</span> Discuss
+                </button>
+                <button class="triage-btn destructive" data-action="drop" title="Remove this — it doesn't need action">
+                  <span class="btn-key">X</span> Drop
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today Section -->
+        <div class="section today">
+          <h2 class="section-header">Wednesday</h2>
+          <div class="meeting-row">
+            <span class="meeting-time">09:30</span>
+            <span class="meeting-title">Standup</span>
+          </div>
+          <div class="meeting-row">
+            <span class="meeting-time">11:00</span>
+            <span class="meeting-title">1:1 w/ Maya</span>
+          </div>
+          <div class="task-row">
+            <label class="task-check">
+              <input type="checkbox" class="task-checkbox">
+              <span class="checkmark"></span>
+            </label>
+            <span class="task-title">Finalize SCIM scope doc</span>
+          </div>
+          <div class="task-row">
+            <label class="task-check">
+              <input type="checkbox" class="task-checkbox">
+              <span class="checkmark"></span>
+            </label>
+            <span class="task-title">Write launch checklist</span>
+          </div>
+          <div class="task-row">
+            <label class="task-check">
+              <input type="checkbox" class="task-checkbox">
+              <span class="checkmark"></span>
+            </label>
+            <span class="task-title">Reply to Anika re: vendor eval</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- f/4 This Week View -->
+      <div class="aperture-view" id="view-f4">
+        <div class="sub-tab-strip">
+          <button class="sub-tab active" data-subtab="schedule-tab">Schedule</button>
+          <button class="sub-tab" data-subtab="people-tab">People</button>
+          <button class="sub-tab" data-subtab="initiatives-tab">Initiatives</button>
+          <button class="sub-tab" data-subtab="next-tab">Next</button>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div class="sub-tab-content visible" id="schedule-tab">
+          <div class="section today" style="margin-bottom: 16px;">
+            <h2 class="section-header" style="font-size: 18px;">Wednesday</h2>
+            <div class="meeting-row"><span class="meeting-time">09:30</span><span class="meeting-title">Standup</span></div>
+            <div class="meeting-row"><span class="meeting-time">11:00</span><span class="meeting-title">1:1 w/ Maya</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Finalize SCIM scope doc</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Write launch checklist</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Reply to Anika re: vendor eval</span></div>
+          </div>
+
+          <div class="section future">
+            <h2 class="section-header small">Thursday</h2>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Review PR #847</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Sync notes from Maya 1:1</span></div>
+          </div>
+
+          <div class="section future">
+            <h2 class="section-header small">Friday</h2>
+            <div class="meeting-row"><span class="meeting-time">09:30</span><span class="meeting-title">Team standup</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Weekly brag sheet</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Submit expense report</span></div>
+          </div>
+        </div>
+
+        <!-- People Tab -->
+        <div class="sub-tab-content" id="people-tab" style="display: none;">
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">P</div>
+              <div class="person-info">
+                <span class="person-name">Priya</span>
+                <span class="person-role">Staff Eng</span>
+              </div>
+              <span class="health-dot yellow" title="Needs attention">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: Monday</span>
+              <span class="person-meta">3 open topics</span>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">M</div>
+              <div class="person-info">
+                <span class="person-name">Maya</span>
+                <span class="person-role">Designer</span>
+              </div>
+              <span class="health-dot green" title="On track">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: Today</span>
+              <span class="person-meta">2 open topics</span>
+              <span class="person-meeting-badge">Meeting today</span>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">A</div>
+              <div class="person-info">
+                <span class="person-name">Anika</span>
+                <span class="person-role">PM Platform</span>
+              </div>
+              <span class="health-dot green" title="On track">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: 5 days ago</span>
+              <span class="person-meta">2 open topics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Initiatives Tab -->
+        <div class="sub-tab-content" id="initiatives-tab" style="display: none;">
+          <div class="initiative-card-mini">
+            <div class="initiative-accent" style="background: var(--init-teal);"></div>
+            <div class="initiative-info">
+              <div class="initiative-header-row">
+                <span class="initiative-name serif">SCIM Integration</span>
+                <span class="health-dot yellow">&#x25CF;</span>
+              </div>
+              <span class="initiative-meta">Week 3 &middot; 4 topics &middot; Priya, Anika</span>
+            </div>
+          </div>
+          <div class="initiative-card-mini">
+            <div class="initiative-accent" style="background: var(--init-plum);"></div>
+            <div class="initiative-info">
+              <div class="initiative-header-row">
+                <span class="initiative-name serif">Q2 Roadmap</span>
+                <span class="health-dot green">&#x25CF;</span>
+              </div>
+              <span class="initiative-meta">Week 2 &middot; 3 topics &middot; Maya</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Tab -->
+        <div class="sub-tab-content" id="next-tab" style="display: none;">
+          <div class="section">
+            <h2 class="section-header small">Next</h2>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Research competitor onboarding flows</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Draft hiring justification for H2</span></div>
+            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Sketch integration test plan</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- f/11 The Arc View -->
+      <div class="aperture-view" id="view-f11">
+        <div class="section" style="margin-bottom: 16px;">
+          <h2 class="section-header">Initiatives</h2>
+          <div class="initiative-card-mini">
+            <div class="initiative-accent" style="background: var(--init-teal);"></div>
+            <div class="initiative-info">
+              <div class="initiative-header-row">
+                <span class="initiative-name serif">SCIM Integration</span>
+                <span class="health-dot yellow">&#x25CF;</span>
+              </div>
+              <span class="initiative-meta">Week 3 &middot; 4 topics &middot; Priya, Anika</span>
+            </div>
+          </div>
+          <div class="initiative-card-mini">
+            <div class="initiative-accent" style="background: var(--init-plum);"></div>
+            <div class="initiative-info">
+              <div class="initiative-header-row">
+                <span class="initiative-name serif">Q2 Roadmap</span>
+                <span class="health-dot green">&#x25CF;</span>
+              </div>
+              <span class="initiative-meta">Week 2 &middot; 3 topics &middot; Maya</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-header">People</h2>
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">P</div>
+              <div class="person-info">
+                <span class="person-name">Priya</span>
+                <span class="person-role">Staff Eng</span>
+              </div>
+              <span class="health-dot yellow" title="Needs attention">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: Monday</span>
+              <span class="person-meta">3 open topics</span>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">M</div>
+              <div class="person-info">
+                <span class="person-name">Maya</span>
+                <span class="person-role">Designer</span>
+              </div>
+              <span class="health-dot green" title="On track">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: Today</span>
+              <span class="person-meta">2 open topics</span>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-header">
+              <div class="person-avatar" style="background: var(--parchment);">A</div>
+              <div class="person-info">
+                <span class="person-name">Anika</span>
+                <span class="person-role">PM Platform</span>
+              </div>
+              <span class="health-dot green" title="On track">&#x25CF;</span>
+            </div>
+            <div class="person-details">
+              <span class="person-meta">Last met: 5 days ago</span>
+              <span class="person-meta">2 open topics</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- f/22 Identity View -->
+      <div class="aperture-view" id="view-f22">
+        <div class="section" style="background: var(--newsprint); border: none;">
+          <h2 class="section-header serif" style="font-size: 20px;">March 2026</h2>
+
+          <div class="brag-section">
+            <h3 class="section-header small">Accomplishments</h3>
+            <ul class="brag-list">
+              <li class="brag-item">Shipped SCIM integration v1 scope doc &mdash; aligned Priya and Anika on timeline</li>
+              <li class="brag-item">Completed Q2 roadmap draft ahead of board review</li>
+              <li class="brag-item">Unblocked Maya's design review by providing product context</li>
+              <li class="brag-item">Delegated infrastructure monitoring to Amir &mdash; first full delegation this quarter</li>
+            </ul>
+          </div>
+
+          <div class="brag-section">
+            <h3 class="section-header small">Role Reflection</h3>
+            <p class="brag-prose">Operating at P4 level. Increased delegation this month &mdash; 5 topics routed through reports vs. 1 in February. Strategic work (roadmap, SCIM scoping) now taking ~40% of your time, up from ~25% last quarter. Meeting load steady at 8-10/week.</p>
+          </div>
+
+          <div class="brag-section">
+            <h3 class="section-header small">Patterns</h3>
+            <p class="brag-prose">Board deck preparation keeps carrying forward &mdash; consider blocking dedicated time. Design reviews are consistently the last item completed each week.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const headlines = {
+      f14: "Two items in triage. Three meetings today, Maya's 1:1 at 11:00.",
+      f4: "Solid week so far. Two open items carried from earlier — design doc and board deck.",
+      f11: "SCIM integration is the long pole at week 3. Priya's workload has been rising.",
+      f22: "This quarter you shipped two P1 initiatives and shifted more work to your reports."
+    };
+
+    function updateHeadline(aperture) {
+      const el = document.getElementById('ai-headline');
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = headlines[aperture];
+        el.style.opacity = '1';
+      }, 150);
+    }
+
+    function initApertureDial() {
+      const stops = document.querySelectorAll('.dial-stop');
+      const views = document.querySelectorAll('.aperture-view');
+
+      stops.forEach(stop => {
+        stop.addEventListener('click', () => {
+          const target = stop.dataset.aperture;
+
+          // Update dial state
+          stops.forEach(s => {
+            s.classList.remove('active');
+            s.setAttribute('aria-selected', 'false');
+          });
+          stop.classList.add('active');
+          stop.setAttribute('aria-selected', 'true');
+
+          // Update AI headline
+          updateHeadline(target);
+
+          // Transition views
+          const currentView = document.querySelector('.aperture-view.visible');
+          const nextView = document.getElementById('view-' + target);
+
+          if (currentView && currentView !== nextView) {
+            currentView.style.opacity = '0';
+            currentView.style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+              currentView.classList.remove('visible');
+              currentView.style.display = 'none';
+
+              nextView.style.display = 'block';
+              nextView.style.opacity = '0';
+              nextView.style.transform = 'scale(1.02)';
+              nextView.classList.add('visible');
+
+              // Force reflow
+              nextView.offsetHeight;
+
+              nextView.style.opacity = '1';
+              nextView.style.transform = 'scale(1)';
+            }, 200);
+          }
+        });
+      });
+    }
+
+    function initTriageActions() {
+      document.querySelectorAll('.triage-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const card = e.target.closest('.triage-card');
+          card.classList.add('dismissed');
+          setTimeout(() => {
+            card.remove();
+            // Check if triage section is empty
+            const triageSection = document.querySelector('.triage-section');
+            if (triageSection && triageSection.querySelectorAll('.triage-card').length === 0) {
+              var emptyMsg = document.createElement('p');
+              emptyMsg.className = 'triage-empty';
+              emptyMsg.textContent = 'Triage is clear. Here's today.';
+              emptyMsg.style.cssText = 'font-size: 13px; color: var(--pencil); font-style: italic; padding: 12px 0;';
+              triageSection.querySelector('.section-content').appendChild(emptyMsg);
+            }
+          }, 300);
+        });
+      });
+    }
+
+    function initTaskCheckboxes() {
+      document.querySelectorAll('.task-checkbox').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          var row = e.target.closest('.task-row');
+          if (e.target.checked) {
+            row.classList.add('done');
+            // Add done badge if not present
+            if (!row.querySelector('.task-done-badge')) {
+              var badge = document.createElement('span');
+              badge.className = 'task-done-badge';
+              badge.textContent = '\u2705';
+              row.appendChild(badge);
+            }
+            // Remove stale badge if present
+            var staleBadge = row.querySelector('.task-stale-badge');
+            if (staleBadge) staleBadge.remove();
+            row.classList.remove('stale');
+          } else {
+            row.classList.remove('done');
+            var doneBadge = row.querySelector('.task-done-badge');
+            if (doneBadge) doneBadge.remove();
+          }
+        });
+      });
+    }
+
+    function initSubTabs() {
+      var tabs = document.querySelectorAll('.sub-tab');
+      var contents = document.querySelectorAll('.sub-tab-content');
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var target = tab.dataset.subtab;
+
+          tabs.forEach(function(t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+
+          contents.forEach(function(c) {
+            c.classList.remove('visible');
+            c.style.display = 'none';
+          });
+
+          var targetEl = document.getElementById(target);
+          targetEl.style.display = 'block';
+          targetEl.offsetHeight;
+          targetEl.classList.add('visible');
+        });
+      });
+    }
+
+    function initDayRowClicks() {
+      var dayRows = document.querySelectorAll('.week-day-row');
+
+      dayRows.forEach(function(row) {
+        row.addEventListener('click', function() {
+          // Remove highlight from all
+          dayRows.forEach(function(r) { r.classList.remove('active-highlight'); });
+
+          // Add highlight to clicked
+          row.classList.add('active-highlight');
+
+          // If currently in f/4 view, ensure Schedule sub-tab is active and scroll to that day section
+          var currentAperture = document.querySelector('.dial-stop.active');
+          if (currentAperture && currentAperture.dataset.aperture === 'f4') {
+            // Activate Schedule sub-tab if not already active
+            var scheduleTab = document.querySelector('[data-subtab="schedule-tab"]');
+            if (scheduleTab && !scheduleTab.classList.contains('active')) {
+              scheduleTab.click();
+            }
+
+            var dayName = row.dataset.day;
+            var dayMap = {
+              monday: 'Monday',
+              tuesday: 'Tuesday',
+              wednesday: 'Wednesday',
+              thursday: 'Thursday',
+              friday: 'Friday'
+            };
+            // Find the section with this day header
+            var sections = document.querySelectorAll('#schedule-tab .section-header');
+            sections.forEach(function(header) {
+              if (header.textContent.trim() === dayMap[dayName]) {
+                header.closest('.section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            });
+          }
+
+          // If clicking today row, switch to f/1.4
+          if (row.classList.contains('today-row')) {
+            var todayStop = document.querySelector('[data-aperture="f14"]');
+            if (todayStop) todayStop.click();
+          }
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initApertureDial();
+      initTriageActions();
+      initTaskCheckboxes();
+      initSubTabs();
+      initDayRowClicks();
+    });
+  </script>
+</body>
+</html>
