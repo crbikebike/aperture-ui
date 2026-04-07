@@ -1,1460 +1,1933 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aperture — Stacked Sections + Fixed Panel (V42)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <style>
-    /* ===== BRAND COLORS & RESET ===== */
-    :root {
-      --newsprint: #f7f5f2;
-      --cotton: #faf9f7;
-      --linen: #edeae4;
-      --parchment: #e3dfd8;
-      --bone: #d8d4cc;
-      --ink: #1a1a1a;
-      --graphite: #4a4a4a;
-      --pencil: #8a8a8a;
-      --today-accent: #2c5f8a;
-      --amber-nudge: #c4883a;
-      --health-green: #5a8a5a;
-      --health-yellow: #b8963a;
-      --health-red: #a85a4a;
-      --done-strike: rgba(138, 138, 138, 0.5);
-      --init-teal: #5a8a8a;
-      --init-plum: #7a5a7a;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: var(--newsprint);
-      color: var(--ink);
-      line-height: 1.5;
-    }
-
-    .serif {
-      font-family: 'Lora', Georgia, serif;
-    }
-
-    /* ===== APP BAR ===== */
-    .app-bar {
-      border-bottom: 1px solid var(--bone);
-      background: var(--cotton);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .app-bar-inner {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .app-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: 0.5px;
-    }
-
-    .record-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1.5px solid var(--bone);
-      background: var(--cotton);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 150ms ease;
-    }
-
-    .record-btn:hover {
-      border-color: var(--health-red);
-    }
-
-    .record-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--health-red);
-      opacity: 0.7;
-    }
-
-    /* ===== SHELL & LAYOUT ===== */
-    .shell {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 16px 16px 140px 16px;
-    }
-
-    .main-content.stacked {
-      /* Single column, stacked vertically */
-    }
-
-    /* ===== APERTURE DIAL ===== */
-    .aperture-dial {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      padding: 16px 0;
-      margin: 0 auto;
-      background: var(--cotton);
-    }
-
-    .dial-stop {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px 16px;
-      position: relative;
-      transition: all 200ms ease;
-    }
-
-    .dial-stop .dial-label {
-      font-size: 14px;
-      color: var(--pencil);
-      transition: all 200ms ease;
-    }
-
-    .dial-stop .dial-name {
-      font-size: 11px;
-      color: var(--pencil);
-      text-transform: none;
-      transition: all 200ms ease;
-    }
-
-    .dial-stop.active .dial-label {
-      font-size: 16px;
-      color: var(--today-accent);
-      font-weight: 600;
-    }
-
-    .dial-stop.active .dial-name {
-      color: var(--today-accent);
-      font-weight: 500;
-    }
-
-    .dial-stop.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 25%;
-      right: 25%;
-      height: 2px;
-      background: var(--today-accent);
-      border-radius: 1px;
-    }
-
-    .dial-line {
-      width: 1px;
-      height: 28px;
-      background: var(--bone);
-      flex-shrink: 0;
-    }
-
-    /* ===== AI HEADLINE ===== */
-    .ai-headline {
-      font-size: 20px;
-      font-style: italic;
-      color: var(--ink);
-      line-height: 1.35;
-      margin: 0 0 24px 0;
-      transition: opacity 150ms ease;
-    }
-
-    /* ===== APERTURE VIEWS ===== */
-    .aperture-view {
-      transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
-      display: none;
-      opacity: 0;
-      transform: scale(0.98);
-    }
-
-    .aperture-view.visible {
-      display: block;
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    /* ===== SECTION CONTAINERS ===== */
-    .section {
-      background: var(--linen);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .section.today {
-      background: var(--cotton);
-      border-left: 2px solid var(--today-accent);
-    }
-
-    .section.past {
-      background: var(--parchment);
-    }
-
-    .section.future {
-      background: var(--linen);
-    }
-
-    .section-header {
-      font-family: 'Lora', Georgia, serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--ink);
-      margin: 0 0 12px 0;
-    }
-
-    .section-header.small {
-      font-size: 14px;
-    }
-
-    /* ===== TRIAGE CARDS ===== */
-    .triage-card {
-      background: var(--cotton);
-      border: 1px solid var(--bone);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      transition: opacity 200ms ease, transform 200ms ease, margin 200ms ease, padding 200ms ease, max-height 300ms ease;
-      max-height: 200px;
-      overflow: hidden;
-    }
-
-    .triage-card.dismissed {
-      opacity: 0;
-      transform: translateX(40px);
-      max-height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      margin-bottom: 0;
-      border-width: 0;
-    }
-
-    .triage-content {
-      margin-bottom: 12px;
-    }
-
-    .triage-text {
-      font-size: 14px;
-      color: var(--ink);
-      margin: 0 0 4px 0;
-    }
-
-    .triage-meta {
-      font-size: 12px;
-      color: var(--pencil);
-      margin: 0;
-    }
-
-    .triage-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .triage-btn {
-      font-size: 12px;
-      font-family: inherit;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: background 150ms ease, border-color 150ms ease;
-    }
-
-    .triage-btn .btn-key {
-      font-size: 10px;
-      color: var(--pencil);
-      opacity: 0.5;
-    }
-
-    .triage-btn.primary {
-      background: var(--today-accent);
-      color: white;
-      border: 1px solid var(--today-accent);
-    }
-
-    .triage-btn.primary:hover {
-      background: #245278;
-    }
-
-    .triage-btn.primary .btn-key {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .triage-btn.secondary {
-      background: transparent;
-      color: var(--graphite);
-      border: 1px solid var(--bone);
-    }
-
-    .triage-btn.secondary:hover {
-      border-color: var(--graphite);
-      background: var(--linen);
-    }
-
-    .triage-btn.destructive {
-      background: transparent;
-      color: var(--health-red);
-      border: 1px solid var(--bone);
-    }
-
-    .triage-btn.destructive:hover {
-      border-color: var(--health-red);
-      background: rgba(168, 90, 74, 0.05);
-    }
-
-    .triage-empty {
-      font-size: 13px;
-      color: var(--pencil);
-      font-style: italic;
-      padding: 12px 0;
-    }
-
-    /* ===== TASK CHECKBOX COMPONENT ===== */
-    .task-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 0;
-      min-height: 36px;
-      transition: opacity 150ms ease;
-    }
-
-    .task-row.done .task-title {
-      text-decoration: line-through;
-      color: var(--pencil);
-    }
-
-    .task-row.stale .task-stale-badge {
-      color: var(--amber-nudge);
-      font-size: 14px;
-    }
-
-    .task-check {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-
-    .task-checkbox {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-
-    .checkmark {
-      width: 16px;
-      height: 16px;
-      border: 1.5px solid var(--bone);
-      border-radius: 4px;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 150ms ease;
-    }
-
-    .task-checkbox:checked + .checkmark {
-      background: var(--today-accent);
-      border-color: var(--today-accent);
-    }
-
-    .task-checkbox:checked + .checkmark::after {
-      content: '\2713';
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .task-title {
-      font-size: 14px;
-      color: var(--ink);
-      transition: all 150ms ease;
-    }
-
-    .meeting-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: var(--linen);
-      border-radius: 6px;
-      margin-bottom: 4px;
-    }
-
-    .meeting-time {
-      font-size: 12px;
-      color: var(--graphite);
-      font-weight: 500;
-      min-width: 40px;
-    }
-
-    .meeting-title {
-      font-size: 14px;
-      color: var(--ink);
-    }
-
-    .task-done-badge {
-      margin-left: auto;
-    }
-
-    .day-header-inline {
-      font-size: 13px;
-      color: var(--pencil);
-      margin: 12px 0 8px 0;
-      display: block;
-    }
-
-    .past-days-compact {
-      /* Container for past days */
-    }
-
-    .past-day-group {
-      margin-bottom: 8px;
-    }
-
-    .future-day-group {
-      margin-bottom: 8px;
-    }
-
-    /* ===== PEOPLE & INITIATIVES CARDS ===== */
-    .person-card {
-      padding: 10px;
-      background: var(--cotton);
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-
-    .person-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .person-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--graphite);
-      flex-shrink: 0;
-    }
-
-    .person-info {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .person-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .person-role {
-      font-size: 11px;
-      color: var(--pencil);
-    }
-
-    .person-details {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-      padding-left: 40px;
-    }
-
-    .person-meta {
-      font-size: 11px;
-      color: var(--pencil);
-    }
-
-    .person-meeting-badge {
-      font-size: 10px;
-      color: var(--today-accent);
-      background: rgba(44, 95, 138, 0.08);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 500;
-    }
-
-    .health-dot {
-      font-size: 10px;
-      flex-shrink: 0;
-    }
-
-    .health-dot.green { color: var(--health-green); }
-    .health-dot.yellow { color: var(--health-yellow); }
-    .health-dot.red { color: var(--health-red); }
-
-    .initiative-card-mini {
-      display: flex;
-      gap: 12px;
-      padding: 10px;
-      background: var(--cotton);
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-
-    .initiative-accent {
-      width: 4px;
-      border-radius: 2px;
-      flex-shrink: 0;
-      align-self: stretch;
-    }
-
-    .initiative-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .initiative-header-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .initiative-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .initiative-meta {
-      font-size: 11px;
-      color: var(--pencil);
-      margin-top: 2px;
-      display: block;
-    }
-
-    /* ===== TABBED PANEL (for shared content) ===== */
-    .tabbed-panel {
-      background: var(--linen);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .tab-strip {
-      display: flex;
-      border-bottom: 1px solid var(--bone);
-      background: var(--parchment);
-      border-radius: 12px 12px 0 0;
-    }
-
-    .tab {
-      flex: 1;
-      padding: 10px 16px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--pencil);
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: color 150ms ease, border-color 150ms ease;
-      border-bottom: 2px solid transparent;
-      font-family: inherit;
-    }
-
-    .tab.active {
-      color: var(--today-accent);
-      border-bottom-color: var(--today-accent);
-      background: var(--linen);
-    }
-
-    .tab:hover:not(.active) {
-      color: var(--graphite);
-    }
-
-    .tab-content {
-      padding: 12px;
-      transition: opacity 150ms ease;
-    }
-
-    /* ===== FIXED BOTTOM PANEL ===== */
-    .fixed-bottom-panel {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      background: var(--linen);
-      border-top: 1px solid var(--bone);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .fixed-bottom-panel .tabbed-panel {
-      height: 100%;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .fixed-bottom-panel .tab-strip {
-      border-radius: 0;
-      flex-shrink: 0;
-    }
-
-    .fixed-bottom-panel .tab-content {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 8px 24px;
-      overflow: hidden;
-    }
-
-    .mini-person-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      padding: 8px 16px;
-      background: var(--cotton);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 150ms ease, transform 100ms ease;
-      position: relative;
-      min-width: 80px;
-    }
-
-    .mini-person-card:hover {
-      background: var(--newsprint);
-      transform: translateY(-2px);
-    }
-
-    .mini-av {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--graphite);
-    }
-
-    .mini-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .mini-meta {
-      font-size: 10px;
-      color: var(--pencil);
-    }
-
-    .mini-meeting-dot {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--today-accent);
-    }
-
-    .bottom-initiative-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--cotton);
-      border-radius: 8px;
-      flex: 1;
-      max-width: 240px;
-    }
-
-    .init-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .init-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .init-meta {
-      font-size: 11px;
-      color: var(--pencil);
-      margin-left: auto;
-    }
-
-    /* ===== PERSON MODAL OVERLAY ===== */
-    .person-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(26, 26, 26, 0.15);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 200ms ease;
-    }
-
-    .person-modal-overlay.show {
-      display: flex;
-      opacity: 1;
-    }
-
-    .person-modal {
-      background: var(--cotton);
-      border-radius: 16px;
-      padding: 24px;
-      width: 320px;
-      max-width: 90vw;
-      transform: scale(0.9) translateY(20px);
-      transition: transform 250ms ease;
-    }
-
-    .person-modal-overlay.show .person-modal {
-      transform: scale(1) translateY(0);
-    }
-
-    .modal-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--parchment);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--graphite);
-      margin-bottom: 12px;
-    }
-
-    .modal-name {
-      font-family: 'Lora', Georgia, serif;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--ink);
-      margin: 0 0 2px 0;
-    }
-
-    .modal-role {
-      font-size: 13px;
-      color: var(--pencil);
-      margin: 0 0 12px 0;
-    }
-
-    .modal-stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--bone);
-      font-size: 13px;
-    }
-
-    .modal-stat-label {
-      color: var(--graphite);
-    }
-
-    .modal-stat-value {
-      color: var(--ink);
-      font-weight: 500;
-    }
-
-    .modal-topics {
-      margin-top: 12px;
-    }
-
-    .modal-topics-header {
-      font-size: 12px;
-      color: var(--pencil);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .modal-topic-item {
-      font-size: 13px;
-      color: var(--ink);
-      padding: 4px 0;
-    }
-
-    /* ===== PEOPLE GRID (f/11) ===== */
-    .people-grid {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .person-flash-card {
-      background: var(--cotton);
-      border-radius: 8px;
-      padding: 12px;
-      min-width: 140px;
-      flex: 1;
-    }
-
-    /* Override for stacked layout */
-    .main-content.stacked .people-grid {
-      flex-wrap: wrap;
-    }
-
-    .main-content.stacked .person-flash-card {
-      min-width: 140px;
-    }
-
-    /* ===== INITIATIVE CARD FULL ===== */
-    .initiative-card-full {
-      background: var(--cotton);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border-left: 4px solid;
-    }
-
-    /* ===== MOBILE RESPONSIVE ===== */
-    @media (max-width: 560px) {
-      .shell {
-        max-width: 100%;
-        padding: 16px 12px 140px 12px;
-      }
-
-      .fixed-bottom-panel {
-        height: 100px;
-      }
-
-      .mini-person-card {
-        padding: 6px 10px;
-        min-width: 60px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture — Variant 42: Stacked Sections + Fixed Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --newsprint: #f7f5f2;
+            --cotton: #faf9f7;
+            --linen: #edeae4;
+            --parchment: #e3dfd8;
+            --bone: #d8d4cc;
+            --ink: #1a1a1a;
+            --graphite: #4a4a4a;
+            --pencil: #8a8a8a;
+            --today-accent: #2c5f8a;
+            --amber-nudge: #c4883a;
+            --health-green: #5a8a5a;
+            --health-yellow: #b8963a;
+            --health-red: #a85a4a;
+            --init-teal: #5a8a8a;
+            --init-plum: #7a5a7a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--newsprint);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: var(--cotton);
+            border-bottom: 1px solid var(--bone);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .header-center {
+            font-size: 11px;
+            color: var(--pencil);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .record-btn {
+            background: none;
+            border: none;
+            color: var(--ink);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .record-btn:hover {
+            background-color: var(--linen);
+        }
+
+        .record-btn.active {
+            color: var(--health-red);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .record-timer {
+            font-size: 12px;
+            color: var(--health-red);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* CONTENT CONTAINER */
+        .main-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 140px;
+        }
+
+        /* APERTURE DIAL */
+        .aperture-dial {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--bone);
+            padding-bottom: 16px;
+        }
+
+        .dial-button {
+            background: none;
+            border: none;
+            color: var(--pencil);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 0;
+            position: relative;
+            transition: color 0.2s, border-color 0.2s;
+            font-weight: 500;
+        }
+
+        .dial-button:hover {
+            color: var(--graphite);
+        }
+
+        .dial-button.active {
+            color: var(--today-accent);
+        }
+
+        .dial-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--today-accent);
+        }
+
+        /* AI HEADLINE */
+        .ai-headline {
+            font-family: 'Lora', serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--graphite);
+            margin-bottom: 24px;
+            transition: opacity 0.2s;
+        }
+
+        /* SECTION HEADER */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bone);
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .section-header h2 {
+            font-family: 'Lora', serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+
+        .section-header .chevron {
+            color: var(--pencil);
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+
+        .section-header.collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+        }
+
+        /* TRIAGE CARD */
+        .triage-card {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            animation: slideInUp 0.3s ease-out;
+            transition: all 0.3s;
+        }
+
+        .triage-card.slide-out {
+            animation: slideOutDown 0.3s ease-out;
+            opacity: 0;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+        }
+
+        .triage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .triage-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink);
+            flex: 1;
+        }
+
+        .triage-meta {
+            font-size: 11px;
+            color: var(--pencil);
+            text-align: right;
+        }
+
+        .triage-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background-color: var(--linen);
+            border: 1px solid var(--bone);
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--graphite);
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background-color: var(--parchment);
+            border-color: var(--pencil);
+        }
+
+        /* DAY/PERSON PICKER */
+        .picker-popup {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .chip {
+            background-color: var(--linen);
+            border: 1px solid var(--bone);
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--graphite);
+        }
+
+        .chip:hover {
+            background-color: var(--parchment);
+            border-color: var(--pencil);
+        }
+
+        .chip.selected {
+            background-color: var(--today-accent);
+            color: white;
+            border-color: var(--today-accent);
+        }
+
+        /* TASK ROW */
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: var(--cotton);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .task-row:hover {
+            background-color: var(--linen);
+        }
+
+        .task-row.completed {
+            background-color: var(--newsprint);
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--bone);
+            border-radius: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .task-row:hover .task-checkbox {
+            border-color: var(--pencil);
+        }
+
+        .task-row.completed .task-checkbox {
+            background-color: var(--today-accent);
+            border-color: var(--today-accent);
+            color: white;
+            font-size: 12px;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--ink);
+            transition: all 0.2s;
+        }
+
+        .task-row.completed .task-text {
+            color: var(--pencil);
+            text-decoration: line-through;
+        }
+
+        .task-focus-btn {
+            background: none;
+            border: none;
+            color: var(--pencil);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .task-row:hover .task-focus-btn {
+            opacity: 1;
+        }
+
+        .undo-link {
+            font-size: 11px;
+            color: var(--today-accent);
+            cursor: pointer;
+            margin-left: 6px;
+            text-decoration: underline;
+            animation: fadeOut 2s ease-in forwards;
+        }
+
+        @keyframes fadeOut {
+            0%, 80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* MEETING ROW */
+        .meeting-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: var(--cotton);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .meeting-row:hover {
+            background-color: var(--linen);
+        }
+
+        .meeting-icon {
+            font-size: 14px;
+            color: var(--today-accent);
+        }
+
+        .meeting-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .meeting-expanded {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--bone);
+        }
+
+        .meeting-row.expanded .meeting-expanded {
+            display: block;
+        }
+
+        .attendee-chip {
+            background-color: var(--today-accent);
+            color: white;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 11px;
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .prep-btn {
+            background-color: var(--today-accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prep-btn:hover {
+            background-color: #1d3f5a;
+        }
+
+        .topics-list {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--graphite);
+            line-height: 1.6;
+        }
+
+        /* STALE BADGE */
+        .stale-badge {
+            background-color: var(--amber-nudge);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            display: inline-block;
+            margin-left: 4px;
+            transition: all 0.2s;
+        }
+
+        .stale-popover {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--graphite);
+            display: none;
+            animation: popIn 0.2s ease-out;
+        }
+
+        .stale-popover.visible {
+            display: block;
+        }
+
+        .stale-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .stale-action-btn {
+            background-color: var(--linen);
+            border: 1px solid var(--bone);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--graphite);
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .stale-action-btn:hover {
+            background-color: var(--parchment);
+        }
+
+        /* INITIATIVE CARD */
+        .initiative-card {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .initiative-card:hover {
+            background-color: var(--linen);
+        }
+
+        .initiative-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .initiative-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .initiative-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .health-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            background-color: var(--linen);
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            color: var(--pencil);
+            margin-left: 6px;
+        }
+
+        .initiative-topics {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--bone);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--graphite);
+        }
+
+        .initiative-card.expanded .initiative-topics {
+            display: block;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--linen);
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .topic-title {
+            flex: 1;
+        }
+
+        .topic-badge {
+            background-color: var(--parchment);
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            color: var(--pencil);
+            white-space: nowrap;
+        }
+
+        .topic-focus-btn {
+            background: none;
+            border: none;
+            color: var(--pencil);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .topic-item:hover .topic-focus-btn {
+            opacity: 1;
+        }
+
+        /* FOCUS OVERLAY */
+        .focus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--newsprint);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .focus-label {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            font-size: 11px;
+            color: var(--pencil);
+            font-family: 'Lora', serif;
+        }
+
+        .focus-content {
+            width: 480px;
+            text-align: center;
+        }
+
+        .focus-title {
+            font-family: 'Lora', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .focus-source {
+            font-size: 13px;
+            color: var(--pencil);
+            margin-bottom: 12px;
+        }
+
+        .focus-divider {
+            height: 1px;
+            background-color: var(--bone);
+            margin-bottom: 16px;
+        }
+
+        .focus-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .focus-done-btn {
+            background-color: var(--today-accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .focus-done-btn:hover {
+            background-color: #1d3f5a;
+        }
+
+        .focus-back-link {
+            background: none;
+            border: none;
+            color: var(--pencil);
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+            transition: all 0.2s;
+        }
+
+        .focus-back-link:hover {
+            color: var(--ink);
+        }
+
+        .focus-hint {
+            position: fixed;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--pencil);
+            text-align: center;
+        }
+
+        /* DOCK */
+        .dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background-color: var(--linen);
+            border-top: 1px solid var(--bone);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dock-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--bone);
+            background-color: var(--linen);
+        }
+
+        .dock-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--pencil);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .dock-tab.active {
+            color: var(--today-accent);
+            border-bottom-color: var(--today-accent);
+        }
+
+        .dock-tab:hover:not(.active) {
+            color: var(--graphite);
+        }
+
+        .dock-content {
+            flex: 1;
+            padding: 8px;
+            overflow-x: auto;
+            display: none;
+        }
+
+        .dock-content.active {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* PEOPLE TAB */
+        .mini-card {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 6px;
+            padding: 8px;
+            min-width: 100px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mini-card:hover {
+            background-color: white;
+            border-color: var(--pencil);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .mini-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .mini-health {
+            font-size: 8px;
+            margin-bottom: 4px;
+        }
+
+        .mini-badge {
+            font-size: 10px;
+            background-color: var(--parchment);
+            border-radius: 2px;
+            padding: 1px 4px;
+            color: var(--pencil);
+            display: inline-block;
+        }
+
+        .meeting-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--today-accent);
+            margin-left: 4px;
+        }
+
+        /* INITIATIVES TAB */
+        .init-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--ink);
+            padding: 6px;
+            background-color: var(--cotton);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .init-row:hover {
+            background-color: white;
+        }
+
+        .init-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .init-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .init-expanded-topics {
+            background-color: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--graphite);
+            line-height: 1.4;
+        }
+
+        /* MODAL */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.25);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-backdrop.visible {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--cotton);
+            border-radius: 16px;
+            width: 380px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--pencil);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--ink);
+        }
+
+        .modal-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .modal-name {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .modal-role {
+            font-size: 12px;
+            color: var(--pencil);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .modal-meta {
+            font-size: 11px;
+            color: var(--pencil);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-topics {
+            border-top: 1px solid var(--bone);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .modal-topic {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--linen);
+            font-size: 12px;
+        }
+
+        .modal-topic:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .modal-topic-title {
+            flex: 1;
+            color: var(--graphite);
+        }
+
+        .modal-topic-age {
+            background-color: var(--parchment);
+            border-radius: 2px;
+            padding: 2px 6px;
+            font-size: 10px;
+            color: var(--pencil);
+            white-space: nowrap;
+        }
+
+        .modal-keep-btn {
+            background-color: var(--today-accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-keep-btn:hover {
+            background-color: #1d3f5a;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background-color: var(--ink);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            z-index: 300;
+            animation: slideInRight 0.3s ease-out, slideOutRight 0.3s ease-out 1.7s forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        /* EXPORT BUTTON */
+        .export-btn {
+            background-color: var(--today-accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .export-btn:hover {
+            background-color: #1d3f5a;
+        }
+
+        /* HEALTH COLORS */
+        .health-green { background-color: var(--health-green); }
+        .health-yellow { background-color: var(--health-yellow); }
+        .health-red { background-color: var(--health-red); }
+        .init-teal { background-color: var(--init-teal); }
+        .init-plum { background-color: var(--init-plum); }
+        .cotton-bg { background-color: var(--cotton); }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .main-container {
+                max-width: 100%;
+            }
+
+            .modal {
+                width: calc(100% - 40px);
+            }
+
+            .aperture-dial {
+                gap: 12px;
+                font-size: 12px;
+            }
+
+            .header {
+                padding: 10px 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header class="app-bar">
-    <div class="app-bar-inner">
-      <span class="app-name serif">Aperture</span>
-      <button class="record-btn" title="Start recording">
-        <span class="record-dot"></span>
-      </button>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">Aperture</div>
+        <div class="header-center">Summary → <span id="aperture-destination">Today</span></div>
+        <div class="header-right">
+            <button class="record-btn" id="record-btn">
+                <span id="record-icon">⏺</span> Record
+            </button>
+            <span class="record-timer" id="record-timer" style="display: none;">● 0:00</span>
+        </div>
     </div>
-  </header>
 
-  <div class="shell">
-    <!-- Aperture dial -->
-    <nav class="aperture-dial" role="tablist">
-      <button class="dial-stop active" data-aperture="f14" role="tab" aria-selected="true">
-        <span class="dial-label serif">f/1.4</span>
-        <span class="dial-name">Today</span>
-      </button>
-      <span class="dial-line"></span>
-      <button class="dial-stop" data-aperture="f4" role="tab" aria-selected="false">
-        <span class="dial-label serif">f/4</span>
-        <span class="dial-name">This Week</span>
-      </button>
-      <span class="dial-line"></span>
-      <button class="dial-stop" data-aperture="f11" role="tab" aria-selected="false">
-        <span class="dial-label serif">f/11</span>
-        <span class="dial-name">The Arc</span>
-      </button>
-      <span class="dial-line"></span>
-      <button class="dial-stop" data-aperture="f22" role="tab" aria-selected="false">
-        <span class="dial-label serif">f/22</span>
-        <span class="dial-name">Identity</span>
-      </button>
-    </nav>
-
-    <!-- AI headline -->
-    <p id="ai-headline" class="ai-headline serif">Two items in triage. Three meetings today, Maya's 1:1 at 11:00.</p>
-
-    <!-- Main content (single stacked column) -->
-    <main class="main-content stacked">
-
-      <!-- ===== f/1.4 TODAY VIEW ===== -->
-      <div class="aperture-view visible" id="view-f14">
-        <!-- Triage section -->
-        <div class="section triage-section">
-          <h2 class="section-header">Triage</h2>
-          <div class="triage-card" data-triage-id="1">
-            <div class="triage-content">
-              <p class="triage-text">Priya mentioned reorg timeline</p>
-              <p class="triage-meta">from: Monday recording &middot; 2h ago</p>
-            </div>
-            <div class="triage-actions">
-              <button class="triage-btn primary" data-action="keep" title="Keep this topic and assign to a day">
-                <span class="btn-key">K</span> Keep
-              </button>
-              <button class="triage-btn secondary" data-action="assign" title="Make someone accountable for this">
-                <span class="btn-key">A</span> Assign
-              </button>
-              <button class="triage-btn secondary" data-action="discuss" title="Add as a discussion topic for someone">
-                <span class="btn-key">D</span> Discuss
-              </button>
-              <button class="triage-btn destructive" data-action="drop" title="Remove this &mdash; it doesn't need action">
-                <span class="btn-key">X</span> Drop
-              </button>
-            </div>
-          </div>
-          <div class="triage-card" data-triage-id="2">
-            <div class="triage-content">
-              <p class="triage-text">Anika asking about vendor eval criteria</p>
-              <p class="triage-meta">from: Wednesday 1:1 &middot; 1h ago</p>
-            </div>
-            <div class="triage-actions">
-              <button class="triage-btn primary" data-action="keep" title="Keep this topic and assign to a day">
-                <span class="btn-key">K</span> Keep
-              </button>
-              <button class="triage-btn secondary" data-action="assign" title="Make someone accountable for this">
-                <span class="btn-key">A</span> Assign
-              </button>
-              <button class="triage-btn secondary" data-action="discuss" title="Add as a discussion topic for someone">
-                <span class="btn-key">D</span> Discuss
-              </button>
-              <button class="triage-btn destructive" data-action="drop" title="Remove this &mdash; it doesn't need action">
-                <span class="btn-key">X</span> Drop
-              </button>
-            </div>
-          </div>
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        <!-- APERTURE DIAL -->
+        <div class="aperture-dial">
+            <button class="dial-button active" data-aperture="today">f/1.4 Today</button>
+            <button class="dial-button" data-aperture="week">f/4 This Week</button>
+            <button class="dial-button" data-aperture="strategy">f/11 Strategy</button>
+            <button class="dial-button" data-aperture="career">f/22 Career</button>
         </div>
 
-        <!-- Today section -->
-        <div class="section today">
-          <h2 class="section-header">Wednesday</h2>
-          <div class="meeting-row"><span class="meeting-time">09:30</span><span class="meeting-title">Standup</span></div>
-          <div class="meeting-row"><span class="meeting-time">11:00</span><span class="meeting-title">1:1 w/ Maya</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Finalize SCIM scope doc</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Write launch checklist</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Reply to Anika re: vendor eval</span></div>
-        </div>
-      </div>
+        <!-- AI HEADLINE -->
+        <div class="ai-headline" id="ai-headline">Two items in triage. Three meetings today, Maya's 1:1 at 11:00.</div>
 
-      <!-- ===== f/4 THIS WEEK VIEW ===== -->
-      <div class="aperture-view" id="view-f4">
-        <!-- Past days section -->
-        <div class="section past">
-          <h2 class="section-header small">Monday &amp; Tuesday</h2>
-          <div class="past-days-compact">
-            <div class="past-day-group">
-              <h3 class="day-header-inline serif">Monday</h3>
-              <div class="task-row done"><label class="task-check"><input type="checkbox" class="task-checkbox" checked><span class="checkmark"></span></label><span class="task-title">1:1 w/ Priya</span> <span class="task-done-badge">✅</span></div>
-              <div class="task-row done"><label class="task-check"><input type="checkbox" class="task-checkbox" checked><span class="checkmark"></span></label><span class="task-title">Update SCIM spec</span> <span class="task-done-badge">✅</span></div>
-              <div class="task-row stale"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Review Maya's design doc</span> <span class="task-stale-badge">⚠️</span></div>
+        <!-- TODAY VIEW -->
+        <div id="today-view" class="aperture-view">
+            <!-- TRIAGE SECTION -->
+            <div class="section-header" data-section="triage">
+                <h2>Triage</h2>
+                <span class="chevron">▼</span>
             </div>
-            <div class="past-day-group">
-              <h3 class="day-header-inline serif">Tuesday</h3>
-              <div class="task-row done"><label class="task-check"><input type="checkbox" class="task-checkbox" checked><span class="checkmark"></span></label><span class="task-title">Draft Q2 roadmap section</span> <span class="task-done-badge">✅</span></div>
-              <div class="task-row stale"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Prep board deck slides</span> <span class="task-stale-badge">⚠️</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Today section -->
-        <div class="section today">
-          <h2 class="section-header">Wednesday</h2>
-          <div class="meeting-row"><span class="meeting-time">09:30</span><span class="meeting-title">Standup</span></div>
-          <div class="meeting-row"><span class="meeting-time">11:00</span><span class="meeting-title">1:1 w/ Maya</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Finalize SCIM scope doc</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Write launch checklist</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Reply to Anika re: vendor eval</span></div>
-        </div>
-
-        <!-- Future section -->
-        <div class="section future">
-          <h2 class="section-header small">Thursday &amp; Friday</h2>
-          <div class="future-day-group">
-            <h3 class="day-header-inline serif">Thursday</h3>
-            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Review PR #847</span></div>
-            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Sync notes from Maya 1:1</span></div>
-          </div>
-          <div class="future-day-group">
-            <h3 class="day-header-inline serif">Friday</h3>
-            <div class="meeting-row"><span class="meeting-time">09:30</span><span class="meeting-title">Team standup</span></div>
-            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Weekly brag sheet</span></div>
-            <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Submit expense report</span></div>
-          </div>
-        </div>
-
-        <!-- Next section -->
-        <div class="section">
-          <h2 class="section-header small">Next</h2>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Research competitor onboarding flows</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Draft hiring justification for H2</span></div>
-          <div class="task-row"><label class="task-check"><input type="checkbox" class="task-checkbox"><span class="checkmark"></span></label><span class="task-title">Sketch integration test plan</span></div>
-        </div>
-      </div>
-
-      <!-- ===== f/11 THE ARC VIEW ===== -->
-      <div class="aperture-view" id="view-f11">
-        <!-- Initiatives section -->
-        <div class="section">
-          <h2 class="section-header">Initiatives</h2>
-          <div class="initiative-card-full" style="border-left-color: var(--init-teal);">
-            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
-              <span class="initiative-name serif" style="font-size: 16px;">SCIM Integration</span>
-              <span class="health-dot yellow">●</span>
-            </div>
-            <p style="font-size: 13px; color: var(--pencil); margin: 0 0 8px 0;">Week 3 of planned timeline. Priya driving spec finalization. Vendor eval criteria still pending Anika sign-off.</p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--graphite); margin-top: 8px;">
-              <span>4 topics</span>
-              <span>•</span>
-              <span>Priya, Anika</span>
-            </div>
-          </div>
-          <div class="initiative-card-full" style="border-left-color: var(--init-plum);">
-            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
-              <span class="initiative-name serif" style="font-size: 16px;">Q2 Roadmap</span>
-              <span class="health-dot green">●</span>
-            </div>
-            <p style="font-size: 13px; color: var(--pencil); margin: 0 0 8px 0;">Design phase complete. Maya's visuals on track for board presentation next month. Team alignment solid.</p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--graphite); margin-top: 8px;">
-              <span>3 topics</span>
-              <span>•</span>
-              <span>Maya</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- People section -->
-        <div class="section">
-          <h2 class="section-header">People</h2>
-          <div class="people-grid">
-            <div class="person-flash-card">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div class="person-avatar" style="width: 36px; height: 36px; background: var(--parchment);">P</div>
-                <div>
-                  <div class="person-name">Priya</div>
-                  <div class="person-role">Staff Eng</div>
+            <div class="section-content">
+                <div class="triage-card" data-triage-id="1">
+                    <div class="triage-header">
+                        <div class="triage-title">Priya mentioned reorg timeline</div>
+                        <div class="triage-meta">Monday recording, 2h ago</div>
+                    </div>
+                    <div class="triage-actions">
+                        <button class="action-btn keep-btn">Keep</button>
+                        <button class="action-btn delegate-btn">Delegate →</button>
+                        <button class="action-btn discuss-btn">Discuss →</button>
+                        <button class="action-btn drop-btn">Drop</button>
+                    </div>
                 </div>
-              </div>
-              <div style="font-size: 11px; color: var(--pencil);">Last met: Monday</div>
-              <div style="font-size: 11px; color: var(--pencil);">3 topics</div>
-              <div style="margin-top: 6px; font-size: 10px;"><span class="health-dot yellow">●</span> Needs attention</div>
-            </div>
-            <div class="person-flash-card">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div class="person-avatar" style="width: 36px; height: 36px; background: var(--parchment);">M</div>
-                <div>
-                  <div class="person-name">Maya</div>
-                  <div class="person-role">Designer</div>
+
+                <div class="triage-card" data-triage-id="2">
+                    <div class="triage-header">
+                        <div class="triage-title">Anika: vendor eval criteria need sign-off</div>
+                        <div class="triage-meta">3h ago</div>
+                    </div>
+                    <div class="triage-actions">
+                        <button class="action-btn keep-btn">Keep</button>
+                        <button class="action-btn delegate-btn">Delegate →</button>
+                        <button class="action-btn discuss-btn">Discuss →</button>
+                        <button class="action-btn drop-btn">Drop</button>
+                    </div>
                 </div>
-              </div>
-              <div style="font-size: 11px; color: var(--pencil);">Last met: Today (11:00)</div>
-              <div style="font-size: 11px; color: var(--pencil);">2 topics</div>
-              <div style="margin-top: 6px; font-size: 10px;"><span class="health-dot green">●</span> On track</div>
             </div>
-            <div class="person-flash-card">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div class="person-avatar" style="width: 36px; height: 36px; background: var(--parchment);">A</div>
-                <div>
-                  <div class="person-name">Anika</div>
-                  <div class="person-role">PM, Platform</div>
+
+            <!-- TASKS SECTION -->
+            <div class="section-header" data-section="tasks">
+                <h2>Today's Tasks</h2>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="task-row" data-task-id="1">
+                    <div class="task-checkbox"></div>
+                    <div class="task-text">09:30 Standup</div>
+                    <span class="task-focus-btn">◎</span>
                 </div>
-              </div>
-              <div style="font-size: 11px; color: var(--pencil);">Last met: 5 days ago</div>
-              <div style="font-size: 11px; color: var(--pencil);">2 topics</div>
-              <div style="margin-top: 6px; font-size: 10px;"><span class="health-dot green">●</span> On track</div>
+                <div class="task-row meeting-row" data-task-id="2">
+                    <span class="meeting-icon">📅</span>
+                    <div class="task-text">11:00 1:1 w/ Maya</div>
+                    <span class="task-focus-btn">◎</span>
+                    <div class="meeting-expanded">
+                        <div class="attendee-chip">Maya</div>
+                        <button class="prep-btn">Prep →</button>
+                        <div class="topics-list" style="display: none;">
+                            • Design system updates<br>
+                            • Q2 roadmap feedback
+                        </div>
+                    </div>
+                </div>
+                <div class="task-row" data-task-id="3">
+                    <div class="task-checkbox"></div>
+                    <div class="task-text">Finalize SCIM scope doc</div>
+                    <span class="task-focus-btn">◎</span>
+                </div>
+                <div class="task-row" data-task-id="4">
+                    <div class="task-checkbox"></div>
+                    <div class="task-text">Write launch checklist</div>
+                    <span class="task-focus-btn">◎</span>
+                </div>
+                <div class="task-row" data-task-id="5">
+                    <div class="task-checkbox"></div>
+                    <div class="task-text">Reply to Anika re: vendor eval</div>
+                    <span class="task-focus-btn">◎</span>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- ===== f/22 IDENTITY VIEW ===== -->
-      <div class="aperture-view" id="view-f22">
-        <div class="section">
-          <h2 class="section-header">Brag Sheet</h2>
-          <div style="font-size: 14px; color: var(--ink); line-height: 1.6;">
-            <p><strong>Q1 Shipped:</strong></p>
-            <ul style="margin-left: 20px; margin-top: 6px;">
-              <li>SCIM spec finalized and approved by security</li>
-              <li>Q2 roadmap aligned with product and design</li>
-              <li>Three major vendor integrations evaluated</li>
-            </ul>
-            <p style="margin-top: 12px;"><strong>Q1 Impact:</strong></p>
-            <ul style="margin-left: 20px; margin-top: 6px;">
-              <li>Two P1 initiatives delivered on time</li>
-              <li>Team capacity shifted from reactive to proactive work</li>
-              <li>Stronger stakeholder alignment across teams</li>
-            </ul>
-            <p style="margin-top: 12px;"><strong>Q2 Focus:</strong></p>
-            <ul style="margin-left: 20px; margin-top: 6px;">
-              <li>Vendor integration implementation</li>
-              <li>Roadmap execution and team growth</li>
-              <li>Board presentation and strategy refinement</li>
-            </ul>
-          </div>
+            <!-- PAST TASKS -->
+            <div class="section-header" data-section="past">
+                <h2>Completed This Week</h2>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="task-row completed" data-task-id="m1">
+                    <div class="task-checkbox">✓</div>
+                    <div class="task-text">10:00 1:1 w/ Priya</div>
+                </div>
+                <div class="task-row completed" data-task-id="m2">
+                    <div class="task-checkbox">✓</div>
+                    <div class="task-text">Update SCIM spec</div>
+                </div>
+                <div class="task-row" data-task-id="m3">
+                    <div class="task-checkbox"></div>
+                    <div class="task-text">Review Maya's design doc <span class="stale-badge">⚠️</span></div>
+                    <span class="task-focus-btn">◎</span>
+                    <div class="stale-popover">
+                        <div>Open for 3 days</div>
+                        <div class="stale-actions">
+                            <button class="stale-action-btn">Keep</button>
+                            <button class="stale-action-btn">Drop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-    </main>
-  </div>
+        <!-- WEEK VIEW -->
+        <div id="week-view" class="aperture-view" style="display: none;">
+            <div class="section-header" data-section="week-tasks">
+                <h2>This Week</h2>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="section-content">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--pencil); margin-bottom: 8px;">Mon (past)</div>
+                    <div class="task-row completed"><div class="task-checkbox">✓</div><div class="task-text">10:00 1:1 w/ Priya</div></div>
+                    <div class="task-row completed"><div class="task-checkbox">✓</div><div class="task-text">Update SCIM spec</div></div>
+                </div>
 
-  <!-- Fixed bottom panel -->
-  <div class="fixed-bottom-panel" id="bottom-panel">
-    <div class="tabbed-panel bottom-tabs">
-      <div class="tab-strip">
-        <button class="tab active" data-tab="people-bottom">People (3)</button>
-        <button class="tab" data-tab="initiatives-bottom">Initiatives (2)</button>
-      </div>
-      <div class="tab-content" id="tab-people-bottom" style="display: flex;">
-        <div class="mini-person-card" data-person="priya">
-          <div class="mini-av" style="background: var(--parchment);">P</div>
-          <span class="mini-name">Priya</span>
-          <span class="health-dot yellow">●</span>
-          <span class="mini-meta">3 topics</span>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--pencil); margin-bottom: 8px;">Tue (past)</div>
+                    <div class="task-row completed"><div class="task-checkbox">✓</div><div class="task-text">Draft Q2 roadmap section</div></div>
+                    <div class="task-row" data-task-id="t2"><div class="task-checkbox"></div><div class="task-text">Prep board deck slides <span class="stale-badge">⚠️</span></div><span class="task-focus-btn">◎</span></div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--pencil); margin-bottom: 8px;">Wed (today)</div>
+                    <div class="task-row meeting-row"><span class="meeting-icon">📅</span><div class="task-text">09:30 Standup</div></div>
+                    <div class="task-row meeting-row"><span class="meeting-icon">📅</span><div class="task-text">11:00 1:1 w/ Maya</div></div>
+                    <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Finalize SCIM scope doc</div><span class="task-focus-btn">◎</span></div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--pencil); margin-bottom: 8px;">Thu</div>
+                    <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Review PR #847</div><span class="task-focus-btn">◎</span></div>
+                    <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Sync notes from Maya 1:1</div><span class="task-focus-btn">◎</span></div>
+                </div>
+
+                <div>
+                    <div style="font-size: 12px; color: var(--pencil); margin-bottom: 8px;">Fri</div>
+                    <div class="task-row meeting-row"><span class="meeting-icon">📅</span><div class="task-text">09:30 Team standup</div></div>
+                    <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Weekly brag sheet</div><span class="task-focus-btn">◎</span></div>
+                    <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Submit expense report</div><span class="task-focus-btn">◎</span></div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <div class="section-header" style="margin: 0; padding: 8px 0;" data-section="next-section">
+                        <h2 style="font-size: 14px;">Next (Backlog)</h2>
+                        <span class="chevron">▼</span>
+                    </div>
+                    <div class="section-content" style="padding-top: 8px;">
+                        <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Research competitor onboarding flows</div><span class="task-focus-btn">◎</span></div>
+                        <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Draft hiring justification for H2</div><span class="task-focus-btn">◎</span></div>
+                        <div class="task-row"><div class="task-checkbox"></div><div class="task-text">Sketch integration test plan</div><span class="task-focus-btn">◎</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mini-person-card" data-person="maya">
-          <div class="mini-av" style="background: var(--parchment);">M</div>
-          <span class="mini-name">Maya</span>
-          <span class="health-dot green">●</span>
-          <span class="mini-meta">2 topics</span>
-          <span class="mini-meeting-dot" title="Meeting today"></span>
+
+        <!-- STRATEGY VIEW -->
+        <div id="strategy-view" class="aperture-view" style="display: none;">
+            <div class="section-header" data-section="scim-init">
+                <h2>SCIM Integration</h2>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="initiative-card expanded">
+                    <div class="initiative-header">
+                        <div class="initiative-dot health-yellow"></div>
+                        <div class="initiative-name">SCIM Integration</div>
+                        <span class="health-dot health-yellow"></span>
+                        <span class="badge">Week 3</span>
+                    </div>
+                    <div class="initiative-topics">
+                        <div class="topic-item">
+                            <div class="topic-title">API rate limits</div>
+                            <span class="topic-badge">3d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-title">SCIM timeline</div>
+                            <span class="topic-badge">5d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-title">On-call rotation</div>
+                            <span class="topic-badge">1d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-title">Integration test plan <span class="stale-badge">⚠️</span></div>
+                            <span class="topic-badge">8d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header" data-section="q2-init">
+                <h2>Q2 Roadmap</h2>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="initiative-card expanded">
+                    <div class="initiative-header">
+                        <div class="initiative-dot health-green"></div>
+                        <div class="initiative-name">Q2 Roadmap</div>
+                        <span class="health-dot health-green"></span>
+                        <span class="badge">Week 2</span>
+                    </div>
+                    <div class="initiative-topics">
+                        <div class="topic-item">
+                            <div class="topic-title">Q2 roadmap section <span class="stale-badge">⚠️</span></div>
+                            <span class="topic-badge">3d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-title">Board deck slides <span class="stale-badge">⚠️</span></div>
+                            <span class="topic-badge">4d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-title">Research competitor flows</div>
+                            <span class="topic-badge">2d</span>
+                            <button class="topic-focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mini-person-card" data-person="anika">
-          <div class="mini-av" style="background: var(--parchment);">A</div>
-          <span class="mini-name">Anika</span>
-          <span class="health-dot green">●</span>
-          <span class="mini-meta">2 topics</span>
+
+        <!-- CAREER VIEW -->
+        <div id="career-view" class="aperture-view" style="display: none;">
+            <button class="export-btn" id="export-btn">Export</button>
+            <div class="ai-headline">This quarter you shipped two P1 initiatives and shifted more work to your reports.</div>
+            <div style="padding: 16px; background-color: var(--cotton); border-radius: 8px; border: 1px solid var(--bone); font-size: 13px; line-height: 1.8; color: var(--graphite);">
+                <strong>Impact Summary:</strong><br><br>
+                Led SCIM integration to completion, enabling enterprise customer onboarding. Coordinated cross-functional alignment on Q2 roadmap and secured board approval. Mentored two junior engineers on system design and incident response. Successfully navigated org restructuring while maintaining team morale and shipping on schedule.
+            </div>
         </div>
-      </div>
-      <div class="tab-content" id="tab-initiatives-bottom" style="display: none;">
-        <div class="bottom-initiative-row">
-          <span class="init-dot" style="background: var(--init-teal);"></span>
-          <span class="init-name serif">SCIM Integration</span>
-          <span class="health-dot yellow">●</span>
-          <span class="init-meta">Week 3 · 4 topics</span>
-        </div>
-        <div class="bottom-initiative-row">
-          <span class="init-dot" style="background: var(--init-plum);"></span>
-          <span class="init-name serif">Q2 Roadmap</span>
-          <span class="health-dot green">●</span>
-          <span class="init-meta">Week 2 · 3 topics</span>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Person modal overlay -->
-  <div class="person-modal-overlay" id="person-modal-overlay">
-    <div class="person-modal" id="person-modal">
-      <!-- Dynamically populated -->
+    <!-- DOCK -->
+    <div class="dock">
+        <div class="dock-tabs">
+            <button class="dock-tab active" data-tab="people">People (3)</button>
+            <button class="dock-tab" data-tab="initiatives">Initiatives (2)</button>
+        </div>
+
+        <!-- PEOPLE TAB -->
+        <div class="dock-content active" data-tab-content="people">
+            <div class="mini-card" data-person-id="priya">
+                <div class="avatar cotton-bg">P</div>
+                <div class="mini-name">Priya</div>
+                <div class="mini-health">🟡</div>
+                <div class="mini-badge">3</div>
+            </div>
+
+            <div class="mini-card" data-person-id="maya">
+                <div class="avatar cotton-bg">M</div>
+                <div class="mini-name">Maya</div>
+                <div class="mini-health">🟢</div>
+                <div class="mini-badge">2 <span class="meeting-dot"></span></div>
+            </div>
+
+            <div class="mini-card" data-person-id="anika">
+                <div class="avatar cotton-bg">A</div>
+                <div class="mini-name">Anika</div>
+                <div class="mini-health">🟢</div>
+                <div class="mini-badge">2</div>
+            </div>
+        </div>
+
+        <!-- INITIATIVES TAB -->
+        <div class="dock-content" data-tab-content="initiatives">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div class="init-row" data-init-id="scim">
+                    <div class="init-dot init-teal"></div>
+                    <div class="init-name">SCIM Integration</div>
+                    <span class="health-dot health-yellow"></span>
+                    <span class="badge">Week 3</span>
+                </div>
+                <div class="init-row" data-init-id="q2">
+                    <div class="init-dot init-teal"></div>
+                    <div class="init-name">Q2 Roadmap</div>
+                    <span class="health-dot health-green"></span>
+                    <span class="badge">Week 2</span>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    /* ===== PERSON DATA ===== */
-    var personData = {
-      priya: {
-        initial: 'P',
-        name: 'Priya',
-        role: 'Staff Engineer',
-        health: 'yellow',
-        lastMet: 'Monday',
-        openTopics: 3,
-        topics: ['SCIM API rate limits', 'Reorg timeline discussion', 'On-call rotation']
-      },
-      maya: {
-        initial: 'M',
-        name: 'Maya',
-        role: 'Designer',
-        health: 'green',
-        lastMet: 'Today (1:1 at 11:00)',
-        openTopics: 2,
-        topics: ['Design doc review', 'Q2 roadmap visuals']
-      },
-      anika: {
-        initial: 'A',
-        name: 'Anika',
-        role: 'PM, Platform',
-        health: 'green',
-        lastMet: '5 days ago',
-        openTopics: 2,
-        topics: ['Vendor eval criteria sign-off', 'SCIM timeline alignment']
-      }
-    };
+    <!-- FOCUS OVERLAY -->
+    <div class="focus-overlay" id="focus-overlay">
+        <div class="focus-label">f/0.95</div>
+        <div class="focus-content">
+            <div class="focus-title" id="focus-title"></div>
+            <div class="focus-source" id="focus-source"></div>
+            <div class="focus-divider"></div>
+            <div class="focus-actions">
+                <button class="focus-done-btn" id="focus-done">Done</button>
+                <button class="focus-back-link" id="focus-back">Back</button>
+            </div>
+        </div>
+        <div class="focus-hint">⌘↩ to complete · Esc to return</div>
+    </div>
 
-    /* ===== HEADLINES ===== */
-    const headlines = {
-      f14: "Two items in triage. Three meetings today, Maya's 1:1 at 11:00.",
-      f4: "Solid week so far. Two open items carried from earlier — design doc and board deck.",
-      f11: "SCIM integration is the long pole at week 3. Priya's workload has been rising.",
-      f22: "This quarter you shipped two P1 initiatives and shifted more work to your reports."
-    };
+    <!-- MODAL -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <div></div>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-avatar cotton-bg" id="modal-avatar"></div>
+            <div class="modal-name" id="modal-name"></div>
+            <div class="modal-role" id="modal-role"></div>
+            <div class="modal-meta" id="modal-meta"></div>
+            <div class="modal-topics" id="modal-topics"></div>
+        </div>
+    </div>
 
-    function updateHeadline(aperture) {
-      const el = document.getElementById('ai-headline');
-      el.style.opacity = '0';
-      setTimeout(() => {
-        el.textContent = headlines[aperture];
-        el.style.opacity = '1';
-      }, 150);
-    }
-
-    /* ===== APERTURE DIAL ===== */
-    function initApertureDial() {
-      const stops = document.querySelectorAll('.dial-stop');
-      const views = document.querySelectorAll('.aperture-view');
-
-      stops.forEach(stop => {
-        stop.addEventListener('click', () => {
-          const target = stop.dataset.aperture;
-
-          // Update dial state
-          stops.forEach(s => {
-            s.classList.remove('active');
-            s.setAttribute('aria-selected', 'false');
-          });
-          stop.classList.add('active');
-          stop.setAttribute('aria-selected', 'true');
-
-          // Update AI headline
-          updateHeadline(target);
-
-          // Transition views
-          const currentView = document.querySelector('.aperture-view.visible');
-          const nextView = document.getElementById('view-' + target);
-
-          if (currentView && currentView !== nextView) {
-            currentView.style.opacity = '0';
-            currentView.style.transform = 'scale(0.98)';
-
-            setTimeout(() => {
-              currentView.classList.remove('visible');
-              currentView.style.display = 'none';
-
-              nextView.style.display = 'block';
-              nextView.style.opacity = '0';
-              nextView.style.transform = 'scale(1.02)';
-              nextView.classList.add('visible');
-
-              // Force reflow
-              nextView.offsetHeight;
-
-              nextView.style.opacity = '1';
-              nextView.style.transform = 'scale(1)';
-            }, 200);
-          }
-        });
-      });
-    }
-
-    /* ===== TRIAGE ACTIONS ===== */
-    function initTriageActions() {
-      document.querySelectorAll('.triage-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const card = e.target.closest('.triage-card');
-          card.classList.add('dismissed');
-          setTimeout(() => {
-            card.remove();
-            // Check if triage section is empty
-            const triageSection = document.querySelector('.triage-section');
-            if (triageSection && triageSection.querySelectorAll('.triage-card').length === 0) {
-              var emptyMsg = document.createElement('p');
-              emptyMsg.className = 'triage-empty';
-              emptyMsg.textContent = 'Triage is clear. Here's today.';
-              triageSection.appendChild(emptyMsg);
+    <script>
+        // Data
+        const people = {
+            priya: {
+                name: 'Priya',
+                role: 'Staff Engineer',
+                health: '🟡',
+                lastMet: 'Mon',
+                topics: [
+                    { title: 'Reorg timeline', age: '2h' },
+                    { title: 'API architecture review', age: '1d' },
+                    { title: 'Mentoring plan', age: '3d' }
+                ]
+            },
+            maya: {
+                name: 'Maya',
+                role: 'Designer',
+                health: '🟢',
+                lastMet: 'today',
+                topics: [
+                    { title: 'Design system updates', age: '1h' },
+                    { title: 'Q2 roadmap feedback', age: '2h' }
+                ]
+            },
+            anika: {
+                name: 'Anika',
+                role: 'PM Platform',
+                health: '🟢',
+                lastMet: '5d',
+                topics: [
+                    { title: 'Vendor eval criteria', age: '3h' },
+                    { title: 'Budget planning', age: '2d' }
+                ]
             }
-          }, 300);
-        });
-      });
-    }
+        };
 
-    /* ===== TASK CHECKBOXES ===== */
-    function initTaskCheckboxes() {
-      document.querySelectorAll('.task-checkbox').forEach(cb => {
-        cb.addEventListener('change', (e) => {
-          var row = e.target.closest('.task-row');
-          if (e.target.checked) {
-            row.classList.add('done');
-            // Add done badge if not present
-            if (!row.querySelector('.task-done-badge')) {
-              var badge = document.createElement('span');
-              badge.className = 'task-done-badge';
-              badge.textContent = '✅';
-              row.appendChild(badge);
-            }
-            // Remove stale badge if present
-            var staleBadge = row.querySelector('.task-stale-badge');
-            if (staleBadge) staleBadge.remove();
-            row.classList.remove('stale');
-          } else {
-            row.classList.remove('done');
-            var doneBadge = row.querySelector('.task-done-badge');
-            if (doneBadge) doneBadge.remove();
-          }
-        });
-      });
-    }
+        const aiHeadlines = {
+            today: "Two items in triage. Three meetings today, Maya's 1:1 at 11:00.",
+            week: "Solid week so far. Two open items carried — design doc and board deck.",
+            strategy: "SCIM integration is the long pole at week 3. Priya's workload has been rising.",
+            career: "This quarter you shipped two P1 initiatives and shifted more work to your reports."
+        };
 
-    /* ===== TABS ===== */
-    function initTabs() {
-      document.querySelectorAll('.tabbed-panel').forEach(panel => {
-        var tabs = panel.querySelectorAll('.tab');
-        var contents = panel.querySelectorAll('.tab-content');
+        // STATE
+        let currentAperture = 'today';
+        let recordingActive = false;
+        let recordingSeconds = 0;
+        let recordingInterval = null;
+        let focusedTask = null;
+        let focusedTopic = null;
 
-        tabs.forEach(tab => {
-          tab.addEventListener('click', () => {
-            var target = tab.dataset.tab;
+        // UTILITIES
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
 
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+        function hideAllPickers() {
+            document.querySelectorAll('.picker-popup').forEach(p => p.remove());
+        }
 
-            contents.forEach(c => {
-              c.style.display = 'none';
-              c.style.opacity = '0';
+        // APERTURE DIAL
+        document.querySelectorAll('.dial-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dial-button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                currentAperture = btn.dataset.aperture;
+
+                // Update destination
+                const destMap = { today: 'Today', week: 'This Week', strategy: 'Strategy', career: 'Career' };
+                document.getElementById('aperture-destination').textContent = destMap[currentAperture];
+
+                // Update headline
+                document.getElementById('ai-headline').textContent = aiHeadlines[currentAperture];
+
+                // Switch views
+                document.querySelectorAll('.aperture-view').forEach(v => v.style.display = 'none');
+                const viewId = currentAperture === 'today' ? 'today-view' :
+                               currentAperture === 'week' ? 'week-view' :
+                               currentAperture === 'strategy' ? 'strategy-view' : 'career-view';
+                document.getElementById(viewId).style.display = 'block';
+
+                hideAllPickers();
             });
-
-            var targetContent = panel.querySelector('#tab-' + target);
-            targetContent.style.display = 'flex';
-            // Force reflow
-            targetContent.offsetHeight;
-            targetContent.style.opacity = '1';
-          });
         });
-      });
-    }
 
-    /* ===== PERSON MODALS ===== */
-    function initPersonModals() {
-      var overlay = document.getElementById('person-modal-overlay');
-      var modal = document.getElementById('person-modal');
+        // RECORDING
+        document.getElementById('record-btn').addEventListener('click', function() {
+            recordingActive = !recordingActive;
+            this.classList.toggle('active');
 
-      document.querySelectorAll('.mini-person-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          var key = card.dataset.person;
-          var data = personData[key];
-          if (!data) return;
-
-          // Clear modal
-          while (modal.firstChild) modal.removeChild(modal.firstChild);
-
-          // Build modal content with DOM methods
-          var avatar = document.createElement('div');
-          avatar.className = 'modal-avatar';
-          avatar.textContent = data.initial;
-          modal.appendChild(avatar);
-
-          var name = document.createElement('h3');
-          name.className = 'modal-name';
-          name.textContent = data.name;
-          modal.appendChild(name);
-
-          var role = document.createElement('p');
-          role.className = 'modal-role';
-          role.textContent = data.role + ' ';
-          var healthSpan = document.createElement('span');
-          healthSpan.className = 'health-dot ' + data.health;
-          healthSpan.textContent = '●';
-          role.appendChild(healthSpan);
-          modal.appendChild(role);
-
-          var stat1 = document.createElement('div');
-          stat1.className = 'modal-stat-row';
-          var label1 = document.createElement('span');
-          label1.className = 'modal-stat-label';
-          label1.textContent = 'Last met';
-          var val1 = document.createElement('span');
-          val1.className = 'modal-stat-value';
-          val1.textContent = data.lastMet;
-          stat1.appendChild(label1);
-          stat1.appendChild(val1);
-          modal.appendChild(stat1);
-
-          var stat2 = document.createElement('div');
-          stat2.className = 'modal-stat-row';
-          var label2 = document.createElement('span');
-          label2.className = 'modal-stat-label';
-          label2.textContent = 'Open topics';
-          var val2 = document.createElement('span');
-          val2.className = 'modal-stat-value';
-          val2.textContent = data.openTopics;
-          stat2.appendChild(label2);
-          stat2.appendChild(val2);
-          modal.appendChild(stat2);
-
-          var topicsDiv = document.createElement('div');
-          topicsDiv.className = 'modal-topics';
-          var topicsHeader = document.createElement('div');
-          topicsHeader.className = 'modal-topics-header';
-          topicsHeader.textContent = 'Open Topics';
-          topicsDiv.appendChild(topicsHeader);
-          data.topics.forEach(function(t) {
-            var item = document.createElement('div');
-            item.className = 'modal-topic-item';
-            item.textContent = '· ' + t;
-            topicsDiv.appendChild(item);
-          });
-          modal.appendChild(topicsDiv);
-
-          overlay.classList.add('show');
-          // Force reflow for transition
-          overlay.offsetHeight;
+            if (recordingActive) {
+                recordingSeconds = 0;
+                document.getElementById('record-timer').style.display = 'inline';
+                recordingInterval = setInterval(() => {
+                    recordingSeconds++;
+                    const mins = Math.floor(recordingSeconds / 60);
+                    const secs = recordingSeconds % 60;
+                    document.getElementById('record-timer').textContent = `● ${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            } else {
+                clearInterval(recordingInterval);
+                document.getElementById('record-timer').style.display = 'none';
+                if (recordingSeconds > 0) {
+                    showToast(`Recording saved: ${Math.floor(recordingSeconds / 60)}:${(recordingSeconds % 60).toString().padStart(2, '0')}`);
+                }
+            }
         });
-      });
 
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-          overlay.classList.remove('show');
+        // SECTION HEADERS
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                this.classList.toggle('collapsed');
+                content.classList.toggle('collapsed');
+            });
+        });
+
+        // TRIAGE ACTIONS
+        document.querySelectorAll('.keep-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideAllPickers();
+                const picker = document.createElement('div');
+                picker.className = 'picker-popup';
+                ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(day => {
+                    const chip = document.createElement('button');
+                    chip.className = 'chip';
+                    chip.textContent = day;
+                    chip.addEventListener('click', () => {
+                        const card = btn.closest('.triage-card');
+                        card.classList.add('slide-out');
+                        setTimeout(() => {
+                            showToast(`Kept for ${day}`);
+                            card.remove();
+                        }, 300);
+                    });
+                    picker.appendChild(chip);
+                });
+                btn.parentElement.after(picker);
+            });
+        });
+
+        document.querySelectorAll('.delegate-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideAllPickers();
+                const picker = document.createElement('div');
+                picker.className = 'picker-popup';
+                ['Priya', 'Maya', 'Anika'].forEach(name => {
+                    const chip = document.createElement('button');
+                    chip.className = 'chip';
+                    chip.textContent = name;
+                    chip.addEventListener('click', () => {
+                        const card = btn.closest('.triage-card');
+                        card.classList.add('slide-out');
+                        setTimeout(() => {
+                            showToast(`Delegateed to ${name}`);
+                            card.remove();
+                        }, 300);
+                    });
+                    picker.appendChild(chip);
+                });
+                btn.parentElement.after(picker);
+            });
+        });
+
+        document.querySelectorAll('.discuss-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideAllPickers();
+                const picker = document.createElement('div');
+                picker.className = 'picker-popup';
+                ['Priya', 'Maya', 'Anika'].forEach(name => {
+                    const chip = document.createElement('button');
+                    chip.className = 'chip';
+                    chip.textContent = name;
+                    chip.addEventListener('click', () => {
+                        const card = btn.closest('.triage-card');
+                        card.classList.add('slide-out');
+                        setTimeout(() => {
+                            showToast(`Added to ${name}'s topics`);
+                            card.remove();
+                        }, 300);
+                    });
+                    picker.appendChild(chip);
+                });
+                btn.parentElement.after(picker);
+            });
+        });
+
+        document.querySelectorAll('.drop-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideAllPickers();
+                const card = btn.closest('.triage-card');
+                card.classList.add('slide-out');
+                setTimeout(() => {
+                    showToast('Dropped');
+                    card.remove();
+                }, 300);
+            });
+        });
+
+        // TASK CHECKBOX
+        document.querySelectorAll('.task-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (e.target.closest('.task-focus-btn') || e.target.closest('.meeting-expanded') ||
+                    e.target.closest('.prep-btn') || e.target.closest('.stale-badge') ||
+                    e.target.closest('.stale-action-btn')) {
+                    return;
+                }
+
+                if (row.classList.contains('meeting-row')) {
+                    row.classList.toggle('expanded');
+                    const topicsDiv = row.querySelector('.topics-list');
+                    if (topicsDiv && !topicsDiv.style.display) {
+                        topicsDiv.style.display = 'block';
+                    } else if (topicsDiv) {
+                        topicsDiv.style.display = 'none';
+                    }
+                    return;
+                }
+
+                if (row.classList.contains('completed')) return;
+
+                row.classList.add('completed');
+                const checkbox = row.querySelector('.task-checkbox');
+                checkbox.textContent = '✓';
+
+                const undo = document.createElement('span');
+                undo.className = 'undo-link';
+                undo.textContent = 'Undo';
+                row.appendChild(undo);
+
+                undo.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    row.classList.remove('completed');
+                    checkbox.textContent = '';
+                    undo.remove();
+                });
+            });
+        });
+
+        // FOCUS MODE
+        function openFocus(title, source) {
+            focusedTask = title;
+            document.getElementById('focus-title').textContent = title;
+            document.getElementById('focus-source').textContent = source;
+            document.getElementById('focus-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
-      });
 
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && overlay.classList.contains('show')) {
-          overlay.classList.remove('show');
+        function closeFocus() {
+            document.getElementById('focus-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            focusedTask = null;
         }
-      });
-    }
 
-    /* ===== INIT ===== */
-    document.addEventListener('DOMContentLoaded', function() {
-      initApertureDial();
-      initTriageActions();
-      initTaskCheckboxes();
-      initTabs();
-      initPersonModals();
-    });
-  </script>
+        document.querySelectorAll('.task-focus-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const row = btn.closest('.task-row');
+                const title = row.querySelector('.task-text').textContent.trim();
+                openFocus(title, 'Today');
+            });
+        });
+
+        document.querySelectorAll('.topic-focus-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const item = btn.closest('.topic-item');
+                const title = item.querySelector('.topic-title').textContent.trim();
+                const init = btn.closest('.initiative-card');
+                const source = init ? init.querySelector('.initiative-name').textContent : 'Strategy';
+                openFocus(title, source);
+            });
+        });
+
+        document.getElementById('focus-back').addEventListener('click', closeFocus);
+        document.getElementById('focus-done').addEventListener('click', () => {
+            showToast('Marked complete');
+            closeFocus();
+        });
+
+        document.getElementById('focus-overlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('focus-overlay')) {
+                closeFocus();
+            }
+        });
+
+        // KEYBOARD
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('focus-overlay').style.display === 'flex') {
+                closeFocus();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && document.getElementById('focus-overlay').style.display === 'flex') {
+                showToast('Marked complete');
+                closeFocus();
+            }
+        });
+
+        // STALE BADGES
+        document.querySelectorAll('.stale-badge').forEach(badge => {
+            badge.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const popover = badge.closest('.task-row').querySelector('.stale-popover');
+                if (popover) {
+                    popover.classList.toggle('visible');
+                }
+            });
+        });
+
+        document.querySelectorAll('.stale-action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const row = btn.closest('.task-row');
+                const popover = row.querySelector('.stale-popover');
+                popover.classList.remove('visible');
+
+                if (btn.textContent === 'Keep') {
+                    showToast('Kept for review');
+                } else {
+                    row.classList.add('slide-out');
+                    setTimeout(() => {
+                        showToast('Removed');
+                        row.remove();
+                    }, 300);
+                }
+            });
+        });
+
+        // INITIATIVE CARDS
+        document.querySelectorAll('.initiative-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.toggle('expanded');
+            });
+        });
+
+        // INITIATIVE ROWS IN DOCK
+        document.querySelectorAll('.init-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!row.querySelector('.init-expanded-topics')) {
+                    const topics = document.createElement('div');
+                    topics.className = 'init-expanded-topics';
+                    const initId = row.dataset.initId;
+                    if (initId === 'scim') {
+                        topics.innerHTML = '• API rate limits 3d<br>• SCIM timeline 5d<br>• On-call rotation 1d<br>• Integration test plan 8d';
+                    } else {
+                        topics.innerHTML = '• Q2 roadmap section 3d<br>• Board deck slides 4d<br>• Research competitor flows 2d';
+                    }
+                    row.after(topics);
+                } else {
+                    row.nextElementSibling.remove();
+                }
+            });
+        });
+
+        // DOCK TABS
+        document.querySelectorAll('.dock-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.dock-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.dock-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                const tabContent = document.querySelector(`[data-tab-content="${tab.dataset.tab}"]`);
+                tabContent.classList.add('active');
+            });
+        });
+
+        // PEOPLE MODAL
+        document.querySelectorAll('.mini-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const personId = card.dataset.personId;
+                const person = people[personId];
+
+                document.getElementById('modal-avatar').textContent = personId.charAt(0).toUpperCase();
+                document.getElementById('modal-name').textContent = person.name;
+                document.getElementById('modal-role').textContent = person.role;
+                document.getElementById('modal-meta').textContent = `Last met: ${person.lastMet}`;
+
+                const topicsHtml = person.topics.map(t => `
+                    <div class="modal-topic">
+                        <div class="modal-topic-title">${t.title}</div>
+                        <span class="modal-topic-age">${t.age}</span>
+                        <button class="modal-keep-btn">→ Keep</button>
+                    </div>
+                `).join('');
+
+                document.getElementById('modal-topics').innerHTML = topicsHtml;
+
+                // Add to today
+                document.querySelectorAll('.modal-keep-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const topic = btn.closest('.modal-topic').querySelector('.modal-topic-title').textContent;
+                        showToast(`Added to today: ${topic}`);
+                        document.getElementById('modal-backdrop').classList.remove('visible');
+                    });
+                });
+
+                document.getElementById('modal-backdrop').classList.add('visible');
+            });
+        });
+
+        document.getElementById('modal-close').addEventListener('click', () => {
+            document.getElementById('modal-backdrop').classList.remove('visible');
+        });
+
+        document.getElementById('modal-backdrop').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal-backdrop')) {
+                document.getElementById('modal-backdrop').classList.remove('visible');
+            }
+        });
+
+        // PREP BUTTON
+        document.querySelectorAll('.prep-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const topicsDiv = btn.nextElementSibling;
+                if (topicsDiv && topicsDiv.classList.contains('topics-list')) {
+                    topicsDiv.style.display = topicsDiv.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // EXPORT
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const text = `IMPACT SUMMARY
+================
+
+This quarter you shipped two P1 initiatives and shifted more work to your reports.
+
+SCIM Integration: Completed enterprise integration work, enabling new customer onboarding and cross-platform sync capabilities.
+
+Q2 Roadmap: Secured board approval and coordinated cross-functional execution. Mentored junior engineers on system design.
+
+Team Impact: Successfully navigated org restructuring while maintaining team morale and shipping on schedule.`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard');
+            });
+        });
+    </script>
 </body>
 </html>
