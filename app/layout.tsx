@@ -1,6 +1,19 @@
 import type { Metadata } from 'next'
+import { Outfit, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Nav from './Nav'
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Aperture Flow',
@@ -13,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-canvas text-text antialiased">
+    <html lang="en" className={`dark ${outfit.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-canvas text-text antialiased font-sans">
         <div className="min-h-screen flex flex-col">
           <Nav />
           <main className="flex-1">{children}</main>

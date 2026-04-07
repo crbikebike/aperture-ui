@@ -25,32 +25,28 @@ const KIND_COLOR: Record<Topic['kind'], string> = {
   note: 'text-yellow-400',
 }
 
-const BUCKET_BADGE: Record<Topic['bucket'], string> = {
-  now: 'bg-red-900/50 text-overdue border-overdue/30',
-  next: 'bg-blue-900/50 text-accent border-accent/30',
-  later: 'bg-yellow-900/30 text-yellow-400 border-yellow-500/30',
-}
-
 interface ActionButtonProps {
   label: string
+  subtitle: string
   shortcut: string
   onClick: () => void
   color: string
 }
 
-function ActionButton({ label, shortcut, onClick, color }: ActionButtonProps) {
+function ActionButton({ label, subtitle, shortcut, onClick, color }: ActionButtonProps) {
   return (
     <button
       onClick={onClick}
       className={`
         flex-1 flex flex-col items-center justify-center gap-1
-        px-3 py-3 rounded-btn border transition-all duration-150
+        px-3 py-3.5 rounded-btn border transition-all duration-150
         hover:scale-105 active:scale-95 cursor-pointer
         ${color}
       `}
     >
       <span className="font-semibold text-sm leading-none">{label}</span>
-      <span className="font-mono text-[10px] opacity-60">[{shortcut}]</span>
+      <span className="text-[9px] opacity-70 leading-tight text-center px-1">{subtitle}</span>
+      <span className="font-mono text-[10px] opacity-50 mt-0.5">[{shortcut}]</span>
     </button>
   )
 }
@@ -101,17 +97,13 @@ export default function TriageCard({ topic, current, total, onAction }: TriageCa
 
       {/* Card face */}
       <div className="bg-card rounded-card shadow-card-hover border border-border p-5 flex flex-col gap-4">
-        {/* Kind + bucket + age */}
+        {/* Kind + needs-triage badge + age */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className={`text-xs font-semibold ${KIND_COLOR[topic.kind]}`}>
             {KIND_LABEL[topic.kind]}
           </span>
-          <span
-            className={`text-[10px] font-mono uppercase tracking-wide px-1.5 py-0.5 rounded border ${
-              BUCKET_BADGE[topic.bucket]
-            }`}
-          >
-            {topic.bucket}
+          <span className="text-[10px] font-mono text-muted/70 italic">
+            Needs triage
           </span>
           <span className="ml-auto font-mono text-[10px] text-muted">
             {days === 0 ? 'today' : `${days}d ago`}
@@ -148,24 +140,28 @@ export default function TriageCard({ topic, current, total, onAction }: TriageCa
       <div className="flex gap-2">
         <ActionButton
           label="K·Now"
+          subtitle="Keep and schedule this week"
           shortcut="K"
           onClick={() => onAction('know')}
           color="bg-green-900/30 border-done/30 text-done hover:bg-green-900/50"
         />
         <ActionButton
-          label="A→"
+          label="A→ Assign"
+          subtitle="Accountable to someone"
           shortcut="A"
           onClick={() => onAction('assign')}
           color="bg-blue-900/30 border-accent/30 text-accent hover:bg-blue-900/50"
         />
         <ActionButton
-          label="T→"
+          label="T→ Track"
+          subtitle="Discussion topic for someone"
           shortcut="T"
           onClick={() => onAction('transfer')}
           color="bg-purple-900/30 border-purple-400/30 text-purple-400 hover:bg-purple-900/50"
         />
         <ActionButton
           label="✕"
+          subtitle="Drop it"
           shortcut="X"
           onClick={() => onAction('dismiss')}
           color="bg-red-900/20 border-overdue/30 text-overdue hover:bg-red-900/40"
@@ -174,7 +170,7 @@ export default function TriageCard({ topic, current, total, onAction }: TriageCa
 
       {/* Keyboard hint */}
       <p className="text-center text-muted text-[11px] font-mono">
-        K · A · T · X or Esc — keyboard shortcuts active
+        K · A · T · X or Esc — keyboard shortcuts active · Z to undo
       </p>
     </div>
   )

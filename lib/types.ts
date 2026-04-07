@@ -1,4 +1,4 @@
-export type Bucket = 'now' | 'next' | 'later'
+export type Bucket = 'now' | 'next' | 'later' | 'untriaged'
 export type TopicKind = 'task' | 'discussion' | 'note'
 export type TopicStatus = 'open' | 'done' | 'overdue'
 

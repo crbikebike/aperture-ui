@@ -21,6 +21,10 @@ const config: Config = {
         label: '#9CA3AF',
         text: '#F9FAFB',
         'text-secondary': '#D1D5DB',
+        amber: {
+          400: '#fb923c',
+          glow: 'rgba(251,146,60,0.18)',
+        },
       },
       borderRadius: {
         card: '12px',
@@ -31,7 +35,8 @@ const config: Config = {
         'card-hover': '0 4px 16px rgba(0,0,0,0.5)',
       },
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['var(--font-outfit)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       width: {
         card: '320px',
