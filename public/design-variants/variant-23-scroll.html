@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture Flow - Variant 23: Newspaper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FFFEFA;
+      color: #2C2C2C;
+      line-height: 1.6;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: #2C2C2C;
+      color: #FFFEFA;
+      padding: 48px 40px;
+      text-align: center;
+      border-bottom: 1px solid #E0DDD6;
+    }
+
+    .hero-date {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* Mini Bar */
+    .mini-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 24px 40px;
+      background: #FFFEFA;
+      border-bottom: 1px solid #E0DDD6;
+    }
+
+    .day-badge {
+      text-align: center;
+    }
+
+    .day-badge-name {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      color: #6B7280;
+      margin-bottom: 6px;
+    }
+
+    .day-badge-count {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2C2C2C;
+    }
+
+    .day-badge.past .day-badge-count {
+      opacity: 0.5;
+    }
+
+    .day-badge.today .day-badge-name {
+      color: #2D6A4F;
+    }
+
+    /* Section Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Today's Section */
+    .section {
+      padding: 48px 0;
+      border-bottom: 1px solid #E0DDD6;
+    }
+
+    .section-header {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: #2C2C2C;
+    }
+
+    /* Today Column Expanded */
+    .today-expanded {
+      background: #FFFFFF;
+      padding: 32px;
+      border-radius: 4px;
+    }
+
+    .item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .meeting {
+      background: #F0F7F0;
+      padding: 16px;
+      border-radius: 4px;
+      border-left: 3px solid #2D6A4F;
+    }
+
+    .meeting-time {
+      font-weight: 600;
+      font-size: 13px;
+      color: #2D6A4F;
+      margin-bottom: 4px;
+    }
+
+    .meeting-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #2C2C2C;
+    }
+
+    .task {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 14px;
+      color: #2C2C2C;
+    }
+
+    .task-age {
+      font-size: 11px;
+      color: #8C8575;
+      margin-top: 4px;
+    }
+
+    /* Other Days Grid */
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .day-column {
+      background: #F5F3EF;
+      padding: 20px;
+      border-radius: 4px;
+    }
+
+    .day-column.past {
+      opacity: 0.7;
+    }
+
+    .day-header {
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6B7280;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E0DDD6;
+    }
+
+    .day-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .day-item {
+      font-size: 12px;
+      padding: 6px 0;
+      color: #2C2C2C;
+    }
+
+    .day-item.done {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .day-item.undone {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .amber-badge {
+      background: #D4A017;
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    /* Topics Section */
+    .topics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topic-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: #FFFFFF;
+      border-radius: 4px;
+      border: 1px solid #F0F0F0;
+    }
+
+    .topic-checkbox {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .topic-content {
+      flex: 1;
+    }
+
+    .topic-title {
+      font-size: 14px;
+      color: #2C2C2C;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topic-age {
+      font-size: 11px;
+      color: #8C8575;
+    }
+
+    /* Flash Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .flash-card {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 4px;
+      border-top: 2px solid;
+    }
+
+    .flash-card.priya {
+      border-top-color: #2D6A4F;
+    }
+
+    .flash-card.maya {
+      border-top-color: #6366F1;
+    }
+
+    .flash-card.anika {
+      border-top-color: #D97706;
+    }
+
+    .flash-card.ravi {
+      border-top-color: #8B5CF6;
+    }
+
+    .flash-card.lena {
+      border-top-color: #EC4899;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 4px;
+    }
+
+    .card-role {
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+
+    .card-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-topic {
+      font-size: 12px;
+      color: #2C2C2C;
+      padding: 6px 0;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .card-topic:last-child {
+      border-bottom: none;
+    }
+
+    .topic-age-badge {
+      font-size: 10px;
+      color: #8C8575;
+      margin-left: 4px;
+    }
+
+    /* Backlog Section */
+    .backlog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .backlog-item {
+      padding: 12px;
+      background: #FFFFFF;
+      border-radius: 4px;
+      border: 1px solid #F0F0F0;
+      font-size: 14px;
+      color: #2C2C2C;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .backlog-age {
+      font-size: 11px;
+      color: #8C8575;
+      white-space: nowrap;
+    }
+
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .days-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .two-column-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-bar {
+        gap: 16px;
+      }
+
+      .container {
+        padding: 0 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-date">Wednesday, April 2, 2026</div>
+    <div class="hero-headline">3 meetings, 5 tasks, 1 carry-over from Monday</div>
+  </section>
+
+  <!-- Mini Bar -->
+  <div class="mini-bar">
+    <div class="day-badge past">
+      <div class="day-badge-name">Mon</div>
+      <div class="day-badge-count">3</div>
+    </div>
+    <div class="day-badge past">
+      <div class="day-badge-name">Tue</div>
+      <div class="day-badge-count">2</div>
+    </div>
+    <div class="day-badge today">
+      <div class="day-badge-name">Wed</div>
+      <div class="day-badge-count">5</div>
+    </div>
+    <div class="day-badge">
+      <div class="day-badge-name">Thu</div>
+      <div class="day-badge-count">2</div>
+    </div>
+    <div class="day-badge">
+      <div class="day-badge-name">Fri</div>
+      <div class="day-badge-count">3</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Today's Section -->
+    <section class="section">
+      <h2 class="section-header">TODAY — Wednesday</h2>
+      <div class="today-expanded">
+        <div class="meeting">
+          <div class="meeting-time">09:30</div>
+          <div class="meeting-title">Standup</div>
+        </div>
+        <div class="item"></div>
+
+        <div class="meeting">
+          <div class="meeting-time">11:00</div>
+          <div class="meeting-title">1:1 w/ Maya</div>
+        </div>
+        <div class="item"></div>
+
+        <div class="item">
+          <div class="task">
+            <input type="checkbox" class="task-checkbox">
+            <div class="task-content">
+              <div class="task-title">Finalize SCIM scope doc</div>
+              <div class="task-age">Due today</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="task">
+            <input type="checkbox" class="task-checkbox">
+            <div class="task-content">
+              <div class="task-title">Write launch checklist</div>
+              <div class="task-age">Due today</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="task">
+            <input type="checkbox" class="task-checkbox">
+            <div class="task-content">
+              <div class="task-title">Reply to Anika re: vendor eval</div>
+              <div class="task-age">Due today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other Days Section -->
+    <section class="section">
+      <h2 class="section-header">REST OF WEEK</h2>
+      <div class="days-grid">
+        <div class="day-column past">
+          <div class="day-header">Monday</div>
+          <div class="day-items">
+            <div class="day-item">10:00 1:1 w/ Priya</div>
+            <div class="day-item done">Update SCIM spec</div>
+            <div class="day-item undone">
+              Review Maya's design doc
+              <span class="amber-badge">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-column past">
+          <div class="day-header">Tuesday</div>
+          <div class="day-items">
+            <div class="day-item done">Draft Q2 roadmap section</div>
+            <div class="day-item undone">
+              Prep board deck slides
+              <span class="amber-badge">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-column">
+          <div class="day-header">Thursday</div>
+          <div class="day-items">
+            <div class="day-item">Review PR #847</div>
+            <div class="day-item">Sync notes from Maya 1:1</div>
+          </div>
+        </div>
+
+        <div class="day-column">
+          <div class="day-header">Friday</div>
+          <div class="day-items">
+            <div class="day-item">09:30 Team standup</div>
+            <div class="day-item">Weekly brag sheet</div>
+            <div class="day-item">Submit expense report</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your Topics Section -->
+    <section class="section">
+      <h2 class="section-header">NEXT — Your Topics</h2>
+      <div class="topics-list">
+        <div class="topic-item">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <div class="topic-title">
+              Research competitor onboarding flows
+              <span class="topic-age">3d</span>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <div class="topic-title">
+              Draft hiring justification for H2
+              <span class="topic-age">5d</span>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <div class="topic-title">
+              Sketch integration test plan
+              <span class="topic-age">2d</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- People & Initiatives Section -->
+    <section class="section">
+      <h2 class="section-header">NEXT — People & Initiatives</h2>
+      <div class="cards-grid">
+        <div class="flash-card priya">
+          <div class="card-name">Priya Singh</div>
+          <div class="card-role">Staff Eng — last met Monday</div>
+          <div class="card-topics">
+            <div class="card-topic">SCIM timeline <span class="topic-age-badge">3d</span></div>
+            <div class="card-topic">API rate limits <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">On-call rotation <span class="topic-age-badge">1d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card maya">
+          <div class="card-name">Maya Cho</div>
+          <div class="card-role">Designer — last met today</div>
+          <div class="card-topics">
+            <div class="card-topic">Design review feedback <span class="topic-age-badge">2d</span></div>
+            <div class="card-topic">Component library proposal <span class="topic-age-badge">7d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card anika">
+          <div class="card-name">Anika Patel</div>
+          <div class="card-role">PM, Platform — last met 5d ago</div>
+          <div class="card-topics">
+            <div class="card-topic">Vendor eval criteria <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">Cross-team dependency map <span class="topic-age-badge">3d</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Later: Backlog & People -->
+    <section class="section">
+      <h2 class="section-header">LATER</h2>
+      <div class="two-column-layout">
+        <div>
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #6B7280;">Your Backlog</h3>
+          <div class="backlog-list">
+            <div class="backlog-item">
+              <span>Plan team offsite Q3</span>
+              <span class="backlog-age">12d</span>
+            </div>
+            <div class="backlog-item">
+              <span>Write ADR for event sourcing</span>
+              <span class="backlog-age">8d</span>
+            </div>
+            <div class="backlog-item">
+              <span>Clean up Confluence archive</span>
+              <span class="backlog-age">15d</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #6B7280;">People</h3>
+          <div class="cards-grid" style="grid-template-columns: 1fr;">
+            <div class="flash-card ravi">
+              <div class="card-name">Ravi Desai</div>
+              <div class="card-role">Eng Manager</div>
+              <div class="card-topics">
+                <div class="card-topic">Hiring pipeline review <span class="topic-age-badge">12d</span></div>
+                <div class="card-topic">Platform migration <span class="topic-age-badge">8d</span></div>
+              </div>
+            </div>
+
+            <div class="flash-card lena">
+              <div class="card-name">Lena Park</div>
+              <div class="card-role">Data Eng</div>
+              <div class="card-topics">
+                <div class="card-topic">Pipeline monitoring <span class="topic-age-badge">14d</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

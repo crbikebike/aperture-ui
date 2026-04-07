@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 15 - Kanban-Lite | Aperture Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #EDECEB;
+            padding: 24px;
+            color: #1F1F1F;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Now Section */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #1F1F1F;
+        }
+
+        .lanes-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .lane {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            overflow: hidden;
+        }
+
+        .lane.past {
+            opacity: 0.5;
+        }
+
+        .lane.today {
+            border-top: 3px solid #7C3AED;
+        }
+
+        .lane-header {
+            padding: 12px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .lane-count {
+            background: #F3E8FF;
+            color: #7C3AED;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .lane-content {
+            padding: 12px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lane-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .lane-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .lane-content::-webkit-scrollbar-thumb {
+            background: #E0E0E0;
+            border-radius: 2px;
+        }
+
+        /* Items */
+        .item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #F8F8F8;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+
+        .item:hover {
+            background: #FFFFFF;
+            border-color: #7C3AED;
+        }
+
+        .item.done {
+            opacity: 0.6;
+        }
+
+        .item.done .item-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .item-checkbox {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #7C3AED;
+        }
+
+        .item-text {
+            flex: 1;
+        }
+
+        .item-badge {
+            flex-shrink: 0;
+            background: #F59E0B;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .meeting {
+            font-weight: 500;
+            color: #1F1F1F;
+        }
+
+        /* Next Section */
+        .next-lanes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .next-lane-topics {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 16px;
+        }
+
+        .next-lane-people {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .next-lane-people::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .next-lane-people::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .next-lane-people::-webkit-scrollbar-thumb {
+            background: #E0E0E0;
+            border-radius: 2px;
+        }
+
+        .mini-card {
+            background: #F8F8F8;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+
+        .mini-card:hover {
+            background: #FFFFFF;
+            border-color: #7C3AED;
+        }
+
+        /* Flash Cards */
+        .flash-card {
+            background: #FFFFFF;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .card-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1F1F1F;
+        }
+
+        .card-role {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .card-topics {
+            margin-top: 8px;
+            border-top: 1px solid #F0F0F0;
+            padding-top: 8px;
+        }
+
+        .topic-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .topic-text {
+            flex: 1;
+        }
+
+        .topic-age {
+            background: #F3F3F3;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #666;
+            white-space: nowrap;
+            margin-left: 4px;
+        }
+
+        /* Later Section */
+        .later-lane {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 16px;
+        }
+
+        .later-content {
+            display: flex;
+            gap: 16px;
+        }
+
+        .later-topics {
+            flex: 0 0 35%;
+        }
+
+        .later-people {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .later-people::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .later-people::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .later-people::-webkit-scrollbar-thumb {
+            background: #E0E0E0;
+            border-radius: 2px;
+        }
+
+        .backlog-item {
+            padding: 6px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .backlog-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 40px 16px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .lanes-container {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 12px;
+            }
+
+            .lane {
+                min-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Aperture Flow</h1>
+        <p>Week of March 31 — Jordan (P4 PM)</p>
+    </div>
+
+    <!-- NOW SECTION -->
+    <div class="section">
+        <div class="section-title">NOW — This Week</div>
+        <div class="lanes-container">
+            <!-- Monday -->
+            <div class="lane past">
+                <div class="lane-header">
+                    <span>Monday</span>
+                    <span class="lane-count">2</span>
+                </div>
+                <div class="lane-content">
+                    <div class="item done meeting">
+                        <input type="checkbox" class="item-checkbox" checked>
+                        <span class="item-text">10:00 1:1 w/ Priya</span>
+                    </div>
+                    <div class="item done">
+                        <input type="checkbox" class="item-checkbox" checked>
+                        <span class="item-text">Update SCIM spec</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Review Maya's design doc</span>
+                        <span class="item-badge">still open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="lane past">
+                <div class="lane-header">
+                    <span>Tuesday</span>
+                    <span class="lane-count">1</span>
+                </div>
+                <div class="lane-content">
+                    <div class="item done">
+                        <input type="checkbox" class="item-checkbox" checked>
+                        <span class="item-text">Draft Q2 roadmap section</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Prep board deck slides</span>
+                        <span class="item-badge">still open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday (Today) -->
+            <div class="lane today">
+                <div class="lane-header">
+                    <span>Wednesday</span>
+                    <span class="lane-count">5</span>
+                </div>
+                <div class="lane-content">
+                    <div class="item meeting">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">09:30 Standup</span>
+                    </div>
+                    <div class="item meeting">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">11:00 1:1 w/ Maya</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Finalize SCIM scope doc</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Write launch checklist</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Reply to Anika re: vendor eval</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="lane">
+                <div class="lane-header">
+                    <span>Thursday</span>
+                    <span class="lane-count">2</span>
+                </div>
+                <div class="lane-content">
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Review PR #847</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Sync notes from Maya 1:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="lane">
+                <div class="lane-header">
+                    <span>Friday</span>
+                    <span class="lane-count">3</span>
+                </div>
+                <div class="lane-content">
+                    <div class="item meeting">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">09:30 Team standup</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Weekly brag sheet</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" class="item-checkbox">
+                        <span class="item-text">Submit expense report</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEXT SECTION -->
+    <div class="section">
+        <div class="section-title">NEXT — 2 Weeks Out</div>
+        <div class="next-lanes">
+            <!-- Your Topics -->
+            <div class="next-lane-topics">
+                <div class="lane-header" style="padding: 0 0 12px 0; border-bottom: 1px solid #E8E8E8; margin-bottom: 12px;">
+                    <span style="font-weight: 600;">Your topics (3)</span>
+                </div>
+                <div class="mini-card">
+                    <input type="checkbox" class="item-checkbox" style="margin-right: 8px;">
+                    <span style="display: inline-block;">Research competitor onboarding flows</span>
+                </div>
+                <div class="mini-card">
+                    <input type="checkbox" class="item-checkbox" style="margin-right: 8px;">
+                    <span style="display: inline-block;">Draft hiring justification for H2</span>
+                </div>
+                <div class="mini-card">
+                    <input type="checkbox" class="item-checkbox" style="margin-right: 8px;">
+                    <span style="display: inline-block;">Sketch integration test plan</span>
+                </div>
+            </div>
+
+            <!-- People & Initiatives -->
+            <div class="next-lane-people">
+                <div class="lane-header" style="padding: 0 0 12px 0; border-bottom: 1px solid #E8E8E8; margin-bottom: 12px; display: block;">
+                    <span style="font-weight: 600;">People & initiatives</span>
+                </div>
+
+                <div class="flash-card">
+                    <div class="card-name">Priya</div>
+                    <div class="card-role">Staff Eng • Last met Monday</div>
+                    <div class="card-topics">
+                        <div class="topic-item">
+                            <span class="topic-text">SCIM timeline</span>
+                            <span class="topic-age">3d</span>
+                        </div>
+                        <div class="topic-item">
+                            <span class="topic-text">API rate limits</span>
+                            <span class="topic-age">5d</span>
+                        </div>
+                        <div class="topic-item">
+                            <span class="topic-text">On-call rotation</span>
+                            <span class="topic-age">1d</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flash-card">
+                    <div class="card-name">Maya</div>
+                    <div class="card-role">Designer • Last met today</div>
+                    <div class="card-topics">
+                        <div class="topic-item">
+                            <span class="topic-text">Design review feedback</span>
+                            <span class="topic-age">2d</span>
+                        </div>
+                        <div class="topic-item">
+                            <span class="topic-text">Component library proposal</span>
+                            <span class="topic-age">7d</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flash-card">
+                    <div class="card-name">Anika</div>
+                    <div class="card-role">PM, Platform • Last met 5d ago</div>
+                    <div class="card-topics">
+                        <div class="topic-item">
+                            <span class="topic-text">Vendor eval criteria</span>
+                            <span class="topic-age">5d</span>
+                        </div>
+                        <div class="topic-item">
+                            <span class="topic-text">Cross-team dependency map</span>
+                            <span class="topic-age">3d</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LATER SECTION -->
+    <div class="section">
+        <div class="section-title">LATER — Horizon</div>
+        <div class="later-lane">
+            <div class="lane-header" style="padding: 0 0 12px 0; border-bottom: 1px solid #E8E8E8; margin-bottom: 12px;">
+                <span style="font-weight: 600;">Backlog (5 items)</span>
+            </div>
+            <div class="later-content">
+                <div class="later-topics">
+                    <div style="font-weight: 500; font-size: 12px; margin-bottom: 8px; color: #666;">Your backlog</div>
+                    <div class="backlog-item">Plan team offsite Q3</div>
+                    <div class="backlog-item">Write ADR for event sourcing</div>
+                    <div class="backlog-item">Clean up Confluence archive</div>
+                </div>
+                <div class="later-people">
+                    <div style="font-weight: 500; font-size: 12px; margin-bottom: 8px; color: #666;">People items</div>
+                    <div class="flash-card">
+                        <div class="card-name">Ravi</div>
+                        <div class="card-role">Eng Manager</div>
+                        <div class="card-topics">
+                            <div class="topic-item">
+                                <span class="topic-text">Hiring pipeline review</span>
+                                <span class="topic-age">12d</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-text">Platform migration</span>
+                                <span class="topic-age">8d</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flash-card">
+                        <div class="card-name">Lena</div>
+                        <div class="card-role">Data Eng</div>
+                        <div class="card-topics">
+                            <div class="topic-item">
+                                <span class="topic-text">Pipeline monitoring</span>
+                                <span class="topic-age">14d</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task completion with checkbox
+        document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function(e) {
+                const item = this.closest('.item');
+                if (this.checked) {
+                    item.classList.add('done');
+                    setTimeout(() => {
+                        item.style.opacity = '0.6';
+                    }, 100);
+                } else {
+                    item.classList.remove('done');
+                    item.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

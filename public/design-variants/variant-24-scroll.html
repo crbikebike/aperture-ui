@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture Flow - Variant 24: Timeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FAF9F6;
+      color: #2C2C2C;
+      line-height: 1.6;
+    }
+
+    .timeline-container {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 60px 120px;
+    }
+
+    /* Timeline Axis */
+    .timeline-axis {
+      position: fixed;
+      left: 40px;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: #D6D3CC;
+      z-index: 1;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #D6D3CC;
+      border: 2px solid #FAF9F6;
+    }
+
+    .timeline-marker.now {
+      background: #2D6A4F;
+      top: 120px;
+    }
+
+    .timeline-marker.next {
+      background: #6366F1;
+      top: 800px;
+    }
+
+    .timeline-marker.later {
+      background: #9CA3AF;
+      top: 1600px;
+    }
+
+    .timeline-label {
+      position: absolute;
+      left: -95px;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6B7280;
+    }
+
+    .timeline-label.now {
+      top: 110px;
+    }
+
+    .timeline-label.next {
+      top: 790px;
+    }
+
+    .timeline-label.later {
+      top: 1590px;
+    }
+
+    /* Main Content */
+    .section {
+      margin-bottom: 80px;
+    }
+
+    .section-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 32px;
+      color: #2C2C2C;
+    }
+
+    /* Now Section: M-F Columns */
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    .day-column {
+      background: #FFFFFF;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .day-column.today {
+      border-left: 3px solid #2D6A4F;
+    }
+
+    .day-column.past {
+      opacity: 0.65;
+    }
+
+    .day-header {
+      background: #F5F4F0;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6B7280;
+      border-bottom: 1px solid #E0DDD6;
+    }
+
+    .day-column.today .day-header {
+      background: #F0FAF0;
+      color: #2D6A4F;
+    }
+
+    .column-items {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .meeting {
+      background: #F0F7F0;
+      border-left: 2px solid #2D6A4F;
+      padding: 8px 10px;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .meeting-time {
+      font-weight: 600;
+      font-size: 11px;
+      color: #2D6A4F;
+    }
+
+    .meeting-title {
+      color: #2C2C2C;
+    }
+
+    .task {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      align-items: flex-start;
+    }
+
+    .task-checkbox {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .task-title {
+      color: #2C2C2C;
+      flex: 1;
+    }
+
+    .amber-badge {
+      background: #D4A017;
+      color: white;
+      font-size: 9px;
+      padding: 2px 4px;
+      border-radius: 2px;
+      white-space: nowrap;
+      margin-left: 4px;
+    }
+
+    /* Topics Section */
+    .topics-block {
+      background: #FFFFFF;
+      padding: 32px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      margin-left: 40px;
+    }
+
+    .topics-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .topics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topic-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .topic-row:last-child {
+      border-bottom: none;
+    }
+
+    .topic-checkbox {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .topic-content {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topic-title {
+      color: #2C2C2C;
+    }
+
+    .topic-age {
+      font-size: 11px;
+      color: #8C8575;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    /* Flash Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-left: 40px;
+    }
+
+    .flash-card {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 4px;
+      border-top: 2px solid;
+    }
+
+    .flash-card.priya {
+      border-top-color: #2D6A4F;
+    }
+
+    .flash-card.maya {
+      border-top-color: #6366F1;
+    }
+
+    .flash-card.anika {
+      border-top-color: #D97706;
+    }
+
+    .flash-card.ravi {
+      border-top-color: #8B5CF6;
+    }
+
+    .flash-card.lena {
+      border-top-color: #EC4899;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 4px;
+    }
+
+    .card-role {
+      font-size: 11px;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+
+    .card-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-topic {
+      font-size: 11px;
+      color: #2C2C2C;
+      padding: 4px 0;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .card-topic:last-child {
+      border-bottom: none;
+    }
+
+    .topic-age-badge {
+      font-size: 10px;
+      color: #8C8575;
+      margin-left: 4px;
+    }
+
+    /* Small Cards for Later */
+    .cards-grid.small-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .flash-card.small {
+      padding: 16px;
+    }
+
+    .flash-card.small .card-name {
+      font-size: 13px;
+    }
+
+    .flash-card.small .card-role {
+      font-size: 10px;
+    }
+
+    .flash-card.small .card-topic {
+      font-size: 10px;
+    }
+
+    .backlog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #FFFFFF;
+      padding: 24px;
+      border-radius: 4px;
+      margin-left: 40px;
+      margin-bottom: 32px;
+    }
+
+    .backlog-item {
+      font-size: 13px;
+      color: #2C2C2C;
+      padding: 8px 0;
+      border-bottom: 1px solid #F0F0F0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .backlog-item:last-child {
+      border-bottom: none;
+    }
+
+    .backlog-age {
+      font-size: 11px;
+      color: #8C8575;
+    }
+
+    @media (max-width: 1000px) {
+      .timeline-container {
+        padding: 60px 20px 60px 80px;
+      }
+
+      .timeline-axis {
+        left: 20px;
+      }
+
+      .timeline-label {
+        font-size: 10px;
+        left: -70px;
+      }
+
+      .columns-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+        margin-left: 0;
+      }
+
+      .topics-block {
+        margin-left: 0;
+      }
+
+      .backlog-list {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Timeline Axis -->
+  <div class="timeline-axis"></div>
+  <div class="timeline-marker now"></div>
+  <div class="timeline-label now">NOW</div>
+
+  <div class="timeline-marker next"></div>
+  <div class="timeline-label next">NEXT</div>
+
+  <div class="timeline-marker later"></div>
+  <div class="timeline-label later">LATER</div>
+
+  <div class="timeline-container">
+    <!-- Now Section: This Week -->
+    <section class="section">
+      <h2 class="section-header">This Week</h2>
+      <div class="columns-grid">
+        <!-- Monday -->
+        <div class="day-column past">
+          <div class="day-header">Monday</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">10:00</div>
+              <div class="meeting-title">1:1 w/ Priya</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox" checked>
+              <div class="task-title" style="text-decoration: line-through; opacity: 0.6;">Update SCIM spec</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Review Maya's design doc<span class="amber-badge">still open</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+          <div class="day-header">Tuesday</div>
+          <div class="column-items">
+            <div class="task">
+              <input type="checkbox" class="task-checkbox" checked>
+              <div class="task-title" style="text-decoration: line-through; opacity: 0.6;">Draft Q2 roadmap section</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Prep board deck slides<span class="amber-badge">still open</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+          <div class="day-header">Wednesday</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">09:30</div>
+              <div class="meeting-title">Standup</div>
+            </div>
+            <div class="meeting">
+              <div class="meeting-time">11:00</div>
+              <div class="meeting-title">1:1 w/ Maya</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Finalize SCIM scope doc</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Write launch checklist</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Reply to Anika re: vendor eval</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+          <div class="day-header">Thursday</div>
+          <div class="column-items">
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Review PR #847</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Sync notes from Maya 1:1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+          <div class="day-header">Friday</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">09:30</div>
+              <div class="meeting-title">Team standup</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Weekly brag sheet</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Submit expense report</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next Section -->
+    <section class="section">
+      <h2 class="section-header">Coming Up</h2>
+
+      <!-- Your Topics -->
+      <div class="topics-block">
+        <div class="topics-header">Your Topics</div>
+        <div class="topics-list">
+          <div class="topic-row">
+            <input type="checkbox" class="topic-checkbox">
+            <div class="topic-content">
+              <span class="topic-title">Research competitor onboarding flows</span>
+              <span class="topic-age">3d</span>
+            </div>
+          </div>
+          <div class="topic-row">
+            <input type="checkbox" class="topic-checkbox">
+            <div class="topic-content">
+              <span class="topic-title">Draft hiring justification for H2</span>
+              <span class="topic-age">5d</span>
+            </div>
+          </div>
+          <div class="topic-row">
+            <input type="checkbox" class="topic-checkbox">
+            <div class="topic-content">
+              <span class="topic-title">Sketch integration test plan</span>
+              <span class="topic-age">2d</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- People Cards -->
+      <div class="cards-grid">
+        <div class="flash-card priya">
+          <div class="card-name">Priya Singh</div>
+          <div class="card-role">Staff Eng — last met Monday</div>
+          <div class="card-topics">
+            <div class="card-topic">SCIM timeline <span class="topic-age-badge">3d</span></div>
+            <div class="card-topic">API rate limits <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">On-call rotation <span class="topic-age-badge">1d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card maya">
+          <div class="card-name">Maya Cho</div>
+          <div class="card-role">Designer — last met today</div>
+          <div class="card-topics">
+            <div class="card-topic">Design review feedback <span class="topic-age-badge">2d</span></div>
+            <div class="card-topic">Component library proposal <span class="topic-age-badge">7d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card anika">
+          <div class="card-name">Anika Patel</div>
+          <div class="card-role">PM, Platform — last met 5d ago</div>
+          <div class="card-topics">
+            <div class="card-topic">Vendor eval criteria <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">Cross-team dependency map <span class="topic-age-badge">3d</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Later Section -->
+    <section class="section">
+      <h2 class="section-header">On the Horizon</h2>
+
+      <!-- Your Backlog -->
+      <div class="backlog-list">
+        <div style="font-size: 12px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Your Backlog</div>
+        <div class="backlog-item">
+          <span>Plan team offsite Q3</span>
+          <span class="backlog-age">12d</span>
+        </div>
+        <div class="backlog-item">
+          <span>Write ADR for event sourcing</span>
+          <span class="backlog-age">8d</span>
+        </div>
+        <div class="backlog-item">
+          <span>Clean up Confluence archive</span>
+          <span class="backlog-age">15d</span>
+        </div>
+      </div>
+
+      <!-- Later People Cards -->
+      <div class="cards-grid small-cards">
+        <div class="flash-card small ravi">
+          <div class="card-name">Ravi Desai</div>
+          <div class="card-role">Eng Manager</div>
+          <div class="card-topics">
+            <div class="card-topic">Hiring pipeline review <span class="topic-age-badge">12d</span></div>
+            <div class="card-topic">Platform migration <span class="topic-age-badge">8d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card small lena">
+          <div class="card-name">Lena Park</div>
+          <div class="card-role">Data Eng</div>
+          <div class="card-topics">
+            <div class="card-topic">Pipeline monitoring <span class="topic-age-badge">14d</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

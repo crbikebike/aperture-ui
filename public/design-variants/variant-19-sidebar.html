@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 19 — Sidebar Weekly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAF8;
+            color: #1F2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 280px;
+            background-color: #1E293B;
+            color: #E2E8F0;
+            padding: 20px;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+        }
+
+        .sidebar-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-user-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-user-info p {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748B;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .person-card {
+            background-color: #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .person-card:hover {
+            background-color: #475569;
+            transform: translateX(2px);
+        }
+
+        .person-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .person-card-meta {
+            font-size: 10px;
+            color: #94A3B8;
+            margin-bottom: 6px;
+        }
+
+        .person-card-topics {
+            font-size: 11px;
+            color: #CBD5E1;
+            line-height: 1.4;
+        }
+
+        .person-card-topic {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+            align-items: center;
+        }
+
+        .topic-badge {
+            background-color: rgba(59, 130, 246, 0.3);
+            color: #93C5FD;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 16px;
+            margin-top: 28px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        /* === NOW SECTION === */
+        .now-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .day-column {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-column.past {
+            opacity: 0.6;
+            background-color: #F3F2EE;
+        }
+
+        .day-column.today {
+            border-left: 4px solid #3B82F6;
+            background-color: #FFFFFF;
+        }
+
+        .day-header {
+            padding: 12px;
+            border-bottom: 1px solid #E5E4E0;
+            font-weight: 600;
+            font-size: 13px;
+            background-color: #FAFAF8;
+        }
+
+        .day-header.today {
+            background-color: #EFF6FF;
+        }
+
+        .day-content {
+            padding: 8px;
+            flex: 1;
+        }
+
+        .meeting, .task-item {
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .meeting {
+            background-color: #EBF5EE;
+            color: #1F2937;
+            border-left: 3px solid #059669;
+        }
+
+        .meeting-time {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .meeting-title {
+            font-size: 11px;
+            color: #4B5563;
+        }
+
+        .task-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        .task-item input[type="checkbox"] {
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #3B82F6;
+            flex-shrink: 0;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 12px;
+            color: #1F2937;
+            word-break: break-word;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: #9CA3AF;
+        }
+
+        .task-item.past-undone {
+            background-color: rgba(245, 158, 11, 0.08);
+            border-left: 2px solid #F59E0B;
+        }
+
+        .past-undone-badge {
+            display: inline-block;
+            background-color: #F59E0B;
+            color: #FFFFFF;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        /* === NEXT SECTION === */
+        .next-topics {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .topic-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 10px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            background-color: #FAFAF8;
+            cursor: pointer;
+        }
+
+        .topic-item:hover {
+            background-color: #F3F2EE;
+        }
+
+        .topic-item input[type="checkbox"] {
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #3B82F6;
+            flex-shrink: 0;
+        }
+
+        .topic-text {
+            flex: 1;
+            font-size: 13px;
+            color: #1F2937;
+        }
+
+        .topic-item.done .topic-text {
+            text-decoration: line-through;
+            color: #9CA3AF;
+        }
+
+        .topic-age {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* === FLASH CARDS (INITIATIVES) === */
+        .initiative-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .flash-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E4E0;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 12px;
+        }
+
+        .flash-card-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #1F2937;
+        }
+
+        .flash-card-meta {
+            font-size: 10px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+        }
+
+        .flash-card-topics {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .flash-card-topic {
+            font-size: 11px;
+            color: #4B5563;
+        }
+
+        /* === LATER SECTION === */
+        .later-topics {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .later-item {
+            display: flex;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #6B7280;
+            border-bottom: 1px solid #F3F2EE;
+        }
+
+        .later-item:last-child {
+            border-bottom: none;
+        }
+
+        .later-item-text {
+            flex: 1;
+        }
+
+        .later-item-age {
+            font-size: 10px;
+            color: #9CA3AF;
+            flex-shrink: 0;
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-4px);
+            }
+        }
+
+        .task-item.completing {
+            animation: fadeOut 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar">J</div>
+            <div class="sidebar-user-info">
+                <h3>Jordan</h3>
+                <p>Product Manager</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section-title">People</div>
+
+        <!-- Person Cards -->
+        <div class="person-card">
+            <div class="person-card-name">Priya</div>
+            <div class="person-card-meta">Staff Eng • Mon</div>
+            <div class="person-card-topics">
+                <div class="person-card-topic">
+                    <span class="topic-badge">3d</span>
+                    <span>SCIM timeline</span>
+                </div>
+                <div class="person-card-topic">
+                    <span class="topic-badge">5d</span>
+                    <span>API rate limits</span>
+                </div>
+                <div class="person-card-topic">
+                    <span class="topic-badge">1d</span>
+                    <span>On-call rotation</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="person-card">
+            <div class="person-card-name">Maya</div>
+            <div class="person-card-meta">Designer • Today</div>
+            <div class="person-card-topics">
+                <div class="person-card-topic">
+                    <span class="topic-badge">2d</span>
+                    <span>Design review feedback</span>
+                </div>
+                <div class="person-card-topic">
+                    <span class="topic-badge">7d</span>
+                    <span>Component library proposal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="person-card">
+            <div class="person-card-name">Anika</div>
+            <div class="person-card-meta">PM, Platform • 5d ago</div>
+            <div class="person-card-topics">
+                <div class="person-card-topic">
+                    <span class="topic-badge">5d</span>
+                    <span>Vendor eval criteria</span>
+                </div>
+                <div class="person-card-topic">
+                    <span class="topic-badge">3d</span>
+                    <span>Cross-team dependency map</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="person-card">
+            <div class="person-card-name">Ravi</div>
+            <div class="person-card-meta">Eng Manager</div>
+            <div class="person-card-topics">
+                <div class="person-card-topic">
+                    <span class="topic-badge">12d</span>
+                    <span>Hiring pipeline review</span>
+                </div>
+                <div class="person-card-topic">
+                    <span class="topic-badge">8d</span>
+                    <span>Platform migration</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="person-card">
+            <div class="person-card-name">Lena</div>
+            <div class="person-card-meta">Data Eng</div>
+            <div class="person-card-topics">
+                <div class="person-card-topic">
+                    <span class="topic-badge">14d</span>
+                    <span>Pipeline monitoring</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- NOW SECTION -->
+        <h2 class="section-header">This Week</h2>
+        <div class="now-grid">
+            <!-- Monday -->
+            <div class="day-column past">
+                <div class="day-header">Monday</div>
+                <div class="day-content">
+                    <div class="meeting">
+                        <div class="meeting-time">10:00</div>
+                        <div class="meeting-title">1:1 w/ Priya</div>
+                    </div>
+                    <div class="task-item done">
+                        <input type="checkbox" checked>
+                        <span class="task-text">Update SCIM spec</span>
+                    </div>
+                    <div class="task-item past-undone">
+                        <input type="checkbox">
+                        <span class="task-text">Review Maya's design doc<span class="past-undone-badge">still open</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-column past">
+                <div class="day-header">Tuesday</div>
+                <div class="day-content">
+                    <div class="task-item done">
+                        <input type="checkbox" checked>
+                        <span class="task-text">Draft Q2 roadmap section</span>
+                    </div>
+                    <div class="task-item past-undone">
+                        <input type="checkbox">
+                        <span class="task-text">Prep board deck slides<span class="past-undone-badge">still open</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-column today">
+                <div class="day-header today">Wednesday</div>
+                <div class="day-content">
+                    <div class="meeting">
+                        <div class="meeting-time">09:30</div>
+                        <div class="meeting-title">Standup</div>
+                    </div>
+                    <div class="meeting">
+                        <div class="meeting-time">11:00</div>
+                        <div class="meeting-title">1:1 w/ Maya</div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Finalize SCIM scope doc</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Write launch checklist</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Reply to Anika re: vendor eval</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="day-column">
+                <div class="day-header">Thursday</div>
+                <div class="day-content">
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Review PR #847</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Sync notes from Maya 1:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-column">
+                <div class="day-header">Friday</div>
+                <div class="day-content">
+                    <div class="meeting">
+                        <div class="meeting-time">09:30</div>
+                        <div class="meeting-title">Team standup</div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Weekly brag sheet</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Submit expense report</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEXT SECTION -->
+        <h2 class="section-header">Your Topics</h2>
+        <div class="next-topics">
+            <div class="topic-item">
+                <input type="checkbox">
+                <span class="topic-text">Research competitor onboarding flows</span>
+                <span class="topic-age">1d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span class="topic-text">Draft hiring justification for H2</span>
+                <span class="topic-age">2d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span class="topic-text">Sketch integration test plan</span>
+                <span class="topic-age">3d</span>
+            </div>
+        </div>
+
+        <!-- LATER SECTION -->
+        <h2 class="section-header">Your Backlog</h2>
+        <div class="later-topics">
+            <div class="later-item">
+                <span class="later-item-text">Plan team offsite Q3</span>
+                <span class="later-item-age">30d</span>
+            </div>
+            <div class="later-item">
+                <span class="later-item-text">Write ADR for event sourcing</span>
+                <span class="later-item-age">25d</span>
+            </div>
+            <div class="later-item">
+                <span class="later-item-text">Clean up Confluence archive</span>
+                <span class="later-item-age">21d</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task completion handler
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                const taskItem = e.target.closest('.task-item, .topic-item');
+                if (taskItem) {
+                    if (e.target.checked) {
+                        taskItem.classList.add('done');
+                        taskItem.classList.add('completing');
+                        setTimeout(() => {
+                            taskItem.classList.remove('completing');
+                        }, 600);
+                    } else {
+                        taskItem.classList.remove('done');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

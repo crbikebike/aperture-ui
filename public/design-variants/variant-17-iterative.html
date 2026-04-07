@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 17 - Muted Luxe | Aperture Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDFC;
+            padding: 48px;
+            color: #2B2B2B;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 48px;
+        }
+
+        .page-title {
+            font-family: 'Newsreader', serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2B2B2B;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        /* NOW SECTION */
+        .section-header {
+            font-family: 'Newsreader', serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            margin-top: 48px;
+            color: #2B2B2B;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #D6D3CC;
+        }
+
+        .now-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            margin-bottom: 48px;
+        }
+
+        .day-column {
+            padding: 0 12px;
+            border-right: 0.5px solid #D6D3CC;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-column:last-child {
+            border-right: none;
+        }
+
+        .day-column.past {
+            opacity: 0.5;
+        }
+
+        .day-name {
+            font-family: 'Newsreader', serif;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2B2B2B;
+        }
+
+        .day-column.today .day-name {
+            border-bottom: 2px solid #1A1A1A;
+            padding-bottom: 8px;
+        }
+
+        .day-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            transition: opacity 0.3s ease;
+            padding: 4px 0;
+        }
+
+        .task-item.meeting {
+            font-weight: 500;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-checkbox {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-top: 3px;
+            cursor: pointer;
+            accent-color: #1A1A1A;
+        }
+
+        .task-text {
+            flex: 1;
+            color: #2B2B2B;
+        }
+
+        .task-time {
+            color: #6B7280;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .task-badge {
+            flex-shrink: 0;
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 2px 5px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* NEXT Section */
+        .next-container {
+            display: flex;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .next-topics {
+            flex: 0 0 35%;
+        }
+
+        .topics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .topic-item {
+            padding: 8px 0;
+            padding-left: 16px;
+            border-left: 2px solid #D6D3CC;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .topic-item:hover {
+            border-left-color: #999;
+        }
+
+        .topic-item.done .topic-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .topic-checkbox {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #1A1A1A;
+        }
+
+        .topic-text {
+            flex: 1;
+        }
+
+        .next-people {
+            flex: 1;
+        }
+
+        /* Masonry Grid for Cards */
+        .cards-masonry {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            grid-auto-rows: auto;
+        }
+
+        .flash-card {
+            background: #FDFDFC;
+            border-top: 2px solid #D6D3CC;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .card-name {
+            font-family: 'Newsreader', serif;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2B2B2B;
+        }
+
+        .card-role {
+            color: #6B7280;
+            font-size: 11px;
+            margin-bottom: 12px;
+        }
+
+        .card-topics {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-top: 1px solid #E5E2DB;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .card-topic-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .card-topic-text {
+            flex: 1;
+        }
+
+        .card-topic-age {
+            color: #999;
+            font-size: 10px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* LATER Section */
+        .later-container {
+            display: flex;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .later-topics {
+            flex: 0 0 35%;
+        }
+
+        .backlog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .backlog-item {
+            padding: 8px 0;
+            padding-left: 16px;
+            border-left: 2px solid #D6D3CC;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #6B7280;
+            transition: border-color 0.2s ease;
+        }
+
+        .backlog-item:hover {
+            border-left-color: #999;
+            color: #2B2B2B;
+        }
+
+        .later-people {
+            flex: 1;
+        }
+
+        /* Show All Link */
+        .show-all {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 0;
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 12px;
+            border-bottom: 1px solid #D6D3CC;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .show-all:hover {
+            color: #2B2B2B;
+            border-bottom-color: #2B2B2B;
+        }
+
+        /* Single line items for later cards */
+        .later-card-compact {
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 6px 0;
+            border-left: 2px solid #E5E2DB;
+            padding-left: 12px;
+            transition: border-color 0.2s ease;
+        }
+
+        .later-card-compact:hover {
+            border-left-color: #999;
+        }
+
+        .later-card-title {
+            font-weight: 500;
+            color: #2B2B2B;
+        }
+
+        .later-card-count {
+            color: #999;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="page-title">Aperture Flow</div>
+        <div class="page-subtitle">Week of March 31 — Jordan (P4 PM) • Today is Wednesday</div>
+    </div>
+
+    <!-- NOW SECTION -->
+    <div class="section-header">This Week</div>
+    <div class="now-grid">
+        <!-- Monday -->
+        <div class="day-column past">
+            <div class="day-name">Monday</div>
+            <div class="day-items">
+                <div class="task-item meeting done">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-text">1:1 w/ Priya</span>
+                    <span class="task-time">10:00</span>
+                </div>
+                <div class="task-item done">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-text">Update SCIM spec</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Review Maya's design doc</span>
+                    <span class="task-badge">still open</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+            <div class="day-name">Tuesday</div>
+            <div class="day-items">
+                <div class="task-item done">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-text">Draft Q2 roadmap section</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Prep board deck slides</span>
+                    <span class="task-badge">still open</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday -->
+        <div class="day-column today">
+            <div class="day-name">Wednesday</div>
+            <div class="day-items">
+                <div class="task-item meeting">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Standup</span>
+                    <span class="task-time">09:30</span>
+                </div>
+                <div class="task-item meeting">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">1:1 w/ Maya</span>
+                    <span class="task-time">11:00</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Finalize SCIM scope doc</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Write launch checklist</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Reply to Anika re: vendor eval</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+            <div class="day-name">Thursday</div>
+            <div class="day-items">
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Review PR #847</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Sync notes from Maya 1:1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+            <div class="day-name">Friday</div>
+            <div class="day-items">
+                <div class="task-item meeting">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Team standup</span>
+                    <span class="task-time">09:30</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Weekly brag sheet</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Submit expense report</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEXT SECTION -->
+    <div class="section-header">Coming Up</div>
+    <div class="next-container">
+        <div class="next-topics">
+            <h3 style="font-family: 'Newsreader', serif; font-size: 14px; margin-bottom: 12px; color: #2B2B2B;">Your topics</h3>
+            <div class="topics-list">
+                <div class="topic-item">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Research competitor onboarding flows</span>
+                </div>
+                <div class="topic-item">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Draft hiring justification for H2</span>
+                </div>
+                <div class="topic-item">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Sketch integration test plan</span>
+                </div>
+            </div>
+        </div>
+        <div class="next-people">
+            <h3 style="font-family: 'Newsreader', serif; font-size: 14px; margin-bottom: 12px; color: #2B2B2B;">People & initiatives</h3>
+            <div class="cards-masonry">
+                <div class="flash-card">
+                    <div class="card-name">Priya</div>
+                    <div class="card-role">Staff Eng • Last met Monday</div>
+                    <div class="card-topics">
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">SCIM timeline</span>
+                            <span class="card-topic-age">3d</span>
+                        </div>
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">API rate limits</span>
+                            <span class="card-topic-age">5d</span>
+                        </div>
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">On-call rotation</span>
+                            <span class="card-topic-age">1d</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flash-card">
+                    <div class="card-name">Maya</div>
+                    <div class="card-role">Designer • Last met today</div>
+                    <div class="card-topics">
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">Design review feedback</span>
+                            <span class="card-topic-age">2d</span>
+                        </div>
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">Component library proposal</span>
+                            <span class="card-topic-age">7d</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flash-card">
+                    <div class="card-name">Anika</div>
+                    <div class="card-role">PM, Platform • Last met 5d ago</div>
+                    <div class="card-topics">
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">Vendor eval criteria</span>
+                            <span class="card-topic-age">5d</span>
+                        </div>
+                        <div class="card-topic-item">
+                            <span class="card-topic-text">Cross-team dependency map</span>
+                            <span class="card-topic-age">3d</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LATER SECTION -->
+    <div class="section-header">On the Horizon</div>
+    <div class="later-container">
+        <div class="later-topics">
+            <h3 style="font-family: 'Newsreader', serif; font-size: 14px; margin-bottom: 12px; color: #2B2B2B;">Your backlog</h3>
+            <div class="backlog-list">
+                <div class="backlog-item">Plan team offsite Q3</div>
+                <div class="backlog-item">Write ADR for event sourcing</div>
+                <div class="backlog-item">Clean up Confluence archive</div>
+            </div>
+        </div>
+        <div class="later-people">
+            <h3 style="font-family: 'Newsreader', serif; font-size: 14px; margin-bottom: 12px; color: #2B2B2B;">People</h3>
+            <div>
+                <div class="later-card-compact">
+                    <span class="later-card-title">Ravi</span>
+                    <div class="later-card-count">Eng Manager • 2 topics</div>
+                </div>
+                <div class="later-card-compact">
+                    <span class="later-card-title">Lena</span>
+                    <div class="later-card-count">Data Eng • 1 topic</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task completion
+        document.querySelectorAll('.task-checkbox, .topic-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const item = this.closest('.task-item') || this.closest('.topic-item');
+                if (this.checked) {
+                    item.classList.add('done');
+                } else {
+                    item.classList.remove('done');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

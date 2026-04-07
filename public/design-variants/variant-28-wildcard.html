@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 28 — Triage-First</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F6F3;
+            color: #2C2C2C;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        /* Week View Grid Background */
+        .week-grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .week-grid-day {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* Triage Overlay */
+        .triage-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+
+        .triage-overlay.hidden {
+            display: none;
+        }
+
+        .triage-stack {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .triage-card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .triage-card-next {
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        .triage-counter {
+            font-size: 12px;
+            color: #8C8575;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .triage-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .triage-source {
+            font-size: 12px;
+            color: #8C8575;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn-now {
+            background-color: #2D6A4F;
+            color: #FFFFFF;
+            grid-column: span 2;
+        }
+
+        .action-btn-now:hover {
+            background-color: #235240;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+        }
+
+        .action-btn-assign {
+            background-color: #3B82F6;
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        .action-btn-assign:hover {
+            background-color: #2563EB;
+        }
+
+        .action-btn-assign::after {
+            content: "▼";
+            position: absolute;
+            right: 12px;
+            font-size: 10px;
+        }
+
+        .action-btn-delegate {
+            background-color: #7C3AED;
+            color: #FFFFFF;
+        }
+
+        .action-btn-delegate:hover {
+            background-color: #6D28D9;
+        }
+
+        .action-btn-tag {
+            background-color: #D97706;
+            color: #FFFFFF;
+        }
+
+        .action-btn-tag:hover {
+            background-color: #B45309;
+        }
+
+        .action-btn-skip {
+            background-color: #DC2626;
+            color: #FFFFFF;
+            grid-column: span 2;
+        }
+
+        .action-btn-skip:hover {
+            background-color: #B91C1C;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #FFFFFF;
+            border: 1px solid #E5E2DB;
+            border-radius: 6px;
+            margin-top: 6px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .action-btn-assign.active ~ .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #2C2C2C;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F0EFEB;
+        }
+
+        /* Week View */
+        .week-view {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .week-view.hidden {
+            display: none;
+        }
+
+        .day-column {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .day-column.past {
+            opacity: 0.6;
+            background-color: #EDEBE8;
+        }
+
+        .day-column.today {
+            border-left: 3px solid #2D6A4F;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(45, 106, 79, 0.1);
+        }
+
+        .day-header {
+            padding: 16px;
+            border-bottom: 1px solid #E5E2DB;
+            background-color: #FAFAF8;
+        }
+
+        .day-header.today {
+            background-color: #F0FAF0;
+        }
+
+        .day-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        .day-date {
+            font-size: 12px;
+            color: #8C8575;
+            margin-top: 4px;
+        }
+
+        .day-content {
+            padding: 12px;
+        }
+
+        .meeting {
+            background-color: #EBF5EE;
+            border-left: 3px solid #2D6A4F;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .meeting-time {
+            color: #2D6A4F;
+            font-weight: 600;
+        }
+
+        .meeting-title {
+            color: #2C2C2C;
+            margin-top: 2px;
+        }
+
+        .task {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #2C2C2C;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 8px;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .task.done {
+            opacity: 0.5;
+            text-decoration: line-through;
+            color: #8C8575;
+        }
+
+        .task.carry-over::after {
+            content: "still open";
+            margin-left: auto;
+            background-color: #D4A017;
+            color: #FFFFFF;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Next Section */
+        .section {
+            margin-top: 32px;
+            padding: 0 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-bottom: 16px;
+        }
+
+        .subsection-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .topics-list {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #2C2C2C;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-item input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .topic-age {
+            margin-left: auto;
+            background-color: #F0EFEB;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #6B7280;
+        }
+
+        .flash-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .flash-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E2DB;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        .card-role {
+            font-size: 12px;
+            color: #8C8575;
+            margin-top: 2px;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: #8C8575;
+            margin-top: 6px;
+        }
+
+        .card-topics {
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .card-topic {
+            padding: 6px 0;
+            color: #2C2C2C;
+            border-bottom: 1px solid #F0EFEB;
+        }
+
+        .card-topic:last-child {
+            border-bottom: none;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background-color: #F0EFEB;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #6B7280;
+            margin-left: 6px;
+        }
+
+        @media (max-width: 1200px) {
+            .week-view {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .week-grid-background {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .week-view {
+                grid-template-columns: 1fr;
+            }
+
+            .flash-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .triage-card {
+                max-width: 90vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">Aperture Flow — Jordan (P4 PM)</div>
+    </header>
+
+    <!-- Triage Overlay -->
+    <div class="triage-overlay" id="triageOverlay">
+        <div class="triage-stack">
+            <div class="triage-card">
+                <div class="triage-counter">Item <span id="triage-current">1</span> of <span id="triage-total">7</span></div>
+                <div class="triage-card-title" id="triage-title">Priya mentioned reorg timeline</div>
+                <div class="triage-source">Source: 1:1 recording · 2h ago</div>
+
+                <div class="action-buttons">
+                    <button class="action-btn action-btn-now" onclick="triageAction('now')">K — Move to Now</button>
+
+                    <div style="position: relative;">
+                        <button class="action-btn action-btn-assign" onclick="toggleDropdown(this)">A — Assign</button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="assignTo('Priya')">Priya (Staff Eng)</div>
+                            <div class="dropdown-item" onclick="assignTo('Maya')">Maya (Designer)</div>
+                            <div class="dropdown-item" onclick="assignTo('Anika')">Anika (PM, Platform)</div>
+                        </div>
+                    </div>
+
+                    <button class="action-btn action-btn-delegate" onclick="triageAction('delegate')">D — Delegate</button>
+                    <button class="action-btn action-btn-tag" onclick="triageAction('tag')">T — Tag Topic</button>
+                    <button class="action-btn action-btn-skip" onclick="triageAction('skip')">X — Skip for Now</button>
+                </div>
+            </div>
+
+            <div class="triage-card-next">
+                <div style="opacity: 0.5;">
+                    <div class="triage-card-title" style="font-size: 14px; margin-bottom: 8px;">Next item preview</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Week View Grid Background -->
+    <div class="week-grid-background">
+        <div class="week-grid-day"></div>
+        <div class="week-grid-day"></div>
+        <div class="week-grid-day"></div>
+        <div class="week-grid-day"></div>
+        <div class="week-grid-day"></div>
+    </div>
+
+    <!-- Week View -->
+    <div class="week-view" id="weekView">
+        <!-- Monday -->
+        <div class="day-column past">
+            <div class="day-header">
+                <div class="day-name">Monday</div>
+                <div class="day-date">Mar 31</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">10:00</div>
+                    <div class="meeting-title">1:1 w/ Priya</div>
+                </div>
+                <div class="task done">
+                    <input type="checkbox" checked>
+                    <span>Update SCIM spec</span>
+                </div>
+                <div class="task carry-over">
+                    <input type="checkbox">
+                    <span>Review Maya's design doc</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+            <div class="day-header">
+                <div class="day-name">Tuesday</div>
+                <div class="day-date">Apr 1</div>
+            </div>
+            <div class="day-content">
+                <div class="task done">
+                    <input type="checkbox" checked>
+                    <span>Draft Q2 roadmap section</span>
+                </div>
+                <div class="task carry-over">
+                    <input type="checkbox">
+                    <span>Prep board deck slides</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+            <div class="day-header today">
+                <div class="day-name">Wednesday</div>
+                <div class="day-date">Apr 2 — Today</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">09:30</div>
+                    <div class="meeting-title">Standup</div>
+                </div>
+                <div class="meeting">
+                    <div class="meeting-time">11:00</div>
+                    <div class="meeting-title">1:1 w/ Maya</div>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Finalize SCIM scope doc</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Write launch checklist</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Reply to Anika re: vendor eval</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+            <div class="day-header">
+                <div class="day-name">Thursday</div>
+                <div class="day-date">Apr 3</div>
+            </div>
+            <div class="day-content">
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Review PR #847</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Sync notes from Maya 1:1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+            <div class="day-header">
+                <div class="day-name">Friday</div>
+                <div class="day-date">Apr 4</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">09:30</div>
+                    <div class="meeting-title">Team standup</div>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Weekly brag sheet</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Submit expense report</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next Section -->
+    <div class="section" id="nextSection">
+        <div class="section-title">Next (2 Weeks)</div>
+
+        <div class="subsection-title">Your Topics</div>
+        <div class="topics-list">
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Research competitor onboarding flows</span>
+                <span class="topic-age">4d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Draft hiring justification for H2</span>
+                <span class="topic-age">2d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Sketch integration test plan</span>
+                <span class="topic-age">1d</span>
+            </div>
+        </div>
+
+        <div class="subsection-title">People & Initiatives</div>
+        <div class="flash-cards">
+            <div class="flash-card">
+                <div>
+                    <div class="card-name">Priya</div>
+                    <div class="card-role">Staff Eng</div>
+                    <div class="card-meta">Last met: Mon</div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">SCIM timeline <span class="topic-badge">3d</span></div>
+                    <div class="card-topic">API rate limits <span class="topic-badge">5d</span></div>
+                    <div class="card-topic">On-call rotation <span class="topic-badge">1d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div>
+                    <div class="card-name">Maya</div>
+                    <div class="card-role">Designer</div>
+                    <div class="card-meta">Last met: Today</div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Design review feedback <span class="topic-badge">2d</span></div>
+                    <div class="card-topic">Component library proposal <span class="topic-badge">7d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div>
+                    <div class="card-name">Anika</div>
+                    <div class="card-role">PM, Platform</div>
+                    <div class="card-meta">Last met: 5d ago</div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Vendor eval criteria <span class="topic-badge">5d</span></div>
+                    <div class="card-topic">Cross-team dependency map <span class="topic-badge">3d</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Later Section -->
+    <div class="section" id="laterSection">
+        <div class="section-title">Later (Backlog)</div>
+
+        <div class="subsection-title">Your Backlog</div>
+        <div class="topics-list">
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Plan team offsite Q3</span>
+                <span class="topic-age">—</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Write ADR for event sourcing</span>
+                <span class="topic-age">—</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Clean up Confluence archive</span>
+                <span class="topic-age">—</span>
+            </div>
+        </div>
+
+        <div class="subsection-title">People & Initiatives</div>
+        <div class="flash-cards">
+            <div class="flash-card">
+                <div>
+                    <div class="card-name">Ravi</div>
+                    <div class="card-role">Eng Manager</div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Hiring pipeline review <span class="topic-badge">12d</span></div>
+                    <div class="card-topic">Platform migration <span class="topic-badge">8d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div>
+                    <div class="card-name">Lena</div>
+                    <div class="card-role">Data Eng</div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Pipeline monitoring <span class="topic-badge">14d</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTriageItem = 0;
+        const triageItems = [
+            { title: 'Priya mentioned reorg timeline', source: '1:1 recording · 2h ago' },
+            { title: 'Research competitor onboarding flows', source: 'Inbox · 4h ago' },
+            { title: 'Draft hiring justification for H2', source: 'Slack · 6h ago' },
+            { title: 'Sketch integration test plan', source: 'Email · 8h ago' },
+            { title: 'Review PR #847', source: 'GitHub · 10h ago' },
+            { title: 'Sync notes from Maya 1:1', source: 'Calendar · 12h ago' },
+            { title: 'Submit expense report', source: 'Reminder · 14h ago' }
+        ];
+
+        function updateTriageCard() {
+            const item = triageItems[currentTriageItem];
+            document.getElementById('triage-title').textContent = item.title;
+            document.getElementById('triage-current').textContent = currentTriageItem + 1;
+            document.getElementById('triage-total').textContent = triageItems.length;
+            document.querySelector('.triage-source').textContent = `Source: ${item.source}`;
+        }
+
+        function triageAction(action) {
+            // In a real app, this would process the action
+            console.log('Triage action:', action, currentTriageItem);
+
+            if (currentTriageItem < triageItems.length - 1) {
+                currentTriageItem++;
+                updateTriageCard();
+            } else {
+                // Triage complete
+                completeTriage();
+            }
+        }
+
+        function assignTo(person) {
+            console.log('Assigned to:', person);
+            triageAction('assign');
+        }
+
+        function toggleDropdown(btn) {
+            const isActive = btn.classList.contains('active');
+            document.querySelectorAll('.action-btn-assign').forEach(b => b.classList.remove('active'));
+            if (!isActive) {
+                btn.classList.add('active');
+            }
+        }
+
+        function completeTriage() {
+            // Hide triage, show week view
+            document.getElementById('triageOverlay').classList.add('hidden');
+            document.getElementById('weekView').classList.remove('hidden');
+            document.getElementById('nextSection').style.display = 'block';
+            document.getElementById('laterSection').style.display = 'block';
+        }
+
+        // Skip triage to see week view
+        function skipTriage() {
+            completeTriage();
+        }
+
+        // Initialize
+        updateTriageCard();
+
+        // Add keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('triageOverlay').classList.contains('hidden')) {
+                if (e.key === 'ArrowRight' || e.key === 'Enter') triageAction('skip');
+                if (e.key === 'Escape') skipTriage();
+            }
+        });
+    </script>
+</body>
+</html>

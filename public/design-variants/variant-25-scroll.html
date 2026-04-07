@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture Flow - Variant 25: Sections</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ECEAE5;
+      color: #2C2C2C;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .page-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .section-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 40px;
+    }
+
+    .section-card.later {
+      background: #F5F4F0;
+    }
+
+    .section-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 32px;
+    }
+
+    /* This Week Section */
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+
+    .day-column {
+      background: #FAFAF9;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .day-column.today {
+      background: #F0FAF0;
+      border: 1px solid #E5F5E5;
+    }
+
+    .day-column.past {
+      opacity: 0.65;
+    }
+
+    .day-header {
+      background: #F5F4F0;
+      padding: 10px;
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6B7280;
+      border-bottom: 1px solid #E0DDD6;
+      text-align: center;
+    }
+
+    .day-column.today .day-header {
+      background: #E5F5E5;
+      color: #2D6A4F;
+    }
+
+    .column-items {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 150px;
+    }
+
+    .meeting {
+      background: #F0F7F0;
+      border-left: 2px solid #2D6A4F;
+      padding: 8px 10px;
+      border-radius: 2px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .meeting-time {
+      font-weight: 600;
+      font-size: 10px;
+      color: #2D6A4F;
+    }
+
+    .meeting-title {
+      color: #2C2C2C;
+      font-size: 11px;
+    }
+
+    .task {
+      display: flex;
+      gap: 6px;
+      font-size: 11px;
+      align-items: flex-start;
+    }
+
+    .task-checkbox {
+      width: 14px;
+      height: 14px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .task-title {
+      color: #2C2C2C;
+      flex: 1;
+    }
+
+    .empty-day {
+      color: #8C8575;
+      font-size: 10px;
+      text-align: center;
+      padding-top: 20px;
+    }
+
+    /* Topics Section */
+    .topics-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topics-header {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .topic-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      padding: 12px;
+      background: #FAFAF9;
+      border-radius: 6px;
+    }
+
+    .topic-checkbox {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+    }
+
+    .topic-content {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topic-title {
+      color: #2C2C2C;
+    }
+
+    .topic-age {
+      font-size: 11px;
+      color: #8C8575;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    /* Flash Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .flash-card {
+      background: #FAFAF9;
+      padding: 20px;
+      border-radius: 12px;
+      border-top: 2px solid;
+    }
+
+    .flash-card.priya {
+      border-top-color: #2D6A4F;
+    }
+
+    .flash-card.maya {
+      border-top-color: #6366F1;
+    }
+
+    .flash-card.anika {
+      border-top-color: #D97706;
+    }
+
+    .flash-card.ravi {
+      border-top-color: #8B5CF6;
+    }
+
+    .flash-card.lena {
+      border-top-color: #EC4899;
+    }
+
+    .card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 4px;
+    }
+
+    .card-role {
+      font-size: 10px;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+
+    .card-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-topic {
+      font-size: 11px;
+      color: #2C2C2C;
+      padding: 4px 0;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .card-topic:last-child {
+      border-bottom: none;
+    }
+
+    .topic-age-badge {
+      font-size: 10px;
+      color: #8C8575;
+      margin-left: 4px;
+    }
+
+    /* Backlog Section */
+    .backlog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .backlog-item {
+      font-size: 13px;
+      color: #2C2C2C;
+      padding: 12px;
+      background: #FAFAF9;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .backlog-age {
+      font-size: 11px;
+      color: #8C8575;
+    }
+
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .cards-grid.small-cards {
+      grid-template-columns: 1fr;
+      margin-top: 0;
+    }
+
+    .flash-card.small {
+      padding: 16px;
+    }
+
+    .flash-card.small .card-name {
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .columns-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .two-column-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .section-card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- This Week Section -->
+    <div class="section-card">
+      <h2 class="section-title">This Week</h2>
+      <div class="columns-grid">
+        <!-- Monday -->
+        <div class="day-column past">
+          <div class="day-header">Mon</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">10:00</div>
+              <div class="meeting-title">1:1 w/ Priya</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox" checked>
+              <div class="task-title">Update SCIM spec</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Review design doc</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+          <div class="day-header">Tue</div>
+          <div class="column-items">
+            <div class="task">
+              <input type="checkbox" class="task-checkbox" checked>
+              <div class="task-title">Draft Q2 roadmap</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Prep board slides</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+          <div class="day-header">Wed</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">09:30</div>
+              <div class="meeting-title">Standup</div>
+            </div>
+            <div class="meeting">
+              <div class="meeting-time">11:00</div>
+              <div class="meeting-title">1:1 w/ Maya</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Finalize SCIM doc</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Launch checklist</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Reply Anika</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+          <div class="day-header">Thu</div>
+          <div class="column-items">
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Review PR #847</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Sync Maya notes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+          <div class="day-header">Fri</div>
+          <div class="column-items">
+            <div class="meeting">
+              <div class="meeting-time">09:30</div>
+              <div class="meeting-title">Standup</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Brag sheet</div>
+            </div>
+            <div class="task">
+              <input type="checkbox" class="task-checkbox">
+              <div class="task-title">Expenses</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coming Up — Your Topics -->
+    <div class="section-card">
+      <h2 class="section-title">Coming Up — Your Topics</h2>
+      <div class="topics-section">
+        <div class="topic-row">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <span class="topic-title">Research competitor onboarding flows</span>
+            <span class="topic-age">3d</span>
+          </div>
+        </div>
+        <div class="topic-row">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <span class="topic-title">Draft hiring justification for H2</span>
+            <span class="topic-age">5d</span>
+          </div>
+        </div>
+        <div class="topic-row">
+          <input type="checkbox" class="topic-checkbox">
+          <div class="topic-content">
+            <span class="topic-title">Sketch integration test plan</span>
+            <span class="topic-age">2d</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coming Up — People -->
+    <div class="section-card">
+      <h2 class="section-title">Coming Up — People</h2>
+      <div class="cards-grid">
+        <div class="flash-card priya">
+          <div class="card-name">Priya Singh</div>
+          <div class="card-role">Staff Eng — last met Monday</div>
+          <div class="card-topics">
+            <div class="card-topic">SCIM timeline <span class="topic-age-badge">3d</span></div>
+            <div class="card-topic">API rate limits <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">On-call rotation <span class="topic-age-badge">1d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card maya">
+          <div class="card-name">Maya Cho</div>
+          <div class="card-role">Designer — last met today</div>
+          <div class="card-topics">
+            <div class="card-topic">Design review feedback <span class="topic-age-badge">2d</span></div>
+            <div class="card-topic">Component library proposal <span class="topic-age-badge">7d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card anika">
+          <div class="card-name">Anika Patel</div>
+          <div class="card-role">PM, Platform — last met 5d ago</div>
+          <div class="card-topics">
+            <div class="card-topic">Vendor eval criteria <span class="topic-age-badge">5d</span></div>
+            <div class="card-topic">Cross-team dependency map <span class="topic-age-badge">3d</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- On the Horizon — Your Backlog -->
+    <div class="section-card later">
+      <h2 class="section-title">On the Horizon — Your Backlog</h2>
+      <div class="backlog-list">
+        <div class="backlog-item">
+          <span>Plan team offsite Q3</span>
+          <span class="backlog-age">12d</span>
+        </div>
+        <div class="backlog-item">
+          <span>Write ADR for event sourcing</span>
+          <span class="backlog-age">8d</span>
+        </div>
+        <div class="backlog-item">
+          <span>Clean up Confluence archive</span>
+          <span class="backlog-age">15d</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- On the Horizon — People -->
+    <div class="section-card later">
+      <h2 class="section-title">On the Horizon — People</h2>
+      <div class="cards-grid small-cards">
+        <div class="flash-card small ravi">
+          <div class="card-name">Ravi Desai</div>
+          <div class="card-role">Eng Manager</div>
+          <div class="card-topics">
+            <div class="card-topic">Hiring pipeline review <span class="topic-age-badge">12d</span></div>
+            <div class="card-topic">Platform migration <span class="topic-age-badge">8d</span></div>
+          </div>
+        </div>
+
+        <div class="flash-card small lena">
+          <div class="card-name">Lena Park</div>
+          <div class="card-role">Data Eng</div>
+          <div class="card-topics">
+            <div class="card-topic">Pipeline monitoring <span class="topic-age-badge">14d</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 27 — Focus Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F6F3;
+            color: #2C2C2C;
+            transition: background-color 0.3s ease;
+        }
+
+        body.focus-mode {
+            background-color: #1A1A2E;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        body.focus-mode header {
+            background-color: #1A1A2E;
+            border-bottom-color: #333;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        body.focus-mode .header-title {
+            color: #FFFFFF;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        body.focus-mode .toggle-label {
+            color: #D1D5DB;
+        }
+
+        .toggle-switch {
+            display: flex;
+            background-color: #D6D3CC;
+            border-radius: 12px;
+            padding: 2px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-switch.active {
+            background-color: #2D6A4F;
+        }
+
+        .toggle-option {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6B7280;
+            transition: color 0.2s;
+        }
+
+        .toggle-option.active {
+            background-color: #FFFFFF;
+            color: #2C2C2C;
+        }
+
+        .toggle-switch.active .toggle-option.active {
+            background-color: #2D6A4F;
+            color: #FFFFFF;
+        }
+
+        /* Week View */
+        .week-view {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .day-column {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .day-column.past {
+            opacity: 0.6;
+            background-color: #EDEBE8;
+        }
+
+        .day-column.today {
+            border-left: 3px solid #2D6A4F;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(45, 106, 79, 0.1);
+        }
+
+        .day-header {
+            padding: 16px;
+            border-bottom: 1px solid #E5E2DB;
+            background-color: #FAFAF8;
+        }
+
+        .day-header.today {
+            background-color: #F0FAF0;
+        }
+
+        .day-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        .day-date {
+            font-size: 12px;
+            color: #8C8575;
+            margin-top: 4px;
+        }
+
+        .day-content {
+            padding: 12px;
+        }
+
+        .meeting {
+            background-color: #EBF5EE;
+            border-left: 3px solid #2D6A4F;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .meeting-time {
+            color: #2D6A4F;
+            font-weight: 600;
+        }
+
+        .meeting-title {
+            color: #2C2C2C;
+            margin-top: 2px;
+        }
+
+        .task {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #2C2C2C;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 8px;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .task.done {
+            opacity: 0.5;
+            text-decoration: line-through;
+            color: #8C8575;
+        }
+
+        .task.carry-over::after {
+            content: "still open";
+            margin-left: auto;
+            background-color: #D4A017;
+            color: #FFFFFF;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Next Section */
+        .section {
+            margin-top: 32px;
+            padding: 0 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-bottom: 16px;
+        }
+
+        .subsection-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .topics-list {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #2C2C2C;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-item input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .topic-age {
+            margin-left: auto;
+            background-color: #F0EFEB;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #6B7280;
+        }
+
+        .flash-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .flash-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E2DB;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2C2C2C;
+        }
+
+        .card-role {
+            font-size: 12px;
+            color: #8C8575;
+            margin-top: 2px;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: #8C8575;
+            margin-top: 6px;
+        }
+
+        .card-topics {
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .card-topic {
+            padding: 6px 0;
+            color: #2C2C2C;
+            border-bottom: 1px solid #F0EFEB;
+        }
+
+        .card-topic:last-child {
+            border-bottom: none;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background-color: #F0EFEB;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #6B7280;
+            margin-left: 6px;
+        }
+
+        /* Focus View */
+        .focus-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        body.focus-mode .focus-view {
+            display: flex;
+        }
+
+        body.focus-mode .week-view {
+            display: none;
+        }
+
+        body.focus-mode .section {
+            display: none;
+        }
+
+        .focus-card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 32px;
+        }
+
+        .focus-card-type {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8C8575;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .focus-card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .focus-card-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #8C8575;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .focus-linked-person {
+            background-color: #F0EFEB;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .focus-linked-label {
+            font-size: 11px;
+            color: #8C8575;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .focus-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .nav-button {
+            background-color: #6366F1;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: #4F46E5;
+        }
+
+        .nav-counter {
+            font-size: 13px;
+            color: #A0AEC0;
+        }
+
+        .focus-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .focus-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #D6D3CC;
+            transition: background-color 0.2s;
+        }
+
+        .focus-dot.active {
+            background-color: #6366F1;
+        }
+
+        .context-drawer {
+            width: 100%;
+            max-width: 600px;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .drawer-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8C8575;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .drawer-content {
+            font-size: 13px;
+            color: #2C2C2C;
+        }
+
+        .drawer-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #E5E2DB;
+        }
+
+        .drawer-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 1200px) {
+            .week-view {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .week-view {
+                grid-template-columns: 1fr;
+            }
+
+            .flash-cards {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .toggle-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">Aperture Flow — Jordan (P4 PM)</div>
+        <div class="toggle-group">
+            <span class="toggle-label">View:</span>
+            <div class="toggle-switch active">
+                <div class="toggle-option active" onclick="switchMode('week')">Week view</div>
+                <div class="toggle-option" onclick="switchMode('focus')">Focus view</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Week View -->
+    <div class="week-view">
+        <!-- Monday -->
+        <div class="day-column past">
+            <div class="day-header">
+                <div class="day-name">Monday</div>
+                <div class="day-date">Mar 31</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">10:00</div>
+                    <div class="meeting-title">1:1 w/ Priya</div>
+                </div>
+                <div class="task done">
+                    <input type="checkbox" checked>
+                    <span>Update SCIM spec</span>
+                </div>
+                <div class="task carry-over">
+                    <input type="checkbox">
+                    <span>Review Maya's design doc</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+            <div class="day-header">
+                <div class="day-name">Tuesday</div>
+                <div class="day-date">Apr 1</div>
+            </div>
+            <div class="day-content">
+                <div class="task done">
+                    <input type="checkbox" checked>
+                    <span>Draft Q2 roadmap section</span>
+                </div>
+                <div class="task carry-over">
+                    <input type="checkbox">
+                    <span>Prep board deck slides</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+            <div class="day-header today">
+                <div class="day-name">Wednesday</div>
+                <div class="day-date">Apr 2 — Today</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">09:30</div>
+                    <div class="meeting-title">Standup</div>
+                </div>
+                <div class="meeting">
+                    <div class="meeting-time">11:00</div>
+                    <div class="meeting-title">1:1 w/ Maya</div>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Finalize SCIM scope doc</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Write launch checklist</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Reply to Anika re: vendor eval</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+            <div class="day-header">
+                <div class="day-name">Thursday</div>
+                <div class="day-date">Apr 3</div>
+            </div>
+            <div class="day-content">
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Review PR #847</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Sync notes from Maya 1:1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+            <div class="day-header">
+                <div class="day-name">Friday</div>
+                <div class="day-date">Apr 4</div>
+            </div>
+            <div class="day-content">
+                <div class="meeting">
+                    <div class="meeting-time">09:30</div>
+                    <div class="meeting-title">Team standup</div>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Weekly brag sheet</span>
+                </div>
+                <div class="task">
+                    <input type="checkbox">
+                    <span>Submit expense report</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next Section -->
+    <div class="section">
+        <div class="section-title">Next (2 Weeks)</div>
+
+        <div class="subsection-title">Your Topics</div>
+        <div class="topics-list">
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Research competitor onboarding flows</span>
+                <span class="topic-age">4d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Draft hiring justification for H2</span>
+                <span class="topic-age">2d</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Sketch integration test plan</span>
+                <span class="topic-age">1d</span>
+            </div>
+        </div>
+
+        <div class="subsection-title">People & Initiatives</div>
+        <div class="flash-cards">
+            <div class="flash-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-name">Priya</div>
+                        <div class="card-role">Staff Eng</div>
+                        <div class="card-meta">Last met: Mon</div>
+                    </div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">SCIM timeline <span class="topic-badge">3d</span></div>
+                    <div class="card-topic">API rate limits <span class="topic-badge">5d</span></div>
+                    <div class="card-topic">On-call rotation <span class="topic-badge">1d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-name">Maya</div>
+                        <div class="card-role">Designer</div>
+                        <div class="card-meta">Last met: Today</div>
+                    </div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Design review feedback <span class="topic-badge">2d</span></div>
+                    <div class="card-topic">Component library proposal <span class="topic-badge">7d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-name">Anika</div>
+                        <div class="card-role">PM, Platform</div>
+                        <div class="card-meta">Last met: 5d ago</div>
+                    </div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Vendor eval criteria <span class="topic-badge">5d</span></div>
+                    <div class="card-topic">Cross-team dependency map <span class="topic-badge">3d</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Later Section -->
+    <div class="section">
+        <div class="section-title">Later (Backlog)</div>
+
+        <div class="subsection-title">Your Backlog</div>
+        <div class="topics-list">
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Plan team offsite Q3</span>
+                <span class="topic-age">—</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Write ADR for event sourcing</span>
+                <span class="topic-age">—</span>
+            </div>
+            <div class="topic-item">
+                <input type="checkbox">
+                <span>Clean up Confluence archive</span>
+                <span class="topic-age">—</span>
+            </div>
+        </div>
+
+        <div class="subsection-title">People & Initiatives</div>
+        <div class="flash-cards">
+            <div class="flash-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-name">Ravi</div>
+                        <div class="card-role">Eng Manager</div>
+                    </div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Hiring pipeline review <span class="topic-badge">12d</span></div>
+                    <div class="card-topic">Platform migration <span class="topic-badge">8d</span></div>
+                </div>
+            </div>
+
+            <div class="flash-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-name">Lena</div>
+                        <div class="card-role">Data Eng</div>
+                    </div>
+                </div>
+                <div class="card-topics">
+                    <div class="card-topic">Pipeline monitoring <span class="topic-badge">14d</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus View -->
+    <div class="focus-view">
+        <div class="focus-navigation">
+            <button class="nav-button" onclick="focusPrevious()">← Previous</button>
+            <span class="nav-counter">Item <span id="current-item">1</span> of <span id="total-items">5</span></span>
+            <button class="nav-button" onclick="focusNext()">Next →</button>
+        </div>
+
+        <div class="focus-card">
+            <div class="focus-card-type">Task</div>
+            <div class="focus-card-title" id="focus-title">Finalize SCIM scope doc</div>
+            <div class="focus-card-meta">
+                <span>Today, Wednesday</span>
+                <span>Linked to Priya</span>
+                <span>No deadline</span>
+            </div>
+            <div class="focus-linked-person">
+                <div class="focus-linked-label">Linked to</div>
+                <div class="card-name">Priya</div>
+                <div class="card-role">Staff Eng, last met Mon</div>
+                <div class="card-topics" style="margin-top: 8px;">
+                    <div class="card-topic">SCIM timeline <span class="topic-badge">3d</span></div>
+                    <div class="card-topic">API rate limits <span class="topic-badge">5d</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="focus-dots">
+            <div class="focus-dot active" onclick="focusItem(0)"></div>
+            <div class="focus-dot" onclick="focusItem(1)"></div>
+            <div class="focus-dot" onclick="focusItem(2)"></div>
+            <div class="focus-dot" onclick="focusItem(3)"></div>
+            <div class="focus-dot" onclick="focusItem(4)"></div>
+        </div>
+
+        <div class="context-drawer">
+            <div class="drawer-title">Your Other Topics</div>
+            <div class="drawer-content">
+                <div class="drawer-item">Write launch checklist</div>
+                <div class="drawer-item">Reply to Anika re: vendor eval</div>
+                <div class="drawer-item">Research competitor onboarding flows</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchMode(mode) {
+            const toggle = document.querySelector('.toggle-switch');
+            const options = document.querySelectorAll('.toggle-option');
+
+            options.forEach(opt => opt.classList.remove('active'));
+
+            if (mode === 'focus') {
+                document.body.classList.add('focus-mode');
+                options[1].classList.add('active');
+            } else {
+                document.body.classList.remove('focus-mode');
+                options[0].classList.add('active');
+            }
+        }
+
+        let currentFocusItem = 0;
+        const focusItems = [
+            { title: 'Finalize SCIM scope doc', type: 'Task', linked: 'Priya' },
+            { title: 'Write launch checklist', type: 'Task', linked: 'None' },
+            { title: 'Reply to Anika re: vendor eval', type: 'Task', linked: 'Anika' },
+            { title: '09:30 Standup', type: 'Meeting', linked: 'Team' },
+            { title: '11:00 1:1 w/ Maya', type: 'Meeting', linked: 'Maya' }
+        ];
+
+        function updateFocusCard() {
+            const item = focusItems[currentFocusItem];
+            document.getElementById('focus-title').textContent = item.title;
+            document.getElementById('current-item').textContent = currentFocusItem + 1;
+            document.getElementById('total-items').textContent = focusItems.length;
+
+            document.querySelectorAll('.focus-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentFocusItem);
+            });
+        }
+
+        function focusNext() {
+            currentFocusItem = (currentFocusItem + 1) % focusItems.length;
+            updateFocusCard();
+        }
+
+        function focusPrevious() {
+            currentFocusItem = (currentFocusItem - 1 + focusItems.length) % focusItems.length;
+            updateFocusCard();
+        }
+
+        function focusItem(idx) {
+            currentFocusItem = idx;
+            updateFocusCard();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.body.classList.contains('focus-mode')) {
+                if (e.key === 'ArrowRight') focusNext();
+                if (e.key === 'ArrowLeft') focusPrevious();
+            }
+        });
+    </script>
+</body>
+</html>

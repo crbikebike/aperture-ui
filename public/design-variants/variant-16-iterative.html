@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 16 - Horizon Bands | Aperture Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1F1F1F;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Band Container */
+        .band {
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .band-label {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #BBBBAA;
+            white-space: nowrap;
+            transform-origin: center;
+        }
+
+        /* BAND 1: NOW */
+        .band-now {
+            background: #FFFFFF;
+            min-height: 55vh;
+            width: 100%;
+            padding: 24px;
+            padding-left: 60px;
+        }
+
+        .now-content {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            height: 100%;
+        }
+
+        .day-column {
+            background: #FFFFFF;
+            border-radius: 0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border-left: 3px solid transparent;
+        }
+
+        .day-column.past {
+            opacity: 0.5;
+        }
+
+        .day-column.today {
+            border-left-color: #0D9488;
+        }
+
+        .day-header {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: #1F1F1F;
+        }
+
+        .day-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .day-items::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .day-items::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .day-items::-webkit-scrollbar-thumb {
+            background: #D0D0D0;
+        }
+
+        .task-item {
+            padding: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        .task-item.meeting {
+            font-weight: 500;
+            color: #1F1F1F;
+        }
+
+        .task-item.done {
+            opacity: 0.5;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-checkbox {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-top: 3px;
+            cursor: pointer;
+            accent-color: #0D9488;
+        }
+
+        .task-text {
+            flex: 1;
+        }
+
+        .task-badge {
+            flex-shrink: 0;
+            background: #D4A017;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* BAND 2: NEXT */
+        .band-next {
+            background: #F8F7F4;
+            min-height: 30vh;
+            width: 100%;
+            padding: 24px;
+            padding-left: 60px;
+            display: flex;
+            gap: 32px;
+            align-items: stretch;
+        }
+
+        .next-your-topics {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .next-people {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: #1F1F1F;
+        }
+
+        .topics-list {
+            border: 1px solid #D0D0D0;
+            border-radius: 4px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .topic-row {
+            padding: 10px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .topic-row:last-child {
+            border-bottom: none;
+        }
+
+        .topic-row:hover {
+            background: #FAF9F8;
+        }
+
+        .topic-row.done .topic-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .topic-checkbox {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #0D9488;
+        }
+
+        .topic-text {
+            flex: 1;
+        }
+
+        /* Scroll container for people cards */
+        .cards-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-right: 12px;
+        }
+
+        .cards-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .cards-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .cards-scroll::-webkit-scrollbar-thumb {
+            background: #D0D0D0;
+        }
+
+        .flash-card {
+            flex-shrink: 0;
+            width: 280px;
+            background: #FFFFFF;
+            border: 1px solid #D0D0D0;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 11px;
+        }
+
+        .card-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1F1F1F;
+            font-size: 12px;
+        }
+
+        .card-role {
+            color: #666;
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+
+        .card-topics {
+            border-top: 1px solid #E8E8E8;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .card-topic-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 10px;
+        }
+
+        .topic-age {
+            color: #999;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        /* Scroll arrows */
+        .scroll-arrow {
+            align-self: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            background: #E8E8E8;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .scroll-arrow:hover {
+            background: #D0D0D0;
+        }
+
+        /* BAND 3: LATER */
+        .band-later {
+            background: #F0EFEC;
+            min-height: 15vh;
+            width: 100%;
+            padding: 24px;
+            padding-left: 60px;
+        }
+
+        .later-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .later-row::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .later-row::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .later-row::-webkit-scrollbar-thumb {
+            background: #D0D0D0;
+        }
+
+        .later-item {
+            flex-shrink: 0;
+            padding: 10px 12px;
+            background: #FFFFFF;
+            border: 1px solid #D0D0D0;
+            border-radius: 4px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .later-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #E8E8E8;
+            flex-shrink: 0;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .later-content {
+            flex: 1;
+        }
+
+        .later-name {
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .later-count {
+            color: #999;
+            font-size: 10px;
+        }
+
+        /* Header section */
+        .page-header {
+            padding: 24px;
+            padding-left: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E8E8E8;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="page-title">Aperture Flow</div>
+        <div class="page-subtitle">Week of March 31 — Jordan (P4 PM) • Today is Wednesday</div>
+    </div>
+
+    <!-- BAND 1: NOW -->
+    <div class="band band-now">
+        <div class="band-label">NOW</div>
+        <div class="now-content">
+            <!-- Monday -->
+            <div class="day-column past">
+                <div class="day-header">Monday</div>
+                <div class="day-items">
+                    <div class="task-item meeting done">
+                        <input type="checkbox" class="task-checkbox" checked>
+                        <span class="task-text">10:00 1:1 w/ Priya</span>
+                    </div>
+                    <div class="task-item done">
+                        <input type="checkbox" class="task-checkbox" checked>
+                        <span class="task-text">Update SCIM spec</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Review Maya's design doc</span>
+                        <span class="task-badge">still open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-column past">
+                <div class="day-header">Tuesday</div>
+                <div class="day-items">
+                    <div class="task-item done">
+                        <input type="checkbox" class="task-checkbox" checked>
+                        <span class="task-text">Draft Q2 roadmap section</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Prep board deck slides</span>
+                        <span class="task-badge">still open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-column today">
+                <div class="day-header">Wednesday</div>
+                <div class="day-items">
+                    <div class="task-item meeting">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">09:30 Standup</span>
+                    </div>
+                    <div class="task-item meeting">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">11:00 1:1 w/ Maya</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Finalize SCIM scope doc</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Write launch checklist</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Reply to Anika re: vendor eval</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="day-column">
+                <div class="day-header">Thursday</div>
+                <div class="day-items">
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Review PR #847</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Sync notes from Maya 1:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-column">
+                <div class="day-header">Friday</div>
+                <div class="day-items">
+                    <div class="task-item meeting">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">09:30 Team standup</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Weekly brag sheet</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Submit expense report</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAND 2: NEXT -->
+    <div class="band band-next">
+        <div class="band-label">NEXT</div>
+        <div class="next-your-topics">
+            <div class="section-header">Your topics</div>
+            <div class="topics-list">
+                <div class="topic-row">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Research competitor onboarding flows</span>
+                </div>
+                <div class="topic-row">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Draft hiring justification for H2</span>
+                </div>
+                <div class="topic-row">
+                    <input type="checkbox" class="topic-checkbox">
+                    <span class="topic-text">Sketch integration test plan</span>
+                </div>
+            </div>
+        </div>
+        <div class="next-people">
+            <div class="section-header">People & initiatives</div>
+            <div style="display: flex; gap: 8px; align-items: center; flex: 1;">
+                <button class="scroll-arrow" onclick="scrollCards(-1)">←</button>
+                <div class="cards-scroll" id="cardsScroll">
+                    <div class="flash-card">
+                        <div class="card-name">Priya</div>
+                        <div class="card-role">Staff Eng • Last met Mon</div>
+                        <div class="card-topics">
+                            <div class="card-topic-item">
+                                <span>SCIM timeline</span>
+                                <span class="topic-age">3d</span>
+                            </div>
+                            <div class="card-topic-item">
+                                <span>API rate limits</span>
+                                <span class="topic-age">5d</span>
+                            </div>
+                            <div class="card-topic-item">
+                                <span>On-call rotation</span>
+                                <span class="topic-age">1d</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flash-card">
+                        <div class="card-name">Maya</div>
+                        <div class="card-role">Designer • Last met today</div>
+                        <div class="card-topics">
+                            <div class="card-topic-item">
+                                <span>Design review feedback</span>
+                                <span class="topic-age">2d</span>
+                            </div>
+                            <div class="card-topic-item">
+                                <span>Component library proposal</span>
+                                <span class="topic-age">7d</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flash-card">
+                        <div class="card-name">Anika</div>
+                        <div class="card-role">PM, Platform • 5d ago</div>
+                        <div class="card-topics">
+                            <div class="card-topic-item">
+                                <span>Vendor eval criteria</span>
+                                <span class="topic-age">5d</span>
+                            </div>
+                            <div class="card-topic-item">
+                                <span>Cross-team dependency map</span>
+                                <span class="topic-age">3d</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-arrow" onclick="scrollCards(1)">→</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAND 3: LATER -->
+    <div class="band band-later">
+        <div class="band-label">LATER</div>
+        <div style="width: 100%;">
+            <div class="section-header" style="margin-bottom: 12px;">Your backlog & people items</div>
+            <div class="later-row">
+                <div class="later-item">
+                    <span class="later-content">Plan team offsite Q3</span>
+                </div>
+                <div class="later-item">
+                    <span class="later-content">Write ADR for event sourcing</span>
+                </div>
+                <div class="later-item">
+                    <span class="later-content">Clean up Confluence archive</span>
+                </div>
+                <div class="later-item">
+                    <div class="later-avatar">R</div>
+                    <div class="later-content">
+                        <div class="later-name">Ravi</div>
+                        <div class="later-count">2 topics</div>
+                    </div>
+                </div>
+                <div class="later-item">
+                    <div class="later-avatar">L</div>
+                    <div class="later-content">
+                        <div class="later-name">Lena</div>
+                        <div class="later-count">1 topic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function scrollCards(direction) {
+            const container = document.getElementById('cardsScroll');
+            const scrollAmount = 300;
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        // Task completion
+        document.querySelectorAll('.task-checkbox, .topic-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('.task-item') || this.closest('.topic-row');
+                if (this.checked) {
+                    row.classList.add('done');
+                } else {
+                    row.classList.remove('done');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

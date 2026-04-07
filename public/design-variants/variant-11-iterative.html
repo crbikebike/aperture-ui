@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture Flow — Variant 11 Clean Grid</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F7F6F3;
+      color: #2C2C2C;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .container {
+      padding: 20px 24px;
+      max-width: 100%;
+    }
+
+    .header {
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 12px;
+      color: #8C8575;
+    }
+
+    /* NOW SECTION */
+    .now-section {
+      margin-bottom: 32px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      flex: 1;
+    }
+
+    .day-column {
+      background: #FFFFFF;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #E8E6E1;
+    }
+
+    .day-column.past {
+      background: #EDEBE8;
+      opacity: 0.7;
+    }
+
+    .day-column.today {
+      background: #FFFFFF;
+      border-left: 3px solid #2D6A4F;
+      box-shadow: 0 2px 8px rgba(45, 106, 79, 0.08);
+    }
+
+    .day-header {
+      padding: 12px;
+      border-bottom: 1px solid #E8E6E1;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #2C2C2C;
+    }
+
+    .day-column.past .day-header {
+      color: #8C8575;
+    }
+
+    .day-column.today .day-header {
+      background: #F0F9F5;
+      color: #2D6A4F;
+    }
+
+    .day-content {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .meeting {
+      background: #F5F5F5;
+      border-left: 2px solid #2D6A4F;
+      padding: 8px 10px;
+      font-size: 12px;
+      border-radius: 2px;
+      color: #2C2C2C;
+      font-weight: 500;
+    }
+
+    .meeting .time {
+      display: block;
+      font-size: 11px;
+      color: #8C8575;
+      font-weight: 400;
+      margin-bottom: 2px;
+    }
+
+    .meeting.done {
+      opacity: 0.6;
+      text-decoration: line-through;
+      color: #8C8575;
+    }
+
+    .task-item {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 4px 0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .task-item:hover {
+      opacity: 0.8;
+    }
+
+    .task-item input[type="checkbox"] {
+      margin-top: 2px;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .task-item.done {
+      opacity: 0.5;
+    }
+
+    .task-item.done .task-label {
+      text-decoration: line-through;
+      color: #8C8575;
+    }
+
+    .task-label {
+      flex: 1;
+      padding: 2px 0;
+    }
+
+    .task-item .still-open {
+      display: inline-block;
+      background: #D4A017;
+      color: #FFFFFF;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .day-column.past .task-item:not(.done) .still-open {
+      display: inline-block;
+    }
+
+    /* NEXT SECTION */
+    .next-section {
+      margin-bottom: 40px;
+    }
+
+    .section-header {
+      font-size: 14px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .next-content {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 24px;
+    }
+
+    .your-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .your-topics .subsection-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px dotted #D4D1CA;
+    }
+
+    .topic-item {
+      background: #FFFFFF;
+      border: 1px solid #E8E6E1;
+      padding: 8px 12px;
+      border-radius: 2px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 13px;
+    }
+
+    .topic-item input[type="checkbox"] {
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .topic-item .topic-label {
+      flex: 1;
+    }
+
+    .flash-cards {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .flash-cards .subsection-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin-bottom: 8px;
+      display: block;
+      width: 100%;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E8E6E1;
+    }
+
+    .flash-card {
+      background: #FFFFFF;
+      border: 1px solid #E8E6E1;
+      border-radius: 4px;
+      padding: 16px;
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+
+    .flash-card-header {
+      font-weight: 500;
+      font-size: 13px;
+      color: #2C2C2C;
+      margin-bottom: 4px;
+    }
+
+    .flash-card-meta {
+      font-size: 11px;
+      color: #8C8575;
+      margin-bottom: 12px;
+    }
+
+    .flash-card-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .topic-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #2C2C2C;
+    }
+
+    .topic-badge .age {
+      background: #F0EFEB;
+      color: #8C8575;
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* LATER SECTION */
+    .later-section {
+      margin-bottom: 40px;
+    }
+
+    .later-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .later-header .toggle {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: #E8E6E1;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #8C8575;
+      transition: transform 0.2s;
+    }
+
+    .later-header.collapsed .toggle {
+      transform: rotate(-90deg);
+    }
+
+    .later-content {
+      max-height: 500px;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .later-header.collapsed ~ .later-content {
+      max-height: 0;
+    }
+
+    .later-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 24px;
+    }
+
+    .your-backlog {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .backlog-item {
+      background: #FFFFFF;
+      border: 1px solid #E8E6E1;
+      padding: 8px 12px;
+      border-radius: 2px;
+      font-size: 13px;
+    }
+
+    /* Scrollbar styling */
+    .flash-cards::-webkit-scrollbar,
+    .day-content::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+
+    .flash-cards::-webkit-scrollbar-track,
+    .day-content::-webkit-scrollbar-track {
+      background: #F0EFEB;
+      border-radius: 2px;
+    }
+
+    .flash-cards::-webkit-scrollbar-thumb,
+    .day-content::-webkit-scrollbar-thumb {
+      background: #D4D1CA;
+      border-radius: 2px;
+    }
+
+    .flash-cards::-webkit-scrollbar-thumb:hover,
+    .day-content::-webkit-scrollbar-thumb:hover {
+      background: #BBBBAA;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Aperture Flow</h1>
+      <p>Jordan — P4 Product Manager • Wednesday, April 9</p>
+    </div>
+
+    <!-- NOW SECTION -->
+    <div class="now-section">
+      <div class="section-title">This Week</div>
+      <div class="week-grid">
+        <!-- Monday -->
+        <div class="day-column past">
+          <div class="day-header">Mon</div>
+          <div class="day-content">
+            <div class="meeting done">
+              <span class="time">10:00</span>
+              1:1 w/ Priya
+            </div>
+            <div class="task-item done">
+              <input type="checkbox" checked>
+              <span class="task-label">Update SCIM spec</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Review Maya's design doc</span>
+              <span class="still-open">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+          <div class="day-header">Tue</div>
+          <div class="day-content">
+            <div class="task-item done">
+              <input type="checkbox" checked>
+              <span class="task-label">Draft Q2 roadmap section</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Prep board deck slides</span>
+              <span class="still-open">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+          <div class="day-header">Wed</div>
+          <div class="day-content">
+            <div class="meeting">
+              <span class="time">09:30</span>
+              Standup
+            </div>
+            <div class="meeting">
+              <span class="time">11:00</span>
+              1:1 w/ Maya
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Finalize SCIM scope doc</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Write launch checklist</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Reply to Anika re: vendor eval</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+          <div class="day-header">Thu</div>
+          <div class="day-content">
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Review PR #847</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Sync notes from Maya 1:1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+          <div class="day-header">Fri</div>
+          <div class="day-content">
+            <div class="meeting">
+              <span class="time">09:30</span>
+              Team standup
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Weekly brag sheet</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Submit expense report</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXT SECTION -->
+    <div class="next-section">
+      <div class="section-title">Next (2 Weeks)</div>
+      <div class="next-content">
+        <div>
+          <div class="your-topics">
+            <div class="subsection-title">Your Topics</div>
+            <div class="topic-item">
+              <input type="checkbox">
+              <span class="topic-label">Research competitor onboarding flows</span>
+            </div>
+            <div class="topic-item">
+              <input type="checkbox">
+              <span class="topic-label">Draft hiring justification for H2</span>
+            </div>
+            <div class="topic-item">
+              <input type="checkbox">
+              <span class="topic-label">Sketch integration test plan</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="flash-cards">
+            <div class="subsection-title" style="grid-column: 1/-1;">People & Initiatives</div>
+            <div class="flash-card">
+              <div class="flash-card-header">Priya</div>
+              <div class="flash-card-meta">Staff Eng • Last met Monday</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>SCIM timeline</span>
+                  <span class="age">3d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>API rate limits</span>
+                  <span class="age">5d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>On-call rotation</span>
+                  <span class="age">1d</span>
+                </div>
+              </div>
+            </div>
+            <div class="flash-card">
+              <div class="flash-card-header">Maya</div>
+              <div class="flash-card-meta">Designer • Last met today</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>Design review feedback</span>
+                  <span class="age">2d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>Component library proposal</span>
+                  <span class="age">7d</span>
+                </div>
+              </div>
+            </div>
+            <div class="flash-card">
+              <div class="flash-card-header">Anika</div>
+              <div class="flash-card-meta">PM, Platform • Last met 5d ago</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>Vendor eval criteria</span>
+                  <span class="age">5d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>Cross-team dependency map</span>
+                  <span class="age">3d</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LATER SECTION -->
+    <div class="later-section">
+      <div class="later-header collapsed">
+        <span class="toggle">›</span>
+        <div class="section-title" style="margin: 0;">Later (3+ Weeks)</div>
+      </div>
+      <div class="later-content">
+        <div class="later-grid">
+          <div>
+            <div class="your-backlog">
+              <div class="subsection-title">Your Backlog</div>
+              <div class="backlog-item">
+                Plan team offsite Q3
+              </div>
+              <div class="backlog-item">
+                Write ADR for event sourcing
+              </div>
+              <div class="backlog-item">
+                Clean up Confluence archive
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flash-cards">
+              <div class="subsection-title" style="grid-column: 1/-1;">People Cards</div>
+              <div class="flash-card">
+                <div class="flash-card-header">Ravi</div>
+                <div class="flash-card-meta">Eng Manager</div>
+                <div class="flash-card-topics">
+                  <div class="topic-badge">
+                    <span>Hiring pipeline review</span>
+                    <span class="age">12d</span>
+                  </div>
+                  <div class="topic-badge">
+                    <span>Platform migration</span>
+                    <span class="age">8d</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flash-card">
+                <div class="flash-card-header">Lena</div>
+                <div class="flash-card-meta">Data Eng</div>
+                <div class="flash-card-topics">
+                  <div class="topic-badge">
+                    <span>Pipeline monitoring</span>
+                    <span class="age">14d</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle completion on checkbox click
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function(e) {
+        const taskItem = this.closest('.task-item') || this.closest('.topic-item');
+        if (taskItem) {
+          if (this.checked) {
+            taskItem.classList.add('done');
+            // Fade out after 2s
+            setTimeout(() => {
+              taskItem.style.opacity = '0';
+              taskItem.style.transition = 'opacity 2s ease-out';
+            }, 100);
+          } else {
+            taskItem.classList.remove('done');
+            taskItem.style.opacity = '1';
+          }
+        }
+      });
+    });
+
+    // Toggle Later section
+    document.querySelector('.later-header').addEventListener('click', function() {
+      this.classList.toggle('collapsed');
+    });
+  </script>
+</body>
+</html>

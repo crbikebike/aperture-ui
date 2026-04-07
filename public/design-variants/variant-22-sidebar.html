@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 22 — Sidebar Contextual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F8F5;
+            color: #1F2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 300px;
+            background-color: #FFFFFF;
+            border-right: 1px solid #E5E2DB;
+            padding: 20px;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+        }
+
+        /* Contextual card - highlighted with red accent */
+        .contextual-card {
+            background-color: #FFFFFF;
+            border-left: 3px solid #DC2626;
+            border: 1px solid #E5E2DB;
+            border-left: 3px solid #DC2626;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .contextual-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1F2937;
+        }
+
+        .contextual-card-meta {
+            font-size: 11px;
+            color: #6B7280;
+            margin-bottom: 10px;
+        }
+
+        .contextual-card-topics {
+            font-size: 12px;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+
+        .contextual-card-topic {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: flex-start;
+        }
+
+        .topic-badge {
+            background-color: rgba(220, 38, 38, 0.15);
+            color: #991B1B;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+
+        /* Default feed section */
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #6B7280;
+            margin-top: 16px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .feed-item {
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4B5563;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 2px solid transparent;
+        }
+
+        .feed-item:hover {
+            background-color: #F5F4F0;
+            border-left-color: #E5E2DB;
+        }
+
+        .feed-item-type {
+            display: inline-block;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: #4F46E5;
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            margin-right: 6px;
+            font-weight: 500;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            margin-left: 300px;
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 16px;
+            margin-top: 28px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        /* === NOW SECTION === */
+        .now-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .day-column {
+            background-color: #FFFFFF;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #E5E2DB;
+        }
+
+        .day-column.past {
+            opacity: 0.55;
+        }
+
+        .day-column.today {
+            background-color: #F0FDF4;
+            border: 1px solid #D1FAE5;
+        }
+
+        .day-header {
+            padding: 10px;
+            border-bottom: 1px solid #E5E2DB;
+            font-weight: 600;
+            font-size: 12px;
+            background-color: #FAFAF8;
+        }
+
+        .day-header.today {
+            background-color: #ECFDF5;
+            border-bottom-color: #D1FAE5;
+        }
+
+        .day-content {
+            padding: 8px;
+            flex: 1;
+        }
+
+        .meeting, .task-item {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .meeting {
+            background-color: #EBF5EE;
+            color: #1F2937;
+            border-left: 2px solid #10B981;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .meeting:hover {
+            background-color: #D1FAE5;
+            border-left-color: #059669;
+        }
+
+        .meeting-time {
+            font-weight: 600;
+            color: #1F2937;
+            font-size: 10px;
+        }
+
+        .meeting-title {
+            font-size: 10px;
+            color: #4B5563;
+        }
+
+        .task-item {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        .task-item input[type="checkbox"] {
+            margin-top: 1px;
+            cursor: pointer;
+            accent-color: #10B981;
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 11px;
+            color: #1F2937;
+            word-break: break-word;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: #9CA3AF;
+        }
+
+        .task-item.past-undone {
+            background-color: rgba(245, 158, 11, 0.08);
+            border-left: 1.5px solid #F59E0B;
+        }
+
+        .past-undone-badge {
+            display: inline-block;
+            background-color: #F59E0B;
+            color: #FFFFFF;
+            font-size: 8px;
+            padding: 1px 4px;
+            border-radius: 2px;
+            margin-left: 3px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* === NEXT SECTION === */
+        .next-topics {
+            background-color: #FFFFFF;
+            border-radius: 6px;
+            border: 1px solid #E5E2DB;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .compact-topic {
+            padding: 6px 0;
+            font-size: 11px;
+            color: #4B5563;
+            border-bottom: 1px solid #F5F4F0;
+        }
+
+        .compact-topic:last-child {
+            border-bottom: none;
+        }
+
+        .compact-topic-text {
+            flex: 1;
+        }
+
+        .compact-topic-age {
+            font-size: 9px;
+            color: #9CA3AF;
+            margin-left: 4px;
+        }
+
+        /* === LATER SECTION === */
+        .later-header {
+            padding: 8px 12px;
+            background-color: #FAFAF8;
+            border: 1px solid #E5E2DB;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #6B7280;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .later-header-count {
+            display: inline-block;
+            background-color: #E5E4E0;
+            color: #4B5563;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-3px);
+            }
+        }
+
+        .task-item.completing {
+            animation: fadeOut 0.6s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .contextual-card {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <!-- Contextual card (triggered by clicking a meeting) -->
+        <div class="contextual-card" id="contextualCard" style="display: none;">
+            <div class="contextual-card-title" id="contextualName"></div>
+            <div class="contextual-card-meta" id="contextualMeta"></div>
+            <div class="contextual-card-topics" id="contextualTopics"></div>
+        </div>
+
+        <!-- Default feed -->
+        <div id="defaultFeed">
+            <div class="sidebar-section-title">Your Topics</div>
+            <div class="feed-item">
+                <span class="feed-item-type">topic</span>
+                Research competitor onboarding flows
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">topic</span>
+                Draft hiring justification for H2
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">topic</span>
+                Sketch integration test plan
+            </div>
+
+            <div class="sidebar-section-title" style="margin-top: 16px;">People</div>
+            <div class="feed-item">
+                <span class="feed-item-type">person</span>
+                Priya • Staff Eng
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">person</span>
+                Maya • Designer
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">person</span>
+                Anika • PM, Platform
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">person</span>
+                Ravi • Eng Manager
+            </div>
+            <div class="feed-item">
+                <span class="feed-item-type">person</span>
+                Lena • Data Eng
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- NOW SECTION -->
+        <h2 class="section-header">This Week</h2>
+        <div class="now-grid">
+            <!-- Monday -->
+            <div class="day-column past">
+                <div class="day-header">Monday</div>
+                <div class="day-content">
+                    <div class="meeting" data-person="Priya" data-meta="Staff Eng • Mon">
+                        <div class="meeting-time">10:00</div>
+                        <div class="meeting-title">1:1 w/ Priya</div>
+                    </div>
+                    <div class="task-item done">
+                        <input type="checkbox" checked>
+                        <span class="task-text">Update SCIM spec</span>
+                    </div>
+                    <div class="task-item past-undone">
+                        <input type="checkbox">
+                        <span class="task-text">Review Maya's design doc<span class="past-undone-badge">still open</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-column past">
+                <div class="day-header">Tuesday</div>
+                <div class="day-content">
+                    <div class="task-item done">
+                        <input type="checkbox" checked>
+                        <span class="task-text">Draft Q2 roadmap section</span>
+                    </div>
+                    <div class="task-item past-undone">
+                        <input type="checkbox">
+                        <span class="task-text">Prep board deck slides<span class="past-undone-badge">still open</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-column today">
+                <div class="day-header today">Wednesday</div>
+                <div class="day-content">
+                    <div class="meeting" data-person="Team" data-meta="Standup • Today">
+                        <div class="meeting-time">09:30</div>
+                        <div class="meeting-title">Standup</div>
+                    </div>
+                    <div class="meeting" data-person="Maya" data-meta="Designer • Today">
+                        <div class="meeting-time">11:00</div>
+                        <div class="meeting-title">1:1 w/ Maya</div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Finalize SCIM scope doc</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Write launch checklist</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Reply to Anika re: vendor eval</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="day-column">
+                <div class="day-header">Thursday</div>
+                <div class="day-content">
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Review PR #847</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Sync notes from Maya 1:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-column">
+                <div class="day-header">Friday</div>
+                <div class="day-content">
+                    <div class="meeting" data-person="Team" data-meta="Standup • Friday">
+                        <div class="meeting-time">09:30</div>
+                        <div class="meeting-title">Team standup</div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Weekly brag sheet</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox">
+                        <span class="task-text">Submit expense report</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEXT SECTION -->
+        <h2 class="section-header">Coming Up</h2>
+        <div class="next-topics">
+            <div class="compact-topic">
+                <span class="compact-topic-text">Research competitor onboarding flows</span>
+                <span class="compact-topic-age">1d</span>
+            </div>
+            <div class="compact-topic">
+                <span class="compact-topic-text">Draft hiring justification for H2</span>
+                <span class="compact-topic-age">2d</span>
+            </div>
+            <div class="compact-topic">
+                <span class="compact-topic-text">Sketch integration test plan</span>
+                <span class="compact-topic-age">3d</span>
+            </div>
+        </div>
+
+        <!-- LATER SECTION -->
+        <h2 class="section-header">On the Horizon</h2>
+        <div class="later-header" id="laterToggle">
+            <span>5 items to review</span>
+            <span class="later-header-count">5</span>
+        </div>
+    </div>
+
+    <script>
+        const contextualCard = document.getElementById('contextualCard');
+        const defaultFeed = document.getElementById('defaultFeed');
+        const meetings = document.querySelectorAll('.meeting[data-person]');
+
+        // Person data for contextual cards
+        const personData = {
+            'Maya': {
+                meta: 'Designer • Today',
+                topics: [
+                    { age: '7d', text: 'Component library proposal' },
+                    { age: '2d', text: 'Design review feedback' }
+                ]
+            },
+            'Priya': {
+                meta: 'Staff Eng • Mon',
+                topics: [
+                    { age: '3d', text: 'SCIM timeline' },
+                    { age: '5d', text: 'API rate limits' }
+                ]
+            }
+        };
+
+        // Handle meeting clicks to show contextual card
+        meetings.forEach(meeting => {
+            meeting.addEventListener('click', function() {
+                const person = this.dataset.person;
+
+                // Only show contextual card if person has topic data
+                if (personData[person]) {
+                    defaultFeed.style.display = 'none';
+                    contextualCard.style.display = 'block';
+
+                    document.getElementById('contextualName').textContent = person;
+                    document.getElementById('contextualMeta').textContent = personData[person].meta;
+
+                    // Clear and rebuild topics
+                    const topicsContainer = document.getElementById('contextualTopics');
+                    topicsContainer.textContent = '';
+
+                    personData[person].topics.forEach(topic => {
+                        const topicEl = document.createElement('div');
+                        topicEl.className = 'contextual-card-topic';
+
+                        const badgeEl = document.createElement('span');
+                        badgeEl.className = 'topic-badge';
+                        badgeEl.textContent = topic.age;
+
+                        const textEl = document.createElement('span');
+                        textEl.textContent = topic.text;
+
+                        topicEl.appendChild(badgeEl);
+                        topicEl.appendChild(textEl);
+                        topicsContainer.appendChild(topicEl);
+                    });
+                }
+            });
+        });
+
+        // Click outside to return to default feed
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.meeting') && !e.target.closest('.contextual-card')) {
+                contextualCard.style.display = 'none';
+                defaultFeed.style.display = 'block';
+            }
+        });
+
+        // Task completion handler
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                const taskItem = e.target.closest('.task-item');
+                if (taskItem) {
+                    if (e.target.checked) {
+                        taskItem.classList.add('done');
+                        taskItem.classList.add('completing');
+                        setTimeout(() => {
+                            taskItem.classList.remove('completing');
+                        }, 600);
+                    } else {
+                        taskItem.classList.remove('done');
+                    }
+                }
+            }
+        });
+
+        // Later toggle (for demo purposes, just shows/hides the header text)
+        document.getElementById('laterToggle').addEventListener('click', function() {
+            this.style.opacity = '0.7';
+        });
+    </script>
+</body>
+</html>

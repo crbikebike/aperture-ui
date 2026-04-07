@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture Flow — Variant 33 — Telegram Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFFFF0;
+            color: #1A1A1A;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header/Dateline */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #1A1A1A;
+        }
+
+        .dateline {
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .header-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .header-meta {
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        /* Wire code styles */
+        .wire-code {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .code-mtg { color: #1D4ED8; }
+        .code-tsk { color: #2D6A4F; }
+        .code-dup { color: #D97706; }
+        .code-next { color: #059669; }
+        .code-late { color: #6B7280; }
+        .code-src { color: #1A1A1A; }
+
+        /* Column grid for M-F */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .day-column {
+            background-color: #F5F4E8;
+            border: 1px solid #1A1A1A;
+            padding: 16px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-column.today {
+            background-color: #FFFFFF;
+            border-top: 4px solid #1A1A1A;
+            border-left: 1px solid #1A1A1A;
+            border-right: 1px solid #1A1A1A;
+            border-bottom: 1px solid #1A1A1A;
+        }
+
+        .day-header {
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1A1A1A;
+        }
+
+        /* Wire items */
+        .wire-item {
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .wire-item-content {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .wire-item-text {
+            flex: 1;
+        }
+
+        .wire-time {
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .wire-title {
+            display: inline;
+        }
+
+        .item-undone-badge {
+            color: #D97706;
+            font-weight: 600;
+            font-size: 10px;
+            display: inline-block;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        /* Section headers with wire style */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background-color: #1A1A1A;
+            color: #FFFFF0;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-code {
+            display: inline-block;
+        }
+
+        /* Next Dispatch Section */
+        .dispatch-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dispatch-item {
+            padding: 6px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: flex-start;
+            border-bottom: 1px solid #E5E2DB;
+            padding-bottom: 6px;
+        }
+
+        .dispatch-item:last-child {
+            border-bottom: none;
+        }
+
+        .dispatch-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .dispatch-age {
+            font-size: 10px;
+            color: #6B7280;
+            white-space: nowrap;
+        }
+
+        /* Source contact blocks */
+        .source-block {
+            background-color: #F5F4E8;
+            border: 1px solid #1A1A1A;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .source-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1A1A1A;
+            font-size: 11px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .source-code {
+            display: inline-block;
+        }
+
+        .source-name {
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .source-role {
+            font-size: 10px;
+            color: #6B7280;
+            display: inline-block;
+        }
+
+        .source-topics {
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .source-topic {
+            padding: 2px 0;
+        }
+
+        .topic-title {
+            display: inline;
+            font-weight: 400;
+        }
+
+        .topic-age {
+            color: #6B7280;
+            font-size: 10px;
+            margin-left: 6px;
+        }
+
+        /* Archive section */
+        .archive-section {
+            background-color: #F5F4E8;
+            border: 1px solid #1A1A1A;
+            padding: 16px;
+        }
+
+        .archive-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .archive-column {
+            padding-right: 12px;
+            border-right: 1px solid #1A1A1A;
+        }
+
+        .archive-column:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .archive-subheader {
+            font-weight: 600;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #1A1A1A;
+        }
+
+        .archive-item {
+            font-size: 10px;
+            padding: 4px 0;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .archive-item-title {
+            display: inline;
+            font-weight: 400;
+        }
+
+        .archive-item-meta {
+            color: #6B7280;
+            font-size: 9px;
+            display: inline;
+            margin-left: 4px;
+        }
+
+        /* Checkbox styles */
+        input[type="checkbox"] {
+            cursor: pointer;
+            margin-right: 6px;
+            accent-color: #1A1A1A;
+        }
+
+        input[type="checkbox"]:checked + .wire-title {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 16px;
+            color: #999999;
+            font-style: italic;
+            font-size: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .section {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Amber "STILL OPEN" style for past undone items */
+        .still-open {
+            color: #D97706;
+            font-weight: 600;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="dateline">APRIL 9, 2026 · WEDNESDAY DISPATCH</div>
+            <div class="header-title">APERTURE DAILY WIRE</div>
+            <div class="header-meta">5 TASKS · 2 MEETINGS · 1 CARRYOVER</div>
+        </div>
+
+        <!-- Week Grid: NOW Section -->
+        <div class="week-grid">
+            <!-- Monday -->
+            <div class="day-column">
+                <div class="day-header">MONDAY</div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-mtg">MTG</span>
+                        <span class="wire-time">10:00</span>
+                        <span class="wire-title">1:1 w/ Priya</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <input type="checkbox" checked>
+                        <span class="wire-title">Update SCIM spec</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-dup">DUP</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Review Maya's design doc</span>
+                        <span class="item-undone-badge">STILL OPEN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-column">
+                <div class="day-header">TUESDAY</div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <input type="checkbox" checked>
+                        <span class="wire-title">Draft Q2 roadmap section</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-dup">DUP</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Prep board deck slides</span>
+                        <span class="item-undone-badge">STILL OPEN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday (TODAY) -->
+            <div class="day-column today">
+                <div class="day-header">WEDNESDAY</div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-mtg">MTG</span>
+                        <span class="wire-time">09:30</span>
+                        <span class="wire-title">Standup</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-mtg">MTG</span>
+                        <span class="wire-time">11:00</span>
+                        <span class="wire-title">1:1 w/ Maya</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Finalize SCIM scope doc</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Write launch checklist</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Reply Anika re: vendor eval</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="day-column">
+                <div class="day-header">THURSDAY</div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Review PR #847</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Sync notes from Maya 1:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-column">
+                <div class="day-header">FRIDAY</div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-mtg">MTG</span>
+                        <span class="wire-time">09:30</span>
+                        <span class="wire-title">Team standup</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Weekly brag sheet</span>
+                    </div>
+                </div>
+                <div class="wire-item">
+                    <div class="wire-item-content">
+                        <span class="wire-code code-tsk">TSK</span>
+                        <input type="checkbox">
+                        <span class="wire-title">Submit expense report</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEXT Dispatch Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-code code-next">▶</span>
+                <span>NEXT DISPATCH</span>
+            </div>
+
+            <!-- Your Topics -->
+            <div style="margin-bottom: 20px;">
+                <div class="dispatch-items">
+                    <div class="dispatch-item">
+                        <span class="wire-code code-next">NEXT</span>
+                        <span class="dispatch-text">Research competitor onboarding flows</span>
+                        <span class="dispatch-age">3D</span>
+                    </div>
+                    <div class="dispatch-item">
+                        <span class="wire-code code-next">NEXT</span>
+                        <span class="dispatch-text">Draft hiring justification for H2</span>
+                        <span class="dispatch-age">5D</span>
+                    </div>
+                    <div class="dispatch-item">
+                        <span class="wire-code code-next">NEXT</span>
+                        <span class="dispatch-text">Sketch integration test plan</span>
+                        <span class="dispatch-age">2D</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Source Contact Blocks -->
+            <div class="source-block">
+                <div class="source-header">
+                    <span class="source-code code-src">SRC</span>
+                    <span class="source-name">PRIYA SINGH</span>
+                    <span class="source-role">STAFF ENG</span>
+                </div>
+                <div class="source-topics">
+                    <div class="source-topic">
+                        <span class="topic-title">SCIM TIMELINE</span>
+                        <span class="topic-age">3D</span>
+                    </div>
+                    <div class="source-topic">
+                        <span class="topic-title">API RATE LIMITS</span>
+                        <span class="topic-age">5D</span>
+                    </div>
+                    <div class="source-topic">
+                        <span class="topic-title">ON-CALL ROTATION</span>
+                        <span class="topic-age">1D</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="source-block">
+                <div class="source-header">
+                    <span class="source-code code-src">SRC</span>
+                    <span class="source-name">MAYA CHEN</span>
+                    <span class="source-role">DESIGNER</span>
+                </div>
+                <div class="source-topics">
+                    <div class="source-topic">
+                        <span class="topic-title">DESIGN REVIEW FEEDBACK</span>
+                        <span class="topic-age">2D</span>
+                    </div>
+                    <div class="source-topic">
+                        <span class="topic-title">COMPONENT LIBRARY PROPOSAL</span>
+                        <span class="topic-age">7D</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="source-block">
+                <div class="source-header">
+                    <span class="source-code code-src">SRC</span>
+                    <span class="source-name">ANIKA PATEL</span>
+                    <span class="source-role">PM, PLATFORM</span>
+                </div>
+                <div class="source-topics">
+                    <div class="source-topic">
+                        <span class="topic-title">VENDOR EVAL CRITERIA</span>
+                        <span class="topic-age">5D</span>
+                    </div>
+                    <div class="source-topic">
+                        <span class="topic-title">CROSS-TEAM DEPENDENCY MAP</span>
+                        <span class="topic-age">3D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LATER/Archive Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-code code-late">▶</span>
+                <span>ARCHIVE</span>
+            </div>
+
+            <div class="archive-section">
+                <div class="archive-items">
+                    <!-- Your Backlog -->
+                    <div class="archive-column">
+                        <div class="archive-subheader">YOUR BACKLOG</div>
+                        <div class="archive-item">
+                            <span class="archive-item-title">Plan team offsite Q3</span>
+                            <span class="archive-item-meta">12D</span>
+                        </div>
+                        <div class="archive-item">
+                            <span class="archive-item-title">Write ADR for event sourcing</span>
+                            <span class="archive-item-meta">8D</span>
+                        </div>
+                        <div class="archive-item">
+                            <span class="archive-item-title">Clean up Confluence archive</span>
+                            <span class="archive-item-meta">14D</span>
+                        </div>
+                    </div>
+
+                    <!-- Later People -->
+                    <div class="archive-column">
+                        <div class="archive-subheader">LONGER HORIZON SOURCES</div>
+                        <div class="archive-item">
+                            <span class="wire-code code-src">SRC</span>
+                            <span class="archive-item-title">RAVI KRISHNAN</span>
+                            <span class="archive-item-meta">ENG MGR</span>
+                        </div>
+                        <div style="margin-left: 24px; margin-top: 4px; font-size: 10px; color: #666;">
+                            <div>Hiring pipeline review · 12D</div>
+                            <div>Platform migration · 8D</div>
+                        </div>
+                        <div class="archive-item" style="margin-top: 8px;">
+                            <span class="wire-code code-src">SRC</span>
+                            <span class="archive-item-title">LENA PARK</span>
+                            <span class="archive-item-meta">DATA ENG</span>
+                        </div>
+                        <div style="margin-left: 24px; margin-top: 4px; font-size: 10px; color: #666;">
+                            <div>Pipeline monitoring · 14D</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid #1A1A1A; font-size: 10px; color: #6B7280;">
+            APERTURE DAILY WIRE · ENCRYPTED TRANSMISSION
+        </div>
+    </div>
+
+    <script>
+        // Task completion animation
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const wireItem = this.closest('.wire-item');
+                if (wireItem) {
+                    if (this.checked) {
+                        wireItem.style.opacity = '0.6';
+                        wireItem.style.transition = 'opacity 0.3s ease';
+                    } else {
+                        wireItem.style.opacity = '1';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

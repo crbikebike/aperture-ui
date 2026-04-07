@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperture Flow — Variant 13 Warm Editorial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #FAF8F5;
+      color: #3D3D3D;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: #3D3D3D;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #8C8C8C;
+    }
+
+    /* NOW SECTION */
+    .now-section {
+      margin-bottom: 56px;
+    }
+
+    .section-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #3D3D3D;
+      margin-bottom: 24px;
+      text-transform: capitalize;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+    }
+
+    .day-column {
+      background: transparent;
+    }
+
+    .day-column.past {
+      opacity: 0.6;
+    }
+
+    .day-header {
+      background: #F0EEEA;
+      padding: 12px 16px;
+      border-radius: 24px;
+      font-family: 'Source Serif 4', serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: #3D3D3D;
+      text-align: center;
+      margin-bottom: 16px;
+      text-transform: capitalize;
+    }
+
+    .day-column.past .day-header {
+      background: #E8E5DF;
+      color: #8C8C8C;
+    }
+
+    .day-column.today .day-header {
+      background: #2D6A4F;
+      color: #FFFFFF;
+    }
+
+    .day-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meeting {
+      background: #EBF5EE;
+      border-left: 3px solid #2D6A4F;
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #3D3D3D;
+    }
+
+    .meeting .time {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: #2D6A4F;
+    }
+
+    .meeting .attendee {
+      font-weight: 400;
+      color: #3D3D3D;
+    }
+
+    .meeting.done {
+      opacity: 0.6;
+      background: #E8E6E1;
+      border-left-color: #8C8C8C;
+    }
+
+    .meeting.done .time,
+    .meeting.done .attendee {
+      color: #8C8C8C;
+      text-decoration: line-through;
+    }
+
+    .task-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 8px 0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .task-item:hover {
+      opacity: 0.85;
+    }
+
+    .task-item input[type="checkbox"] {
+      margin-top: 3px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: #2D6A4F;
+    }
+
+    .task-item.done input[type="checkbox"] {
+      accent-color: #BBBBAA;
+    }
+
+    .task-label {
+      flex: 1;
+      padding: 2px 0;
+      color: #3D3D3D;
+    }
+
+    .task-item.done .task-label {
+      text-decoration: line-through;
+      color: #8C8C8C;
+    }
+
+    .task-item .still-open {
+      display: inline-block;
+      background: #C7940A;
+      color: #FFFFFF;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .day-column.past .task-item:not(.done) .still-open {
+      display: inline-block;
+    }
+
+    /* NEXT SECTION */
+    .next-section {
+      margin-bottom: 56px;
+    }
+
+    .next-content {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .your-topics {
+      flex: 0 0 400px;
+      background: #F5F3EF;
+      border: 1px solid #DDD9D1;
+      border-radius: 4px;
+      padding: 20px;
+    }
+
+    .your-topics-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3D3D3D;
+      margin-bottom: 16px;
+    }
+
+    .topic-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .topic-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: #2D6A4F;
+    }
+
+    .topic-item .topic-label {
+      flex: 1;
+      color: #3D3D3D;
+    }
+
+    .topic-item.done .topic-label {
+      text-decoration: line-through;
+      color: #8C8C8C;
+    }
+
+    .flash-cards-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .flash-cards-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3D3D3D;
+    }
+
+    .flash-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .flash-card {
+      background: #FFFFFF;
+      border: 1px solid #DDD9D1;
+      border-radius: 4px;
+      padding: 16px;
+      min-width: 280px;
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    .flash-card-header {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: #3D3D3D;
+      margin-bottom: 4px;
+    }
+
+    .flash-card-meta {
+      font-size: 12px;
+      color: #8C8C8C;
+      margin-bottom: 12px;
+    }
+
+    .flash-card-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .topic-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #3D3D3D;
+    }
+
+    .topic-badge .age {
+      background: #F0EFEB;
+      color: #8C8C8C;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* LATER SECTION */
+    .later-section {
+      margin-bottom: 40px;
+    }
+
+    .later-content {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .your-backlog {
+      flex: 0 0 400px;
+    }
+
+    .backlog-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3D3D3D;
+      margin-bottom: 12px;
+    }
+
+    .backlog-item {
+      font-size: 14px;
+      color: #3D3D3D;
+      padding: 6px 0;
+      margin-left: 20px;
+      position: relative;
+    }
+
+    .backlog-item::before {
+      content: "•";
+      position: absolute;
+      left: -14px;
+      color: #8C8C8C;
+    }
+
+    .later-flash-cards {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .later-flash-cards-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #8C8C8C;
+    }
+
+    .later-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .later-flash-card {
+      background: #FFFFFF;
+      border: 1px solid #DDD9D1;
+      border-radius: 4px;
+      padding: 12px;
+      width: 240px;
+    }
+
+    .later-flash-card-header {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: #3D3D3D;
+      margin-bottom: 4px;
+    }
+
+    .later-flash-card-meta {
+      font-size: 11px;
+      color: #8C8C8C;
+      margin-bottom: 8px;
+    }
+
+    .later-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .later-topic-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #3D3D3D;
+    }
+
+    .later-topic-badge .age {
+      background: #F0EFEB;
+      color: #8C8C8C;
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Aperture Flow</h1>
+      <p>Jordan — P4 Product Manager • Wednesday, April 9</p>
+    </div>
+
+    <!-- NOW SECTION -->
+    <div class="now-section">
+      <div class="section-title">This Week</div>
+      <div class="week-grid">
+        <!-- Monday -->
+        <div class="day-column past">
+          <div class="day-header">Monday</div>
+          <div class="day-content">
+            <div class="meeting done">
+              <span class="time">10:00</span>
+              <span class="attendee">1:1 w/ Priya</span>
+            </div>
+            <div class="task-item done">
+              <input type="checkbox" checked>
+              <span class="task-label">Update SCIM spec</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Review Maya's design doc</span>
+              <span class="still-open">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column past">
+          <div class="day-header">Tuesday</div>
+          <div class="day-content">
+            <div class="task-item done">
+              <input type="checkbox" checked>
+              <span class="task-label">Draft Q2 roadmap section</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Prep board deck slides</span>
+              <span class="still-open">still open</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wednesday (Today) -->
+        <div class="day-column today">
+          <div class="day-header">Wednesday</div>
+          <div class="day-content">
+            <div class="meeting">
+              <span class="time">09:30</span>
+              <span class="attendee">Standup</span>
+            </div>
+            <div class="meeting">
+              <span class="time">11:00</span>
+              <span class="attendee">1:1 w/ Maya</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Finalize SCIM scope doc</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Write launch checklist</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Reply to Anika re: vendor eval</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column">
+          <div class="day-header">Thursday</div>
+          <div class="day-content">
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Review PR #847</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Sync notes from Maya 1:1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column">
+          <div class="day-header">Friday</div>
+          <div class="day-content">
+            <div class="meeting">
+              <span class="time">09:30</span>
+              <span class="attendee">Team standup</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Weekly brag sheet</span>
+            </div>
+            <div class="task-item">
+              <input type="checkbox">
+              <span class="task-label">Submit expense report</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXT SECTION -->
+    <div class="next-section">
+      <div class="section-title">Next (2 Weeks)</div>
+      <div class="next-content">
+        <div class="your-topics">
+          <div class="your-topics-title">Floating Topics</div>
+          <div class="topic-item">
+            <input type="checkbox">
+            <span class="topic-label">Research competitor onboarding flows</span>
+          </div>
+          <div class="topic-item">
+            <input type="checkbox">
+            <span class="topic-label">Draft hiring justification for H2</span>
+          </div>
+          <div class="topic-item">
+            <input type="checkbox">
+            <span class="topic-label">Sketch integration test plan</span>
+          </div>
+        </div>
+        <div class="flash-cards-wrapper">
+          <div class="flash-cards-title">People & Initiatives</div>
+          <div class="flash-cards">
+            <div class="flash-card">
+              <div class="flash-card-header">Priya</div>
+              <div class="flash-card-meta">Staff Eng • Last met Monday</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>SCIM timeline</span>
+                  <span class="age">3d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>API rate limits</span>
+                  <span class="age">5d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>On-call rotation</span>
+                  <span class="age">1d</span>
+                </div>
+              </div>
+            </div>
+            <div class="flash-card">
+              <div class="flash-card-header">Maya</div>
+              <div class="flash-card-meta">Designer • Last met today</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>Design review feedback</span>
+                  <span class="age">2d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>Component library proposal</span>
+                  <span class="age">7d</span>
+                </div>
+              </div>
+            </div>
+            <div class="flash-card">
+              <div class="flash-card-header">Anika</div>
+              <div class="flash-card-meta">PM, Platform • Last met 5d ago</div>
+              <div class="flash-card-topics">
+                <div class="topic-badge">
+                  <span>Vendor eval criteria</span>
+                  <span class="age">5d</span>
+                </div>
+                <div class="topic-badge">
+                  <span>Cross-team dependency map</span>
+                  <span class="age">3d</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LATER SECTION -->
+    <div class="later-section">
+      <div class="section-title">Later (3+ Weeks)</div>
+      <div class="later-content">
+        <div class="your-backlog">
+          <div class="backlog-title">Your Backlog</div>
+          <div class="backlog-item">Plan team offsite Q3</div>
+          <div class="backlog-item">Write ADR for event sourcing</div>
+          <div class="backlog-item">Clean up Confluence archive</div>
+        </div>
+        <div class="later-flash-cards">
+          <div class="later-flash-cards-title">People Cards</div>
+          <div class="later-cards">
+            <div class="later-flash-card">
+              <div class="later-flash-card-header">Ravi</div>
+              <div class="later-flash-card-meta">Eng Manager</div>
+              <div class="later-topics">
+                <div class="later-topic-badge">
+                  <span>Hiring pipeline review</span>
+                  <span class="age">12d</span>
+                </div>
+                <div class="later-topic-badge">
+                  <span>Platform migration</span>
+                  <span class="age">8d</span>
+                </div>
+              </div>
+            </div>
+            <div class="later-flash-card">
+              <div class="later-flash-card-header">Lena</div>
+              <div class="later-flash-card-meta">Data Eng</div>
+              <div class="later-topics">
+                <div class="later-topic-badge">
+                  <span>Pipeline monitoring</span>
+                  <span class="age">14d</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle completion on checkbox click
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function(e) {
+        const container = this.closest('.task-item') ||
+                         this.closest('.topic-item') ||
+                         this.closest('.meeting');
+        if (container) {
+          if (this.checked) {
+            container.classList.add('done');
+            setTimeout(() => {
+              container.style.opacity = '0';
+              container.style.transition = 'opacity 2s ease-out';
+            }, 100);
+          } else {
+            container.classList.remove('done');
+            container.style.opacity = '1';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
