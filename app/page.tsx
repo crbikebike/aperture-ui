@@ -1,5 +1,12 @@
 const variants = [
   {
+    category: 'Interactive Prototypes — Batch 5',
+    description: 'Brand standards applied to the original Now/Next/Later board — the interaction model you liked most',
+    items: [
+      { number: '44', name: 'Brand Board', file: 'variant-44-brand-board.html', summary: 'The original three-column Now/Next/Later board rebuilt with brand standards. Day-grouped Now column, cards expand in-place (no modal), kind labels (◻ Task ◎ Discuss ◈ Note), age badges, person avatars per card. Full aperture dial, triage queue, focus mode, filter pills, people/initiatives panel.', tags: ['fully interactive', 'board layout', 'day-grouped', 'in-place expand', 'brand-focused'] },
+    ],
+  },
+  {
     category: 'Interactive Prototypes — Batch 4',
     description: 'Fully clickable — working aperture dial, triage actions, tabbed People/Initiatives, multi-view navigation',
     items: [

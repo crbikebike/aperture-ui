@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperture v44 — Brand Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --newsprint: #f7f5f2;
+            --cotton: #faf9f7;
+            --linen: #edeae4;
+            --parchment: #e3dfd8;
+            --bone: #d8d4cc;
+            --ink: #1a1a1a;
+            --graphite: #4a4a4a;
+            --pencil: #8a8a8a;
+            --today-accent: #2c5f8a;
+            --amber-nudge: #c4883a;
+            --health-green: #5a8a5a;
+            --health-yellow: #b8963a;
+            --health-red: #a85a4a;
+            --init-teal: #5a8a8a;
+            --init-plum: #7a5a7a;
+        }
+
+        body {
+            background-color: var(--newsprint);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: var(--cotton);
+            border-bottom: 1px solid var(--bone);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            font-family: Lora, Georgia, serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .header-center {
+            font-size: 11px;
+            color: var(--pencil);
+        }
+
+        .record-btn {
+            font-size: 12px;
+            padding: 6px 12px;
+            border: 1px solid var(--graphite);
+            background: transparent;
+            color: var(--graphite);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 200ms;
+            font-weight: 500;
+        }
+
+        .record-btn.active {
+            background: var(--health-red);
+            border-color: var(--health-red);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Aperture Dial */
+        .aperture-dial {
+            background: var(--cotton);
+            border-bottom: 1px solid var(--bone);
+            padding: 16px;
+            display: flex;
+            gap: 40px;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .dial-stop {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 0 8px;
+            transition: all 200ms;
+        }
+
+        .dial-stop-label {
+            font-size: 12px;
+            color: var(--pencil);
+        }
+
+        .dial-stop.active .dial-stop-label {
+            font-size: 14px;
+            color: var(--today-accent);
+            font-weight: 600;
+        }
+
+        .dial-underline {
+            height: 2px;
+            width: 0;
+            background: var(--today-accent);
+            transition: width 200ms;
+        }
+
+        .dial-stop.active .dial-underline {
+            width: 32px;
+        }
+
+        /* Main content area */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* AI Headline */
+        .ai-headline {
+            font-family: Lora, Georgia, serif;
+            font-size: 17px;
+            font-style: italic;
+            color: var(--ink);
+            background: var(--cotton);
+            border-left: 3px solid var(--today-accent);
+            border-radius: 8px;
+            padding: 12px;
+            line-height: 1.5;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* f/4 This Week Board */
+        .week-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--bone);
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 1px;
+        }
+
+        .column-header {
+            background: var(--cotton);
+            padding: 16px;
+            border-right: 1px solid var(--bone);
+        }
+
+        .column-header:last-child {
+            border-right: none;
+        }
+
+        .column-header-title {
+            font-family: Lora, Georgia, serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .column-header-subtitle {
+            font-size: 11px;
+            color: var(--pencil);
+        }
+
+        .topic-count {
+            display: inline-block;
+            background: var(--linen);
+            color: var(--graphite);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        /* Day columns */
+        .day-column {
+            background: var(--cotton);
+            min-height: 400px;
+            padding: 16px;
+            border-right: 1px solid var(--bone);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .day-column:last-child {
+            border-right: none;
+        }
+
+        .day-column.past {
+            background: var(--parchment);
+            opacity: 0.9;
+        }
+
+        .day-column.future {
+            background: var(--newsprint);
+        }
+
+        .day-column.today {
+            background: var(--cotton);
+        }
+
+        .day-label {
+            font-family: Lora, Georgia, serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--pencil);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--bone);
+        }
+
+        .day-label.today {
+            color: var(--today-accent);
+        }
+
+        /* Topic Card */
+        .topic-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 200ms;
+        }
+
+        .topic-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .topic-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .topic-kind {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: var(--linen);
+            color: var(--graphite);
+        }
+
+        .topic-kind.task {
+            color: var(--today-accent);
+            background: rgba(44, 95, 138, 0.1);
+        }
+
+        .topic-kind.discuss {
+            color: #7a5a7a;
+            background: rgba(122, 90, 122, 0.1);
+        }
+
+        .topic-kind.note {
+            color: var(--health-yellow);
+            background: rgba(184, 150, 58, 0.1);
+        }
+
+        .age-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: var(--linen);
+            color: var(--pencil);
+        }
+
+        .age-badge.stale {
+            background: var(--linen);
+            color: var(--amber-nudge);
+        }
+
+        .topic-title {
+            font-size: 14px;
+            color: var(--ink);
+            font-weight: 500;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .topic-note-preview {
+            font-size: 12px;
+            color: var(--graphite);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .topic-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid var(--bone);
+        }
+
+        .topic-avatars {
+            display: flex;
+            gap: 4px;
+        }
+
+        .avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--linen);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--graphite);
+        }
+
+        .focus-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid var(--pencil);
+            color: var(--pencil);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 200ms;
+        }
+
+        .topic-card:hover .focus-btn {
+            opacity: 1;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--cotton);
+            border-bottom: 1px solid var(--bone);
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--linen);
+            color: var(--graphite);
+            border: none;
+            transition: all 200ms;
+        }
+
+        .filter-pill.active {
+            background: var(--today-accent);
+            color: white;
+        }
+
+        /* f/1.4 Today View */
+        .today-view {
+            max-width: 520px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .section-header {
+            font-family: Lora, Georgia, serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .triage-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .triage-text {
+            font-size: 14px;
+            color: var(--ink);
+            margin-bottom: 8px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .triage-source {
+            font-size: 12px;
+            color: var(--pencil);
+            margin-bottom: 12px;
+        }
+
+        /* f/11 Strategy View */
+        .strategy-view {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .initiative-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-left: 6px solid var(--init-teal);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .initiative-card.plum {
+            border-left-color: var(--init-plum);
+        }
+
+        .initiative-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .initiative-title {
+            font-family: Lora, Georgia, serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .health-indicator {
+            font-size: 14px;
+        }
+
+        .week-badge {
+            display: inline-block;
+            background: var(--linen);
+            color: var(--pencil);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* f/22 Career View */
+        .career-view {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: Lora, Georgia, serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        .accomplishment-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .accomplishment-item {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            color: var(--ink);
+        }
+
+        .accomplishment-item:before {
+            content: "•";
+            margin-right: 8px;
+            color: var(--today-accent);
+        }
+
+        /* Focus Mode */
+        .focus-mode-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--newsprint);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .focus-mode-overlay.active {
+            display: flex;
+        }
+
+        .focus-mode-content {
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: focusIn 300ms ease-out;
+        }
+
+        @keyframes focusIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .focus-label {
+            font-size: 11px;
+            color: var(--pencil);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .focus-title {
+            font-family: Lora, Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        .focus-divider {
+            height: 1px;
+            background: var(--bone);
+        }
+
+        .focus-note {
+            font-size: 15px;
+            color: var(--graphite);
+            line-height: 1.5;
+        }
+
+        .focus-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .focus-done-btn {
+            background: var(--today-accent);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 200ms;
+        }
+
+        .focus-done-btn:hover {
+            opacity: 0.9;
+        }
+
+        .focus-back-link {
+            color: var(--pencil);
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Toast System */
+        .toast-container {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: var(--ink);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            max-width: 260px;
+            animation: toastIn 200ms;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Next/Later sections */
+        .next-later-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .next-later-section {
+            background: var(--linen);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .section-title-sm {
+            font-family: Lora, Georgia, serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .compact-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 12px;
+            color: var(--ink);
+        }
+
+        /* People section */
+        .people-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .person-card {
+            background: var(--cotton);
+            border: 1px solid var(--bone);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 200ms;
+        }
+
+        .person-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .person-avatar-large {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--linen);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--graphite);
+            margin-bottom: 8px;
+        }
+
+        .person-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .person-role {
+            font-size: 10px;
+            color: var(--pencil);
+        }
+
+        .health-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 4px;
+        }
+
+        .health-dot.green {
+            background: var(--health-green);
+        }
+
+        .health-dot.yellow {
+            background: var(--health-yellow);
+        }
+
+        .health-dot.red {
+            background: var(--health-red);
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 200ms;
+            border: 1px solid var(--graphite);
+            background: transparent;
+            color: var(--graphite);
+        }
+
+        .btn.primary {
+            background: var(--today-accent);
+            color: white;
+            border-color: var(--today-accent);
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .week-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .day-column {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="header-left">Aperture</div>
+        <div class="header-center" id="header-tag">Summary → This Week</div>
+        <button class="record-btn" id="record-btn">⏺ Record</button>
+    </div>
+
+    <!-- Aperture Dial -->
+    <div class="aperture-dial">
+        <div class="dial-stop active" data-depth="1.4">
+            <div class="dial-stop-label">f/1.4</div>
+            <div class="dial-stop-label">Today</div>
+            <div class="dial-underline"></div>
+        </div>
+        <div class="dial-stop" data-depth="4">
+            <div class="dial-stop-label">f/4</div>
+            <div class="dial-stop-label">This Week</div>
+            <div class="dial-underline"></div>
+        </div>
+        <div class="dial-stop" data-depth="11">
+            <div class="dial-stop-label">f/11</div>
+            <div class="dial-stop-label">The Arc</div>
+            <div class="dial-underline"></div>
+        </div>
+        <div class="dial-stop" data-depth="22">
+            <div class="dial-stop-label">f/22</div>
+            <div class="dial-stop-label">Identity</div>
+            <div class="dial-underline"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- AI Headline -->
+        <div class="ai-headline" id="ai-headline">Two items in triage. Three meetings today, Maya's 1:1 at 11:00.</div>
+
+        <!-- f/1.4 TODAY VIEW -->
+        <div class="view active" id="view-1.4">
+            <div class="today-view">
+                <!-- Triage Section -->
+                <div class="section-card">
+                    <div class="section-header">Triage — 2 items</div>
+                    <div class="triage-card">
+                        <div class="triage-text">Priya mentioned reorg timeline</div>
+                        <div class="triage-source">from Monday recording · 2h ago</div>
+                        <div class="action-buttons">
+                            <button class="btn">Keep</button>
+                            <button class="btn">Delegate →</button>
+                            <button class="btn">Discuss →</button>
+                            <button class="btn">Drop</button>
+                        </div>
+                    </div>
+                    <div class="triage-card">
+                        <div class="triage-text">Anika: vendor eval criteria need sign-off</div>
+                        <div class="triage-source">from recording · 3h ago</div>
+                        <div class="action-buttons">
+                            <button class="btn">Keep</button>
+                            <button class="btn">Delegate →</button>
+                            <button class="btn">Discuss →</button>
+                            <button class="btn">Drop</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Plan -->
+                <div class="section-card">
+                    <div class="section-header">Wednesday</div>
+                    <div class="card-list">
+                        <div class="topic-card">
+                            <div class="topic-card-header">
+                                <span class="topic-kind task">◻ Meeting</span>
+                                <span class="age-badge">0d</span>
+                            </div>
+                            <div class="topic-title">09:30 Standup</div>
+                            <div class="topic-card-footer">
+                                <div class="topic-avatars">
+                                    <div class="avatar">T</div>
+                                    <div class="avatar">P</div>
+                                </div>
+                                <button class="focus-btn">◎</button>
+                            </div>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-card-header">
+                                <span class="topic-kind task">◻ Meeting</span>
+                                <span class="age-badge">0d</span>
+                            </div>
+                            <div class="topic-title">11:00 1:1 w/ Maya</div>
+                            <div class="topic-card-footer">
+                                <div class="topic-avatars">
+                                    <div class="avatar">M</div>
+                                </div>
+                                <button class="focus-btn">◎</button>
+                            </div>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-card-header">
+                                <span class="topic-kind task">◻ Task</span>
+                                <span class="age-badge">1d</span>
+                            </div>
+                            <div class="topic-title">Finalize SCIM scope doc</div>
+                            <div class="topic-card-footer">
+                                <div class="topic-avatars">
+                                    <div class="avatar">P</div>
+                                </div>
+                                <button class="focus-btn">◎</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- People Section -->
+                <div class="section-card">
+                    <div class="section-header">People</div>
+                    <div class="people-grid">
+                        <div class="person-card">
+                            <div class="person-avatar-large">P</div>
+                            <div class="person-name">Priya <span class="health-dot yellow"></span></div>
+                            <div class="person-role">Staff Eng</div>
+                        </div>
+                        <div class="person-card">
+                            <div class="person-avatar-large">M</div>
+                            <div class="person-name">Maya <span class="health-dot green"></span></div>
+                            <div class="person-role">Designer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- f/4 THIS WEEK VIEW -->
+        <div class="view" id="view-4">
+            <div class="filter-bar">
+                <button class="filter-pill active">All</button>
+                <button class="filter-pill">◻ Tasks</button>
+                <button class="filter-pill">◎ Discuss</button>
+                <button class="filter-pill">◈ Notes</button>
+                <button class="filter-pill">⚠️ Stale</button>
+            </div>
+
+            <div class="week-board">
+                <!-- MON -->
+                <div>
+                    <div class="column-header">
+                        <div class="column-header-title">Monday</div>
+                        <div class="column-header-subtitle">This week · committed</div>
+                    </div>
+                </div>
+                <!-- TUE -->
+                <div>
+                    <div class="column-header">
+                        <div class="column-header-title">Tuesday</div>
+                        <div class="column-header-subtitle">This week · committed</div>
+                    </div>
+                </div>
+                <!-- WED -->
+                <div>
+                    <div class="column-header">
+                        <div class="column-header-title">Wednesday</div>
+                        <div class="column-header-subtitle">This week · committed</div>
+                    </div>
+                </div>
+                <!-- THU -->
+                <div>
+                    <div class="column-header">
+                        <div class="column-header-title">Thursday</div>
+                        <div class="column-header-subtitle">This week · committed</div>
+                    </div>
+                </div>
+                <!-- FRI -->
+                <div>
+                    <div class="column-header">
+                        <div class="column-header-title">Friday</div>
+                        <div class="column-header-subtitle">This week · committed</div>
+                    </div>
+                </div>
+
+                <!-- MON COLUMN -->
+                <div class="day-column past">
+                    <div class="day-label">— Mon —</div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge stale">5d</span>
+                        </div>
+                        <div class="topic-title">Review Maya's design doc</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">M</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">5d</span>
+                        </div>
+                        <div class="topic-title">Update SCIM spec</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">P</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TUE COLUMN -->
+                <div class="day-column past">
+                    <div class="day-label">— Tue —</div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge stale">4d</span>
+                        </div>
+                        <div class="topic-title">Prep board deck slides</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars"></div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">4d</span>
+                        </div>
+                        <div class="topic-title">Draft Q2 roadmap section</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars"></div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WED COLUMN (TODAY) -->
+                <div class="day-column today">
+                    <div class="day-label today">— Wed · Today —</div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Meeting</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">09:30 Standup</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">T</div>
+                                <div class="avatar">P</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Meeting</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">11:00 1:1 w/ Maya</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">M</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">1d</span>
+                        </div>
+                        <div class="topic-title">Finalize SCIM scope doc</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">P</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Write launch checklist</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars"></div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind discuss">◎ Discuss</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Reply to Anika re: vendor eval</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">A</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THU COLUMN -->
+                <div class="day-column future">
+                    <div class="day-label">— Thu —</div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Review PR #847</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">P</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind note">◈ Note</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Sync notes from Maya 1:1</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">M</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRI COLUMN -->
+                <div class="day-column future">
+                    <div class="day-label">— Fri —</div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Meeting</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">09:30 Team standup</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars">
+                                <div class="avatar">T</div>
+                            </div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Weekly brag sheet</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars"></div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-kind task">◻ Task</span>
+                            <span class="age-badge">0d</span>
+                        </div>
+                        <div class="topic-title">Submit expense report</div>
+                        <div class="topic-card-footer">
+                            <div class="topic-avatars"></div>
+                            <button class="focus-btn">◎</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next/Later Section -->
+            <div class="next-later-container" style="margin-top: 32px;">
+                <div class="next-later-section">
+                    <div class="section-title-sm">Next · Coming up · 2 weeks</div>
+                    <div class="card-list">
+                        <div class="compact-card">Research competitor onboarding flows</div>
+                        <div class="compact-card">Draft hiring justification for H2</div>
+                        <div class="compact-card">Sketch integration test plan (Priya)</div>
+                    </div>
+                </div>
+                <div class="next-later-section" style="background: var(--parchment);">
+                    <div class="section-title-sm">Later · Backlog · someday</div>
+                    <div class="card-list">
+                        <div class="compact-card">Plan team offsite Q3</div>
+                        <div class="compact-card">Write ADR for event sourcing</div>
+                        <div class="compact-card">Clean up Confluence archive</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- f/11 THE ARC VIEW -->
+        <div class="view" id="view-11">
+            <div class="strategy-view">
+                <div class="initiative-card">
+                    <div class="initiative-header">
+                        <div>
+                            <div class="initiative-title">SCIM Integration</div>
+                            <div class="week-badge">🟡 Week 3</div>
+                        </div>
+                        <span class="health-indicator">🟡</span>
+                    </div>
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--bone);">
+                        <div style="font-size: 12px; color: var(--graphite); margin-bottom: 8px;">Topics in progress:</div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <div style="font-size: 12px; color: var(--ink);">SCIM timeline (5d)</div>
+                            <div style="font-size: 12px; color: var(--ink);">API rate limits (3d)</div>
+                            <div style="font-size: 12px; color: var(--ink);">On-call rotation (1d)</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--graphite);">People: Priya (Staff Eng)</div>
+                </div>
+
+                <div class="initiative-card plum">
+                    <div class="initiative-header">
+                        <div>
+                            <div class="initiative-title">Q2 Roadmap</div>
+                            <div class="week-badge">🟢 Week 2</div>
+                        </div>
+                        <span class="health-indicator">🟢</span>
+                    </div>
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--bone);">
+                        <div style="font-size: 12px; color: var(--graphite); margin-bottom: 8px;">Topics in progress:</div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <div style="font-size: 12px; color: var(--ink);">Draft roadmap section (4d)</div>
+                            <div style="font-size: 12px; color: var(--ink);">Stakeholder alignment (2d)</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--graphite);">People: Product team</div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <div class="section-title">People</div>
+                    <div class="people-grid">
+                        <div class="person-card">
+                            <div class="person-avatar-large">P</div>
+                            <div class="person-name">Priya <span class="health-dot yellow"></span></div>
+                            <div class="person-role">Staff Eng</div>
+                            <div style="font-size: 10px; color: var(--pencil); margin-top: 4px;">Last met: Mon</div>
+                        </div>
+                        <div class="person-card">
+                            <div class="person-avatar-large">M</div>
+                            <div class="person-name">Maya <span class="health-dot green"></span></div>
+                            <div class="person-role">Designer</div>
+                            <div style="font-size: 10px; color: var(--pencil); margin-top: 4px;">Last met: Today</div>
+                        </div>
+                        <div class="person-card">
+                            <div class="person-avatar-large">A</div>
+                            <div class="person-name">Anika <span class="health-dot green"></span></div>
+                            <div class="person-role">PM Platform</div>
+                            <div style="font-size: 10px; color: var(--pencil); margin-top: 4px;">Last met: 5d ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- f/22 IDENTITY VIEW -->
+        <div class="view" id="view-22">
+            <div class="career-view">
+                <div class="section-title">Q1 2026 Accomplishments</div>
+                <ul class="accomplishment-list">
+                    <li class="accomplishment-item">Shipped SCIM integration Phase 1 — unblocked customer onboarding on the enterprise track</li>
+                    <li class="accomplishment-item">Led architecture review for API rate limiting — decided on token bucket approach, reducing infrastructure spend by 12%</li>
+                    <li class="accomplishment-item">Mentored Maya through design system refactor — shifted responsibility for component library to her ownership</li>
+                    <li class="accomplishment-item">Resolved platform reorg alignment — clarified RACI with Priya and Morgan, reduced cross-team friction</li>
+                    <li class="accomplishment-item">Cleared backlog of vendor evaluations — delegated evaluation criteria documentation to Anika, established repeatable process</li>
+                </ul>
+                <div style="margin-top: 24px; padding: 12px; background: var(--linen); border-radius: 8px;">
+                    <button class="btn primary" style="width: 100%; text-align: center;">Export Brag Sheet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Mode Overlay -->
+    <div class="focus-mode-overlay" id="focus-overlay">
+        <div class="focus-mode-content">
+            <div style="text-align: center;">
+                <div class="focus-label">f/0.95</div>
+                <div class="focus-title" id="focus-title">Topic Title</div>
+            </div>
+            <div class="focus-divider"></div>
+            <div id="focus-body"></div>
+            <div class="focus-actions">
+                <button class="focus-done-btn" id="focus-done">Done</button>
+                <a class="focus-back-link" id="focus-back">Back</a>
+            </div>
+            <div style="text-align: center; font-size: 11px; color: var(--pencil); margin-top: 16px;">
+                ⌘↩ to complete · Esc to return
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // State
+        let currentDepth = '1.4';
+        let recordingActive = false;
+        let recordingTime = 0;
+        let recordingInterval = null;
+
+        // Aperture Dial
+        document.querySelectorAll('.dial-stop').forEach(stop => {
+            stop.addEventListener('click', () => {
+                const depth = stop.dataset.depth;
+                switchView(depth);
+            });
+        });
+
+        function switchView(depth) {
+            // Update dial
+            document.querySelectorAll('.dial-stop').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[data-depth="${depth}"]`).classList.add('active');
+
+            // Update views
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${depth}`).classList.add('active');
+
+            // Update headline and header
+            const headlines = {
+                '1.4': 'Two items in triage. Three meetings today, Maya\'s 1:1 at 11:00.',
+                '4': 'Solid week. Two open items carried from earlier — design doc and board deck.',
+                '11': 'SCIM integration is the long pole at week 3. Priya\'s workload has been rising.',
+                '22': 'This quarter you shipped two P1 initiatives and shifted more work to your reports.'
+            };
+
+            const tags = {
+                '1.4': 'Summary → Today',
+                '4': 'Summary → This Week',
+                '11': 'Summary → The Arc',
+                '22': 'Summary → Identity'
+            };
+
+            document.getElementById('ai-headline').textContent = headlines[depth];
+            document.getElementById('header-tag').textContent = tags[depth];
+            currentDepth = depth;
+        }
+
+        // Record button
+        document.getElementById('record-btn').addEventListener('click', function() {
+            recordingActive = !recordingActive;
+            if (recordingActive) {
+                this.classList.add('active');
+                recordingTime = 0;
+                recordingInterval = setInterval(() => {
+                    recordingTime++;
+                    const secs = recordingTime;
+                    const mins = Math.floor(secs / 60);
+                    const displaySecs = (secs % 60).toString().padStart(2, '0');
+                    this.textContent = '● ' + mins + ':' + displaySecs;
+                }, 1000);
+            } else {
+                this.classList.remove('active');
+                this.textContent = '⏺ Record';
+                if (recordingInterval) clearInterval(recordingInterval);
+                showToast('Recording saved');
+            }
+        });
+
+        // Focus mode
+        document.querySelectorAll('.focus-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const card = btn.closest('.topic-card');
+                const title = card.querySelector('.topic-title').textContent;
+                const noteElem = card.querySelector('.topic-note-preview');
+                const note = noteElem ? noteElem.textContent : 'No additional notes.';
+                const kind = card.querySelector('.topic-kind').textContent;
+
+                document.getElementById('focus-title').textContent = title;
+
+                const focusBody = document.getElementById('focus-body');
+                focusBody.textContent = '';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.style.display = 'flex';
+                headerDiv.style.gap = '8px';
+                headerDiv.style.marginBottom = '12px';
+                headerDiv.style.alignItems = 'center';
+
+                const kindSpan = document.createElement('span');
+                kindSpan.style.fontSize = '12px';
+                kindSpan.style.padding = '4px 8px';
+                kindSpan.style.background = 'var(--linen)';
+                kindSpan.style.borderRadius = '3px';
+                kindSpan.style.color = 'var(--graphite)';
+                kindSpan.textContent = kind;
+
+                const daySpan = document.createElement('span');
+                daySpan.style.fontSize = '13px';
+                daySpan.style.color = 'var(--pencil)';
+                daySpan.textContent = 'Wednesday · Today';
+
+                headerDiv.appendChild(kindSpan);
+                headerDiv.appendChild(daySpan);
+                focusBody.appendChild(headerDiv);
+
+                const divider = document.createElement('div');
+                divider.className = 'focus-divider';
+                focusBody.appendChild(divider);
+
+                const noteSection = document.createElement('div');
+                noteSection.style.marginTop = '12px';
+
+                const noteLabel = document.createElement('div');
+                noteLabel.style.fontSize = '11px';
+                noteLabel.style.color = 'var(--pencil)';
+                noteLabel.style.textTransform = 'uppercase';
+                noteLabel.style.letterSpacing = '0.5px';
+                noteLabel.style.marginBottom = '4px';
+                noteLabel.textContent = 'Note';
+
+                const noteText = document.createElement('div');
+                noteText.className = 'focus-note';
+                noteText.textContent = note;
+
+                noteSection.appendChild(noteLabel);
+                noteSection.appendChild(noteText);
+                focusBody.appendChild(noteSection);
+
+                document.getElementById('focus-overlay').classList.add('active');
+            });
+        });
+
+        document.getElementById('focus-done').addEventListener('click', () => {
+            document.getElementById('focus-overlay').classList.remove('active');
+            showToast('Marked as done');
+        });
+
+        document.getElementById('focus-back').addEventListener('click', () => {
+            document.getElementById('focus-overlay').classList.remove('active');
+        });
+
+        document.getElementById('focus-overlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('focus-overlay')) {
+                document.getElementById('focus-overlay').classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('focus-overlay').classList.remove('active');
+            }
+        });
+
+        // Toast system
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 200ms';
+                setTimeout(() => toast.remove(), 200);
+            }, 1800);
+        }
+
+        // Action buttons
+        document.querySelectorAll('.btn:not(.primary)').forEach(btn => {
+            if (!btn.classList.contains('focus-done-btn')) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const action = btn.textContent;
+                    if (action === 'Drop') {
+                        showToast('Item dropped');
+                    } else if (action === 'Keep') {
+                        showToast('Kept for Wednesday');
+                    } else {
+                        showToast(action + ' initiated');
+                    }
+                });
+            }
+        });
+
+        // Export brag sheet
+        document.querySelectorAll('.btn.primary').forEach(btn => {
+            if (btn.textContent === 'Export Brag Sheet') {
+                btn.addEventListener('click', () => {
+                    const items = [
+                        'Shipped SCIM integration Phase 1 — unblocked customer onboarding on the enterprise track',
+                        'Led architecture review for API rate limiting — decided on token bucket approach, reducing infrastructure spend by 12%',
+                        'Mentored Maya through design system refactor — shifted responsibility for component library to her ownership',
+                        'Resolved platform reorg alignment — clarified RACI with Priya and Morgan, reduced cross-team friction',
+                        'Cleared backlog of vendor evaluations — delegated evaluation criteria documentation to Anika, established repeatable process'
+                    ];
+                    const text = 'Q1 2026 Accomplishments\n\n' + items.map(i => '• ' + i).join('\n');
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('Copied to clipboard!');
+                    });
+                });
+            }
+        });
+
+        // Filter pills
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                showToast('Filter: ' + pill.textContent);
+            });
+        });
+
+        // Person cards click
+        document.querySelectorAll('.person-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const nameElem = card.querySelector('.person-name');
+                const name = nameElem.textContent.split(' ')[0];
+                showToast(name + '\'s full card would open here');
+            });
+        });
+    </script>
+</body>
+</html>
